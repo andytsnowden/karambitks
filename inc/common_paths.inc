@@ -23,7 +23,7 @@
  * @author     Michael Cummings <mgcummings@yahoo.com>
  * @author     Stephen Gulickk <stephenmg12@gmail.com>
  * @author     Andy Snowden <forumadmin@eve-razor.com>
- * @copyright  2008 (C) Michael Cummings, Stephen Gulick, and Andy Snowden 
+ * @copyright  2009(C) Michael Cummings, Stephen Gulick, and Andy Snowden 
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GPL 3.0
  * @package    KarambitKS
  * @version    SVN: $Id$
@@ -46,7 +46,7 @@ $ds = DIRECTORY_SEPARATOR;
  * all the other paths are relative to it.
  *
  */
-define('KARAMBITKS_INC', $incDir . $ds);
+define('KKS_INC', $incDir . $ds);
 /* **************************************************************************
 * Paths
 * **************************************************************************/
@@ -57,7 +57,7 @@ foreach ($settings as $k => $v)
     $realpath = realpath($incDir . $ds . $v);
     if ($realpath && is_dir($realpath))
     {
-        define('KARAMBITKS_' . $k, $realpath . $ds);
+        define('KKS_' . $k, $realpath . $ds);
     } else
     {
         $mess = 'Nonexistent directory defined for KARAMBITKS_' . $k . ' constant';
