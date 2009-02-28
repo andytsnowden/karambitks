@@ -31,26 +31,44 @@
  * @link       http://www.eve-online.com/
  */
 
-//LOAD AND SET PATH CONSTANTS
-require_once'inc/common_paths.inc';
 
-//LOAD CONFIGURATION AND SET CONSTANTS
-require_once KKS_CONFIG.'config.php';
+/**
+ * killList
+ * 
+ * @package KarambitKS
+ * @author Stephen Gulick
+ * @copyright 2009
+ * @version $Id$
+ * @access public
+ */
+class killList 
+{
+    private $rs;
+    
+    public $rarray;
+    
+    
+    
+    /**
+     * killList::fetchList()
+     * 
+     * @return
+     */
+    function fetchList() {
+            //Get ADODB Factory INSTANCE
+            $instance = ADOdbFactory::getInstance();
+            //Get DB Connection
+            $con = $instance->factory(KKS_DSN);
+            
+            $sql = 'SELECT * FROM `corpKillLog` kl'
+        . ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`'
+        . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
+        . ' WHERE ca.corporationID=170567768 AND WEEK( kl.`killTime` ) = WEEK( NOW( ) )'; 
 
-//LOAD ADODB CONNECTION FACTORY
-require_once KKS_CLASS . 'ADOdbFactory.class.php';
-
- //Find out what page the user wants to view
- $view=$_GET['v'];
- if(ctype_alpha($view)) {
-	 $loadPage='view/'.$view.'.php';
-	 if(file_exists($loadPage)) {
-	 	include($loadPage);
-	 }
- }
- else {
- 	echo "An Error has occured!";
- }
-
+            $this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql);
+            $this->rarray=$this->rs->GetAssoc();
+            
+    }
+}
 
 ?>

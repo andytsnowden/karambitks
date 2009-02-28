@@ -31,26 +31,17 @@
  * @link       http://www.eve-online.com/
  */
 
-//LOAD AND SET PATH CONSTANTS
-require_once'inc/common_paths.inc';
+//Get Needed Classes
+require_once KKS_CLASS.'class.killlist.php';
 
-//LOAD CONFIGURATION AND SET CONSTANTS
-require_once KKS_CONFIG.'config.php';
+//New KillList
+$kl = New killList();
 
-//LOAD ADODB CONNECTION FACTORY
-require_once KKS_CLASS . 'ADOdbFactory.class.php';
+//Get the list
+$kl->fetchList();
+//Get the results
+$list=$kl->rarray;
 
- //Find out what page the user wants to view
- $view=$_GET['v'];
- if(ctype_alpha($view)) {
-	 $loadPage='view/'.$view.'.php';
-	 if(file_exists($loadPage)) {
-	 	include($loadPage);
-	 }
- }
- else {
- 	echo "An Error has occured!";
- }
-
-
+//Dump
+echo"<pre>";print_r($list);echo"</pre><br>\n";
 ?>
