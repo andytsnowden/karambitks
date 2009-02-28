@@ -31,6 +31,12 @@
  * @link       http://www.eve-online.com/
  */
 
+//Define KB Version 
+define('KKS_VERSION', '1.0'); 
+
+//Turn off some possible annoances
+@set_magic_quotes_runtime(0);
+
 //LOAD AND SET PATH CONSTANTS
 require_once'inc/common_paths.inc';
 
@@ -40,17 +46,32 @@ require_once KKS_CONFIG.'config.php';
 //LOAD ADODB CONNECTION FACTORY
 require_once KKS_CLASS . 'ADOdbFactory.class.php';
 
- //Find out what page the user wants to view
+//LOAD ODD/END FUNCTIONS
+require_once KKS_FUCTIONS . 'functions.inc';
+
+//UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
+unregister_globals('_POST', '_GET', '_REQUEST');
+
+ //Find out what page the user wants to view & check for invalid request or empty request
  $view=$_GET['v'];
- if(ctype_alpha($view)) {
-	 $loadPage='view/'.$view.'.php';
-	 if(file_exists($loadPage)) {
-	 	include($loadPage);
-	 }
- }
- else {
- 	echo "An Error has occured!";
- }
-
-
+ //if the user tries to put anything but valid data in the broswer this check will fail.
+ if ((!eregi("^[a-z_./]*$", $view) && !eregi("\\.\\.", $view))) {
+ 	//invalid data was sent to the header, Possible break/XSS attack
+ 	//we prob want to log this with the ip the request came from
+ 	die("Invalid request");
+	} else {
+		
+	if(ctype_alpha($view) OR !empty($view)) {
+		$loadPage='view/'.$view.'.php';
+		if(file_exists($loadPage)) {
+			include($loadPage);
+		}
+	}
+	elseif (empty($view)){
+		include('home.php');
+	}
+	else {
+		echo "An Error has occured!";
+	} 
+ } 
 ?>
