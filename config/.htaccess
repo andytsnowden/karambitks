@@ -1,0 +1,2 @@
+deny from all
+ErrorDocument 403 "You are not allowed in this directory"
