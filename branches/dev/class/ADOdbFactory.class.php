@@ -103,7 +103,8 @@ class ADOdbFactory {
       //$tracing->activeTrace(YAPEAL_TRACE_DATABASE, 0) &&
       //$tracing->logTrace(YAPEAL_TRACE_DATABASE, $mess);
       $con = NewADOConnection($dsn);
-      $con->debug = true;
+      $con->LogSQL(KKS_ADODBLOG);
+      $con->debug = KKS_ADODB_DEBUG;
       $con->Execute('set names utf8');
       $this->connections[$hash] = $con;
     };
