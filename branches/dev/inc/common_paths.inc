@@ -51,7 +51,7 @@ define('KKS_INC', $incDir . $ds);
 * Paths
 * **************************************************************************/
 $settings = array('ADODB' => '../ext/adodb5', 'BASE' => '../', 'CACHE' =>
-    '../cache/', 'CLASS' => '../class/', 'CONFIG' => '../config/', 'FUCTIONS' => '../inc');
+    '../cache/', 'CLASS' => '../class/', 'CONFIG' => '../config/');
 foreach ($settings as $k => $v)
 {
     $realpath = realpath($incDir . $ds . $v);
