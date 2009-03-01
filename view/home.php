@@ -33,15 +33,37 @@
 
 //Get Needed Classes
 require_once KKS_CLASS.'class.killlist.php';
+require_once KKS_CLASS.'class.shipclassstats.php';
 
+//Check to see if Week and Year are set
+if(isset($_GET['w']) && is_numeric($_GET['w'])) {
+    (int) $week=$_GET['w'];
+}
+else {
+    $week='';
+    echo "WEEK :".$_GET['w']."<br><br>\n";
+}
+if(isset($_GET['y']) && is_numeric($_GET['y'])) {
+    (int) $year=$_GET['y'];
+}
+else {
+    $year='';
+}
 //New KillList
 $kl = New killList();
+//New Statslist
+$sc= New shipClassStats();
 
 //Get the list
-$kl->fetchList();
+$kl->fetchList(KKS_KBCORPID, false, $week, $year);
+$sc->fetchShipLostList(KKS_KBCORPID, false, $week, $year);
+$sc->fetchShipKIllList(KKS_KBCORPID, false, $week, $year);
 //Get the results
 $list=$kl->rarray;
+$list_scloss=$sc->rarray_scloss;
+$list_sckill=$sc->rarray_sckill;
 
 //Dump
-echo"<pre>";print_r($list);echo"</pre><br>\n";
+echo"Losses: <pre>";print_r($list_scloss);echo"</pre><br>\n";
+echo"Kills: <pre>";print_r($list_sckill);echo"</pre><br>\n";
 ?>

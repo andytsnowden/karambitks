@@ -73,14 +73,14 @@ class killList
             //Get DB Connection
             $con = $instance->factory(KKS_DSN);
             
-            if(!is_int($corporationID)) {
-                $corporationID=KKS_KBCORPID;            
+            if(!is_int($ID)) {
+                $ID=KKS_KBCORPID;            
             }
-            if(!is_int($week) && $week>=0 || $week<=53) {
-                $week='NOW()';       
+            if(!is_int($week) && $week<=0 || $week>=53) {
+                $week='WEEK(NOW())';   
             }
             if(!is_int($year)) {
-                $year='NOW()';            
+                $year='YEAR(NOW())';            
             }
             if($isAlliance){
                 $WHERE=' ca.allianceID='.$ID.'';
@@ -94,7 +94,7 @@ class killList
         . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
         . ' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
         . ' WHERE '.$WHERE.' '
-        .'AND WEEK( kl.`killTime` ) = WEEK('.$week.') AND YEAR(kl. `killTime`)=YEAR('.$year.')'; 
+        .'AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year.''; 
 
             $this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql);
             $this->rarray=$this->rs->GetAssoc();
