@@ -42,28 +42,59 @@
  * @access public
  */
 class killList 
-{
+{   
+    /**
+     * 
+     * @var object
+     */
     private $rs;
     
+    /**
+     * 
+     * @var array
+     */
     public $rarray;
     
-    
-    
+
     /**
      * killList::fetchList()
      * 
-     * @return
+     * Use this to generate a list of kills
+     * 
+     * @param mixed $ID
+     * @param bool  $isAlliance
+     * @param mixed $week
+     * @param mixed $year
+     * @return void
      */
-    function fetchList() {
+    function fetchList($ID=KKS_KBCORPID, $isAlliance=FALSE,$week=NULL, $year=NULL) {
             //Get ADODB Factory INSTANCE
             $instance = ADOdbFactory::getInstance();
             //Get DB Connection
             $con = $instance->factory(KKS_DSN);
             
-            $sql = 'SELECT * FROM `corpKillLog` kl'
+            if(!is_int($corporationID)) {
+                $corporationID=KKS_KBCORPID;            
+            }
+            if(!is_int($week) && $week>=0 || $week<=53) {
+                $week='NOW()';       
+            }
+            if(!is_int($year)) {
+                $year='NOW()';            
+            }
+            if($isAlliance){
+                $WHERE=' ca.allianceID='.$ID.'';
+            }
+            else {
+                $WHERE=' ca.corporationID='.$ID.'';
+            }
+            
+            $sql = 'SELECT  kl . * , cv . * , ca . * , it.typeName, it.graphicID FROM `corpKillLog` kl'
         . ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`'
         . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
-        . ' WHERE ca.corporationID=170567768 AND WEEK( kl.`killTime` ) = WEEK( NOW( ) )'; 
+        . ' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
+        . ' WHERE '.$WHERE.' '
+        .'AND WEEK( kl.`killTime` ) = WEEK('.$week.') AND YEAR(kl. `killTime`)=YEAR('.$year.')'; 
 
             $this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql);
             $this->rarray=$this->rs->GetAssoc();
