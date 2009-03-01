@@ -46,6 +46,9 @@ $killdetail=1800;
 //Your Corporation ID
 $corporationID=0;
 
+//Server Compression
+$compression=1;
+
 /*******************************************
 ** DO NOT CHANGE ANYTHING BELOW THIS LINE **
 *******************************************/

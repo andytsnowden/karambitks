@@ -49,6 +49,19 @@ require_once KKS_CLASS . 'ADOdbFactory.class.php';
 //LOAD ODD/END FUNCTIONS
 require_once KKS_INC . 'functions.inc';
 
+//Compress output if server can and enabled in config.
+if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
+{
+	// If zlib is being used, turn off output compression.
+	if (@ini_get('zlib.output_compression') == '1' || @ini_get('output_handler') == 'ob_gzhandler' || @version_compare(PHP_VERSION, '4.2.0') == -1) {
+		ob_start();
+	} else {
+		ob_start('ob_gzhandler');
+	}
+} else {	
+	ob_start();
+}
+
 //UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
 unregister_globals('_POST', '_GET', '_REQUEST');
 
@@ -68,10 +81,13 @@ unregister_globals('_POST', '_GET', '_REQUEST');
 		}
 	}
 	elseif (empty($view)){
-		include('home.php');
+		include('view/home.php');
 	}
 	else {
 		echo "An Error has occured!";
 	} 
- } 
+ }
+
+//all output should be finished, send headers to the broswer.
+ob_end_flush();
 ?>
