@@ -23,7 +23,7 @@
  * @author     Michael Cummings <mgcummings@yahoo.com>
  * @author     Stephen Gulickk <stephenmg12@gmail.com>
  * @author     Andy Snowden <forumadmin@eve-razor.com>
- * @copyright  2008 (C) Michael Cummings, Stephen Gulick, and Andy Snowden 
+ * @copyright  2009 (C) Michael Cummings, Stephen Gulick, and Andy Snowden 
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GPL 3.0
  * @package    KarambitKS
  * @link       http://code.google.com/p/karambitks/
