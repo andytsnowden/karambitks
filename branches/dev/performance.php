@@ -23,56 +23,45 @@
  * @author     Michael Cummings <mgcummings@yahoo.com>
  * @author     Stephen Gulickk <stephenmg12@gmail.com>
  * @author     Andy Snowden <forumadmin@eve-razor.com>
- * @copyright  2008 (C) Michael Cummings, Stephen Gulick, and Andy Snowden 
+ * @copyright  2009 (C) Michael Cummings, Stephen Gulick, and Andy Snowden 
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GPL 3.0
  * @package    KarambitKS
+ * @version    SVN: $Id$
  * @link       http://code.google.com/p/karambitks/
  * @link       http://www.eve-online.com/
  */
 
-//Database Configuration Options
-$host="localhost";
-$dbusername="dbusername";
-$dbpassword="dbpassword";
-$database="dbdatabase";
-//$dbtable_prefix="";
-$dbdriver="mysqli://";
+//Define KB Version 
+define('KKS_VERSION', '1.0'); 
 
-//Cache Timers (in Seconds unless noted)
-$killlist=60;
-$stats=900;
-$killdetail=1800;
+//Turn off some possible annoances
+@set_magic_quotes_runtime(0);
 
-//Your Corporation ID
-$corporationID=0;
+//LOAD AND SET PATH CONSTANTS
+require_once'inc/common_paths.inc';
 
-/*******************************************
-** DO NOT CHANGE ANYTHING BELOW THIS LINE **
-*******************************************/
+//LOAD CONFIGURATION AND SET CONSTANTS
+require_once KKS_CONFIG.'config.php';
 
-//build and set the Database Source Name
-$dsn = $dbdriver.$dbusername.':'.$dbpassword.'@'.$host.'/'.$database;
-define('KKS_DSN', $dsn);
+//LOAD ADODB CONNECTION FACTORY
+require_once KKS_CLASS . 'ADOdbFactory.class.php';
 
-//Set CorporationID constant
-define('KKS_KBCORPID', $corporationID);
+//LOAD ODD/END FUNCTIONS
+require_once KKS_FUCTIONS . 'functions.inc';
 
-//Set Cache Timer constants
-$cache = array('KILLLIST' => $killlist, 'STATS' => $stats, 'KILLDETAIL' =>
-    $killdetail);
-foreach ($cache as $k => $v)
-{
-        define('KKS_CACHE_' . $k, $v);
+//UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
+unregister_globals('_POST', '_GET', '_REQUEST');
+
+echo "<h3>ADODB Performance Monitor</h3>\n";
+if(KKS_ADODB_LOG==FALSE) {
+    echo "Performance monitoring is turned off. Edit your config.php file to turn on.<br>\n<hr>\n";
 }
-; // foreach $cache ...
+ //Get ADODB Factory INSTANCE
+            $instance = ADOdbFactory::getInstance();
+            //Get DB Connection
+            $con = $instance->factory(KKS_DSN);
 
-//DEBUGING PURPOSES ONLY
+$perf = NewPerfMonitor($con);
 
-//Turn ON/OFF ADODB LOGGING
-define('KKS_ADODB_LOG', 'FALSE');
-
-//Turn On/Off ADODB Debug
-define('KKS_ADODB_DEBUG', 'FALSE');
-
-
+$perf->ui();
 ?>

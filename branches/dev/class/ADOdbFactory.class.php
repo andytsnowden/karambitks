@@ -98,7 +98,7 @@ class ADOdbFactory {
       //require_once KKS_CLASS . 'ADODB_Exception.class.php';
       require_once KKS_ADODB . 'adodb.inc.php';
       $ds = DIRECTORY_SEPARATOR;
-      $ADODB_CACHE_DIR =  KKS_CACHE.'ADODB_CACHE'.$ds;
+      $ADODB_CACHE_DIR =  KKS_CACHE.'ADODB_CACHE';
       //$mess = 'Before NewADOConnection in ' . basename(__FILE__);
       //$tracing->activeTrace(YAPEAL_TRACE_DATABASE, 0) &&
       //$tracing->logTrace(YAPEAL_TRACE_DATABASE, $mess);
