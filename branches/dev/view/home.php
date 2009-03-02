@@ -35,6 +35,9 @@
 require_once KKS_CLASS.'class.killlist.php';
 require_once KKS_CLASS.'class.shipclassstats.php';
 
+//Turn on Dev mode
+define('KKS_DEV_MODE', 'Just needs to be defined');
+
 //Check to see if Week and Year are set
 if(isset($_GET['w']) && is_numeric($_GET['w'])) {
     (int) $week=$_GET['w'];
@@ -82,6 +85,9 @@ $data = new Dwoo_Data();
 $data->assign($table, 'sckill');
 $data->assign('test', 'Hello World');
 }
-//echo "<pre>";print_r($list);echo"</pre><br>";
+echo "<pre>";var_dump($table);echo"</pre><br>";
+foreach($table as $sc) {
+    echo $sc['shipclass'].' - '.$sc['shipkill'].' - '.$sc['shiploss'];
+}
 echo TemplateHandler::fetch($template, $data);
 ?>
