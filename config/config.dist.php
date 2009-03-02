@@ -42,6 +42,7 @@ $dbdriver="mysqli://";
 $killlist=60;
 $stats=900;
 $killdetail=1800;
+$dwoo_cache=300;
 
 //Your Corporation ID
 $corporationID=0;
@@ -62,7 +63,7 @@ define('KKS_KBCORPID', $corporationID);
 
 //Set Cache Timer constants
 $cache = array('KILLLIST' => $killlist, 'STATS' => $stats, 'KILLDETAIL' =>
-    $killdetail);
+    $killdetail, 'DWOO' => $dwoo_cache);
 foreach ($cache as $k => $v)
 {
         define('KKS_CACHE_' . $k, $v);
