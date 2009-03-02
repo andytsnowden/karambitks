@@ -37,17 +37,22 @@ define('KKS_VERSION', '1.0');
 //Turn off some possible annoances
 @set_magic_quotes_runtime(0);
 
-//LOAD AND SET PATH CONSTANTS
+/**
+ * LOAD AND SET PATH CONSTANTS 
+ * LOAD CONFIGURATION AND SET CONSTANTS
+ * LOAD ADODB CONNECTION FACTORY
+ * LOAD ERROR Handeling Class
+ * LOAD ODD/END FUNCTIONS 
+ */
+ 
 require_once'inc/common_paths.inc';
-
-//LOAD CONFIGURATION AND SET CONSTANTS
 require_once KKS_CONFIG.'config.php';
-
-//LOAD ADODB CONNECTION FACTORY
 require_once KKS_CLASS . 'ADOdbFactory.class.php';
-
-//LOAD ODD/END FUNCTIONS
+require_once KKS_CLASS . 'class.errors.php';
 require_once KKS_INC . 'functions.inc';
+
+//set new Error Handler
+set_error_handler(array('errors', 'handler'));
 
 //Compress output if server can and enabled in config.
 if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
@@ -71,7 +76,7 @@ unregister_globals('_POST', '_GET', '_REQUEST');
  if ((!eregi("^[a-z_./]*$", $view) && !eregi("\\.\\.", $view))) {
  	//invalid data was sent to the header, Possible break/XSS attack
  	//we prob want to log this with the ip the request came from
- 	die("Invalid request");
+ 	trigger_error('Invalid Link/Page', E_USER_ERROR);
 	} else {
 		
 	if(ctype_alpha($view) OR !empty($view)) {
@@ -87,6 +92,8 @@ unregister_globals('_POST', '_GET', '_REQUEST');
 		echo "An Error has occured!";
 	} 
  }
+ 
+
 
 //all output should be finished, send headers to the broswer.
 ob_end_flush();
