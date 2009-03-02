@@ -50,7 +50,7 @@ define('KKS_INC', $incDir . $ds);
 /* **************************************************************************
 * Paths
 * **************************************************************************/
-$settings = array('ADODB' => '../ext/adodb5', 'BASE' => '../', 'CACHE' =>
+$settings = array('ADODB' => '../ext/adodb5', 'DWOO'=> '../ext/dwoo', 'BASE' => '../', 'CACHE' =>
     '../cache/', 'CLASS' => '../class/', 'CONFIG' => '../config/');
 foreach ($settings as $k => $v)
 {

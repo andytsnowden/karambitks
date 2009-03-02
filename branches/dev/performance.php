@@ -47,7 +47,7 @@ require_once KKS_CONFIG.'config.php';
 require_once KKS_CLASS . 'ADOdbFactory.class.php';
 
 //LOAD ODD/END FUNCTIONS
-require_once KKS_FUCTIONS . 'functions.inc';
+require_once KKS_INC . 'functions.inc';
 
 //UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
 unregister_globals('_POST', '_GET', '_REQUEST');
