@@ -100,7 +100,7 @@ class shipClassStats
             else {
                 $WHERE=' cv.corporationID='.$ID.'';
             }
-            $sql = 'SELECT sc.groupName, count(cv.killID) as shipcount FROM `corpVictim` cv'
+            $sql = 'SELECT sc.groupID, sc.groupName, count(cv.killID) as shiplosscount FROM `corpVictim` cv'
         . ' JOIN `invTypes` it ON it.typeID=cv.shipTypeID'
         . ' JOIN `corpKillLog` kl ON kl.`killID`=cv.`killID`'
         . ' RIGHT JOIN `invShipclass` sc ON sc.groupID=it.groupID'
@@ -148,7 +148,7 @@ class shipClassStats
             else {
                 $WHERE=' ca.corporationID='.$ID.'';
             }
-            $sql = 'SELECT sc.groupName, count(cv.killID) as shipcount FROM `corpVictim` cv'
+            $sql = 'SELECT sc.groupID, sc.groupName, count(cv.killID) as shipkillcount FROM `corpVictim` cv'
         . ' JOIN `invTypes` it ON it.typeID=cv.shipTypeID'
         . ' JOIN `corpKillLog` kl ON kl.`killID`=cv.`killID`'
         . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
@@ -163,6 +163,38 @@ class shipClassStats
             $this->rs_sckill=$con->CacheExecute(KKS_CACHE_STATS, $sql);
             $this->rarray_sckill=$this->rs_sckill->GetAssoc();
             
+    }
+    
+    /**
+     * shipClassStats::fetchShipClassTableArray()
+     * 
+     * @param mixed $ID
+     * @param bool $isAlliance
+     * @param mixed $week
+     * @param mixed $year
+     * @return array $table
+     */
+    function fetchShipClassTableArray($ID=KBCORPID, $isAlliance=FALSE, $week=NULL, $year=NULL) {
+            //Get ADODB Factory INSTANCE
+            $instance = ADOdbFactory::getInstance();
+            //Get DB Connection
+            $con = $instance->factory(KKS_DSN);
+            //SQL to get a list of ship classes
+            $sql = 'SELECT `groupID`, `groupName` FROM `invShipclass` LIMIT 0, 40 '; 
+            $this->rs_sckill=$con->CacheExecute(21600, $sql); //It should not change often, so cache for 6 hours
+            $sclasses=$this->rs_sckill->GetAssoc();
+            $scloss=$this->rarray_scloss;
+            $sckill=$this->rarray_sckill;
+            foreach($sclasses as $key=>$sc) {
+                if(!is_numeric($sckill[$key]['shipkillcount'])) {
+                    $sckill[$key]['shipkillcount']=0;             
+                }
+                if(!is_numeric($scloss[$key]['shiplosscount']) || empty($scloss[$key]['shiplosscount'])) {
+                    $scloss[$key]['shiplosscount']=0;             
+                }
+                $table[$key]=array('shipclass'=>$sc, 'shipkill'=>$sckill[$key]['shipkillcount'], 'shiploss'=>$scloss[$key]['shiplosscount']);
+            }
+            return $table;
     }
 }
 

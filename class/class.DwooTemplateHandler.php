@@ -60,10 +60,11 @@ class TemplateHandler extends Dwoo
         if(self::$instance === null)
         {
             self::$instance = new self();
-            self::$instance->setCacheDir(KKS_CACHE.'Dwoo_Cache');
-            self::$instance->setCompileDir(KKS_CACHE.'Dwoo_Compile');
-            self::$instance->setDefaultCompilerFactory('file', array('MyTemplate','compilerFactory'));
+            self::$instance->setDefaultCompilerFactory('file', array('TemplateHandler','compilerFactory'));
         }
+        //Set KKS Cache directories for Dwoo
+        self::$instance->setCacheDir(KKS_CACHE.'Dwoo_Cache');
+        self::$instance->setCompileDir(KKS_CACHE.'Dwoo_Compile');
         return self::$instance;
     }
  
@@ -76,10 +77,8 @@ class TemplateHandler extends Dwoo
             $cache = 0;
         }
         elseif(empty($cache)) {
-            
-            $cache=KKS_CACHE_DWOO;        
+            $cache=KKS_CACHE_DWOO;
         }
-            
 
  
         // for example you could also tweak the cache time globally for your application here.. 
@@ -93,20 +92,22 @@ class TemplateHandler extends Dwoo
         // you should of course replace User::$lang everywhere in this class by some 
         // other variable of yours that represents the language
         if(empty($cacheId) === false)
-            $cacheId .= User::$lang;
  
         // set the path to your template directory
-        $path = '/home/moo/mysite.com/templates/';
+        $ds = DIRECTORY_SEPARATOR;
+        $path = KKS_TPL.'karambitks'.$ds.'default'.$ds;
  
         // look if there is a custom template for the current site language
+        /*
         if(file_exists($path . $name . '-' . User::$lang . '.html'))
         {
             $file = $path . $name . '-' . User::$lang . '.html';
         }
         // if not then look if the default template exists
-        elseif(file_exists($path . $name . '.html'))
+        */
+        if(file_exists($path . $name . '.tpl'))
         {
-            $file = $path . $name . '.html';
+            $file = $path . $name . '.tpl';
         }
         // still not found, then throw an exception
         else
@@ -119,7 +120,7 @@ class TemplateHandler extends Dwoo
     }
  
     // this function allows you to retrieve a template output
-    public static function fetch(Dwoo_Template_File $tpl, array $data, $customCompiler = null)
+    public static function fetch(Dwoo_Template_File $tpl, $data, $customCompiler = null)
     {
         return self::getInstance()->get($tpl, $data, $customCompiler);
     }

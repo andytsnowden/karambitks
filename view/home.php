@@ -41,14 +41,28 @@ if(isset($_GET['w']) && is_numeric($_GET['w'])) {
 }
 else {
     $week='';
-    echo "WEEK :".$_GET['w']."<br><br>\n";
+    $date=date_parse(strtotime("now"));
 }
 if(isset($_GET['y']) && is_numeric($_GET['y'])) {
     (int) $year=$_GET['y'];
+    $y=$year;
 }
 else {
     $year='';
+    $date=date_parse(strtotime("now"));
+    $y=$date['year'];
 }
+//Generate Cache ID
+$cacheID='home_id'.KKS_KBCORPID.'a0w'.$week.'y'.$year;
+//Generate Template
+$template = TemplateHandler::createTemplate('home', KKS_CACHE_DWOO, $cacheID);
+
+//Check to see if template was cached
+if(TemplateHandler::getInstance()->isCached($template))
+{
+    // we assign a blank array as the data
+    $data = array();
+} else {
 //New KillList
 $kl = New killList();
 //New Statslist
@@ -60,10 +74,14 @@ $sc->fetchShipLostList(KKS_KBCORPID, false, $week, $year);
 $sc->fetchShipKIllList(KKS_KBCORPID, false, $week, $year);
 //Get the results
 $list=$kl->rarray;
-$list_scloss=$sc->rarray_scloss;
-$list_sckill=$sc->rarray_sckill;
-
-//Dump
-echo"Losses: <pre>";print_r($list_scloss);echo"</pre><br>\n";
-echo"Kills: <pre>";print_r($list_sckill);echo"</pre><br>\n";
+$table=$sc->fetchShipClassTableArray(KKS_KBCORPID, false, $week, $year);
+$sc->fetchShipClassTableArray();
+//assign Data to Dwoo
+$data = new Dwoo_Data();
+//$data =array('test', 'Hello World!');
+$data->assign($table, 'sckill');
+$data->assign('test', 'Hello World');
+}
+//echo "<pre>";print_r($list);echo"</pre><br>";
+echo TemplateHandler::fetch($template, $data);
 ?>

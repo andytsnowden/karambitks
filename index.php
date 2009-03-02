@@ -51,8 +51,9 @@ require_once KKS_CLASS . 'ADOdbFactory.class.php';
 require_once KKS_CLASS . 'class.errors.php';
 require_once KKS_INC . 'functions.inc';
 
-//set new Error Handler
-set_error_handler(array('errors', 'handler'));
+//set new Error Handlerset_error_handler(array('errors', 'handler'));//LOAD DWOO
+require_once KKS_DWOO.'dwooAutoload.php';
+require_once KKS_CLASS.'class.DwooTemplateHandler.php';
 
 //Compress output if server can and enabled in config.
 if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
