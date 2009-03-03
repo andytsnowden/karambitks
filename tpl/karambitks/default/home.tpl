@@ -30,10 +30,10 @@
 {else}
 {if $banner_link}
 <a href="{$banner_link}">
-<a href="?a=home"><img src="img/{$banner}" border="0"></a>
+<a href="?v=home"><img src="img/{$banner}" border="0"></a>
 </a>
 {else}
-<a href="?a=home"><img src="img/{$banner}" border="0"></a>
+<a href="?v=home"><img src="img/{$banner}" border="0"></a>
 {/if}
 {/if}
 </div>
@@ -42,5 +42,6 @@
 {foreach $table sc}
   {$sc.shipclass} - {$sc.shipkill} - {$sc.shiploss}<br />
 {/foreach}
+<div class="counter"><sub>{$gen}s </sub></div>
 </body>
 </html>

@@ -84,11 +84,15 @@ $data = new Dwoo_Data();
 
 $sckill = array('table' => $table);
 $data->assign($sckill, 'table');
-$data->assign('kb_title', 'KKS KB Beta');
-$data->assign('style_url', 'style');
+$data->assign('kb_title', $kb_title);
+$data->assign('style_url', $style_url);
 $data->assign('banner_link', $_SERVER['SCRIPT_URI']);
-$data->assign('banner', 'killboard.jpg');
-$data->assign('theme_url', 'karambitks');
+$data->assign('banner', $banner);
+$data->assign('theme_url', $theme_url);
+
+
+//execution time
+$data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
 //debug_var('sckill', print_r($sckill, true));
