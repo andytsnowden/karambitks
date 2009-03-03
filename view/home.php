@@ -81,13 +81,13 @@ $table=$sc->fetchShipClassTableArray(KKS_KBCORPID, false, $week, $year);
 $sc->fetchShipClassTableArray();
 //assign Data to Dwoo
 $data = new Dwoo_Data();
+
+$sckill = array('table' => $table);
+$data->assign($sckill, 'table');
 //$data =array('test', 'Hello World!');
-$data->assign($table, 'sckill');
-$data->assign('test', 'Hello World');
+//$data->assign($table, 'sckill');
+//$data->assign('test', 'Hello World');
 }
-echo "<pre>";var_dump($table);echo"</pre><br>";
-foreach($table as $sc) {
-    echo $sc['shipclass'].' - '.$sc['shipkill'].' - '.$sc['shiploss'];
-}
+debug_var('sckill', print_r($sckill, true));
 echo TemplateHandler::fetch($template, $data);
 ?>

@@ -111,8 +111,11 @@ class shipClassStats
         . ' LIMIT 0, 40;';
             
 
-            $this->rs_scloss=$con->CacheExecute(KKS_CACHE_STATS, $sql);
-            $this->rarray_scloss=$this->rs_scloss->GetAssoc();
+            if($this->rs_scloss=$con->CacheExecute(KKS_CACHE_STATS, $sql)){
+            	$this->rarray_scloss=$this->rs_scloss->GetAssoc();
+            } else {
+            	trigger_error('SQL Query Failed', E_USER_ERROR);
+            }
             
     }
     
@@ -160,9 +163,11 @@ class shipClassStats
         . ' LIMIT 0, 40;';
             
 
-            $this->rs_sckill=$con->CacheExecute(KKS_CACHE_STATS, $sql);
-            $this->rarray_sckill=$this->rs_sckill->GetAssoc();
-            
+            if($this->rs_sckill=$con->CacheExecute(KKS_CACHE_STATS, $sql)){
+            	$this->rarray_sckill=$this->rs_sckill->GetAssoc();
+            } else {
+            	trigger_error('SQL Query Failed', E_USER_ERROR);
+            }
     }
     
     /**
@@ -181,8 +186,12 @@ class shipClassStats
             $con = $instance->factory(KKS_DSN);
             //SQL to get a list of ship classes
             $sql = 'SELECT `groupID`, `groupName` FROM `invShipclass` LIMIT 0, 40 '; 
-            $this->rs_sckill=$con->CacheExecute(21600, $sql); //It should not change often, so cache for 6 hours
-            $sclasses=$this->rs_sckill->GetAssoc();
+            //It should not change often, so cache for 6 hours
+            if ($this->rs_sckill=$con->CacheExecute(21600, $sql)){
+            	$sclasses=$this->rs_sckill->GetAssoc();
+            } else {
+            	trigger_error('SQL Query Failed', E_USER_ERROR);
+            }
             $scloss=$this->rarray_scloss;
             $sckill=$this->rarray_sckill;
             foreach($sclasses as $key=>$sc) {
