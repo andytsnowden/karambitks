@@ -82,7 +82,11 @@ $sc->fetchShipClassTableArray();
 //assign Data to Dwoo
 $data = new Dwoo_Data();
 
+//echo"<pre>";print_r($list);echo"</pre><br>";
+
 $sckill = array('table' => $table);
+$recent = array('recent' => $list);
+$data->assign($recent, 'recent');
 $data->assign($sckill, 'table');
 $data->assign('kb_title', $kb_title);
 $data->assign('style_url', $style_url);

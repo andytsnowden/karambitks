@@ -89,7 +89,7 @@ class killList
                 $WHERE=' ca.corporationID='.$ID.'';
             }
             
-            $sql = 'SELECT  kl . * , cv . * , ca . * , it.typeName, it.graphicID FROM `corpKillLog` kl'
+            $sql = 'SELECT  kl . * , cv . * , ca . * , it.typeName as shiptype, it.graphicID FROM `corpKillLog` kl'
         . ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`'
         . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
         . ' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
