@@ -79,19 +79,27 @@ unregister_globals('_POST', '_GET', '_REQUEST');
  	//we prob want to log this with the ip the request came from
  	trigger_error('Invalid Link/Page', E_USER_ERROR);
 	} else {
+		//if its IGB, redirect to igp pages
+		if (substr($_SERVER['HTTP_USER_AGENT'], 0, 15) == 'EVE-minibrowser'){
+			
+			$loadPage='view/igb.php';
+			if(file_exists($loadPage)) {
+				include($loadPage);
+			}
 		
-	if(ctype_alpha($view) OR !empty($view)) {
-		$loadPage='view/'.$view.'.php';
-		if(file_exists($loadPage)) {
-			include($loadPage);
+		} else {
+		
+			if(ctype_alpha($view) OR !empty($view)) {
+				$loadPage='view/'.$view.'.php';
+				if(file_exists($loadPage)) {
+					include($loadPage);
+				}
+			} elseif (empty($view)){
+				include('view/home.php');
+			} else {
+				trigger_error("An Error has occured!", E_USER_WARNING);
+			} 
 		}
-	}
-	elseif (empty($view)){
-		include('view/home.php');
-	}
-	else {
-		echo "An Error has occured!";
-	} 
  }
  
 

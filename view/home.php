@@ -84,10 +84,13 @@ $data = new Dwoo_Data();
 
 $sckill = array('table' => $table);
 $data->assign($sckill, 'table');
-//$data =array('test', 'Hello World!');
-//$data->assign($table, 'sckill');
-//$data->assign('test', 'Hello World');
+$data->assign('kb_title', 'KKS KB Beta');
+$data->assign('style_url', 'style');
+$data->assign('banner_link', $_SERVER['SCRIPT_URI']);
+$data->assign('banner', 'killboard.jpg');
+$data->assign('theme_url', 'karambitks');
 }
-debug_var('sckill', print_r($sckill, true));
+
+//debug_var('sckill', print_r($sckill, true));
 echo TemplateHandler::fetch($template, $data);
 ?>
