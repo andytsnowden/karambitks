@@ -96,8 +96,11 @@ class lossList
         . ' WHERE '.$WHERE.' '
         .'AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year.''; 
 
-            $this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql);
-            $this->rarray=$this->rs->GetAssoc();
+            if ($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
+            	$this->rarray=$this->rs->GetAssoc();
+            } else {
+            	trigger_error('SQL Query Failed', E_USER_ERROR);
+            }
             
     }
 }

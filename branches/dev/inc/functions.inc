@@ -230,6 +230,7 @@ function master_escape($tag){
  * Debug tool for Arrays prints the in color/expandable format
  * @uses debug_var('nametodisplay', print_r($array, TRUE));
  * @return NA prints to screen
+ */
 function debug_var($name, $data)
 {
     $captured = preg_split("/\r?\n/", $data);
