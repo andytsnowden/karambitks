@@ -1,4 +1,5 @@
 <?php
+$time_start = microtime();
 
 /**
  * Karambit Killboard System
@@ -49,7 +50,16 @@ require_once'inc/common_paths.inc';
 require_once KKS_CONFIG.'config.php';
 require_once KKS_CLASS . 'ADOdbFactory.class.php';
 require_once KKS_CLASS . 'class.errors.php';
+require_once KKS_CLASS . 'class.config.php';
 require_once KKS_INC . 'functions.inc';
+
+//Load config from SQL and some basic config needed for all pages
+$config = new kss_config();
+$kb_host = kss_config::get('kb_host');
+$theme_url = kss_config::get('theme_url');
+$style_url = kss_config::get('style_url');
+$kb_title = kss_config::get('kb_title');
+$banner = kss_config::get('banner');
 
 //set new Error Handlerset_error_handler(array('errors', 'handler'));//LOAD DWOO
 require_once KKS_DWOO.'dwooAutoload.php';
