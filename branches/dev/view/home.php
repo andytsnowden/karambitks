@@ -34,6 +34,7 @@
 //Get Needed Classes
 require_once KKS_CLASS.'class.killlist.php';
 require_once KKS_CLASS.'class.shipclassstats.php';
+require_once KKS_CLASS.'class.navigation.php';
 
 //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
@@ -82,18 +83,26 @@ $sc->fetchShipClassTableArray();
 //assign Data to Dwoo
 $data = new Dwoo_Data();
 
-//echo"<pre>";print_r($list);echo"</pre><br>";
+//menu
+$nav = new Navigation();
+$menu = $nav->generateMenu();
+$w = floor(100 / count($menu));
+$data->assign('menu_w',$w.'%');
+$data->assign('menu', $menu);
 
-$sckill = array('table' => $table);
-$recent = array('recent' => $list);
-$data->assign($recent, 'recent');
-$data->assign($sckill, 'table');
+//template data
 $data->assign('kb_title', $kb_title);
 $data->assign('style_url', $style_url);
 $data->assign('banner_link', $_SERVER['SCRIPT_URI']);
 $data->assign('banner', $banner);
 $data->assign('theme_url', $theme_url);
 
+//echo"<pre>";print_r($list);echo"</pre><br>";
+
+$sckill = array('table' => $table);
+$recent = array('recent' => $list);
+$data->assign($recent, 'recent');
+$data->assign($sckill, 'table');
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
