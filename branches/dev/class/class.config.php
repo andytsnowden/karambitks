@@ -26,7 +26,7 @@
  * @copyright  2009 (C) Michael Cummings, Stephen Gulick, and Andy Snowden 
  * @license    http://www.gnu.org/licenses/gpl-3.0.html GPL 3.0
  * @package    KarambitKS
- * @version    SVN: $Id: class.killlist.php 17 2009-03-01 20:22:27Z stephenmg12 $
+ * @version    SVN: $Id$
  * @link       http://code.google.com/p/karambitks/
  * @link       http://www.eve-online.com/
  */
@@ -38,7 +38,7 @@
  * @package KarambitKS
  * @author Andy Snowden
  * @copyright 2009
- * @version $Id: class.config.php 17 2009-03-03 09:32:00 forumadmin $
+ * @version $Id$
  * @access public
  */
 class kss_config{

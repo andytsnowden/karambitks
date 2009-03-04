@@ -10,7 +10,7 @@
 <table border="1" width="750">
 <tr><th>Ship Type</th><th>Victim</th><th>Final Blow</th><th>System Name</th><th>Time</th></tr>
 {foreach $recent kill}
-<tr><td>{$kill.shiptype}</td><td>Victim</td><td>Final Blow</td><td>{$kill.solarSystemID}</td><td>{$kill.killTime}</td></tr>
+<tr><td>{$kill.shiptype}</td><td>{$kill.victimName}</td><td>{$kill.killerName}</td><td>{$kill.solarSystemID}</td><td>{$kill.killTime}</td></tr>
 {/foreach}
 </table>
 

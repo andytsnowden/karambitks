@@ -89,12 +89,17 @@ class killList
                 $WHERE=' ca.corporationID='.$ID.'';
             }
             
-            $sql = 'SELECT  kl . * , cv . * , ca . * , it.typeName as shiptype, it.graphicID FROM `corpKillLog` kl'
+            $sql = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.allianceName as valliName, kl.solarSystemID,'
+        .' caf.characterName as killerName, it.graphicID, kl.killTime'
+        .' FROM `corpKillLog` kl'
         . ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`'
-        . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
-        . ' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
-        . ' WHERE '.$WHERE.' '
-        .'AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year.''; 
+        .' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
+        .' JOIN `corpAttackers` caf ON caf.`killID`=cv.`killID`'
+        .' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
+        .' WHERE '.$WHERE.' '
+        .' AND caf.`finalBlow`=1' 
+        .' AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year; 
+        
 
             if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
             	$this->rarray=$this->rs->GetAssoc();

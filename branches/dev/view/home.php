@@ -97,8 +97,8 @@ $data->assign('banner_link', $_SERVER['SCRIPT_URI']);
 $data->assign('banner', $banner);
 $data->assign('theme_url', $theme_url);
 
-//echo"<pre>";print_r($list);echo"</pre><br>";
 
+//Page data
 $sckill = array('table' => $table);
 $recent = array('recent' => $list);
 $data->assign($recent, 'recent');
@@ -108,6 +108,6 @@ $data->assign($sckill, 'table');
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
-//debug_var('sckill', print_r($sckill, true));
+//debug_var('list', print_r($list, true));
 echo TemplateHandler::fetch($template, $data);
 ?>
