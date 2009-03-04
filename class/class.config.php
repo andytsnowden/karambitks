@@ -64,10 +64,10 @@ class kss_config{
         //Get DB Connection
         $con = $instance->factory(KKS_DSN); 
 		       
-        $sql = "SELECT * FROM config";	
+        $sql = "SELECT config_string,config_value FROM config";	
 		
 		//short cache time while we'er still developing.. after we finish need to come up with a method to detect config changes and reload the config.. May look into shoving the config into memcache rather than using adobe's cache	       
-        if($this->rs=$con->CacheExecute(60, $sql)){
+        if($this->rs=$con->CacheExecute(3600, $sql)){
             $kks_config=$this->rs->GetAssoc();
         } else {
             trigger_error('SQL Query Failed', E_USER_ERROR);
@@ -93,7 +93,51 @@ class kss_config{
 		}		
 	}
 	
-	// going to expand this to allow add/remove of keys after I consider how to deal with the cache delay.
-	
+	/** kss_config:put
+	 * Stores new config var
+	 * @var config_name
+	 * @var config_value
+	 * @var action -- required!!
+	 * @return true/false on sucess/fail
+	 * 1 = insert 2 = update 3 = delete
+	 * If returns true the config cache will be purged and reloaded
+	 */
+	 function action($config_name, $config_value, $action)
+	 {
+	 	//Get ADODB Factory INSTANCE
+        $instance = ADOdbFactory::getInstance();
+        //Get DB Connection
+        $con = $instance->factory(KKS_DSN); 
+        
+        if (empty($action)){
+        	return false;
+        } else {
+			switch ($action){ 
+				case 1:
+		 		$sql = "INSERT INTO config (`config_string` ,`config_value`)VALUES('".$config_name."', '".$config_value."') ON DUPLICATE KEY UPDATE config_value = '".$config_value."';";
+				break;
+			
+				case 2:
+				$sql = "UPDATE config SET `config_value` = '".$config_value."' WHERE `config`.`config_string` = '".$config_name."' LIMIT 1 ;";
+				break;
+			
+				case 3:
+				$sql = "DELETE FROM config WHERE `config_string` = '".$config_name."' LIMIT 1";
+				break;
+}		 	
+		 	//execute the query
+		 	if ($con->Execute($sql)){
+		 		//clear the cache
+		 		$con->CacheFlush('SELECT config_string,config_value FROM config');	 	
+		 		//reload the settings global array
+		 		kss_config::start_up();	 	
+		 		//sucess return turn
+				return true;	
+		 	} else {
+		 		//failure gets a false
+		 		return false;	 	
+		 	}
+	 	}
+	}	
 }
 ?>
