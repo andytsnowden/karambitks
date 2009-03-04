@@ -55,11 +55,14 @@ require_once KKS_INC . 'functions.inc';
 
 //Load config from SQL and some basic config needed for all pages
 $config = new kss_config();
-$kb_host = kss_config::get('kb_host');
-$theme_url = kss_config::get('theme_url');
-$style_url = kss_config::get('style_url');
-$kb_title = kss_config::get('kb_title');
-$banner = kss_config::get('banner');
+$kb_host = $config->get('kb_host');
+$theme_url = $config->get('theme_url');
+$style_url = $config->get('style_url');
+$kb_title = $config->get('kb_title');
+$banner = $config->get('banner');
+
+//action example 1=insert 2=update 3=delete return T/F
+//$config->action('test_config', '19923', 1);
 
 //set new Error Handlerset_error_handler(array('errors', 'handler'));//LOAD DWOO
 require_once KKS_DWOO.'dwooAutoload.php';
