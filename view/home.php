@@ -84,11 +84,12 @@ $sc->fetchShipClassTableArray();
 $data = new Dwoo_Data();
 
 //menu
-$nav = new Navigation();
+$nav = new kss_navigation();
 $menu = $nav->generateMenu();
 $w = floor(100 / count($menu));
 $data->assign('menu_w',$w.'%');
 $data->assign('menu', $menu);
+//$menu = $nav->addmenu('123','123','123');
 
 //template data
 $data->assign('kb_title', $kb_title);
@@ -108,6 +109,6 @@ $data->assign($sckill, 'table');
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
-//debug_var('list', print_r($list, true));
+//debug_var('list', print_r($table, true));
 echo TemplateHandler::fetch($template, $data);
 ?>

@@ -89,7 +89,31 @@ class killDetail
         
 
             if($this->rs_attackers=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
-            	$this->rarray_attackers=$this->rs_attackers->GetArray();
+            	//$this->rarray_attackers=$this->rs_attackers->GetArray();
+            	
+            	$a=0;
+            	while (!$this->rs_attackers->EOF) {
+        	 	
+        	 	$temp[$a]['killID'] = $this->rs_attackers->fields['killID'];
+        	 	$temp[$a]['allianceID'] = $this->rs_attackers->fields['allianceID'];
+        	 	$temp[$a]['allianceName'] = $this->rs_attackers->fields['allianceName'];
+        	 	$temp[$a]['characterID'] = $this->rs_attackers->fields['characterID'];
+        	 	$temp[$a]['characterName'] = $this->rs_attackers->fields['characterName'];
+        	 	$temp[$a]['corporationID'] = $this->rs_attackers->fields['corporationID'];
+        	 	$temp[$a]['corporatiionName'] = $this->rs_attackers->fields['corporatiionName'];
+        	 	$temp[$a]['factionID'] = $this->rs_attackers->fields['factionID'];
+        	 	$temp[$a]['factionName'] = $this->rs_attackers->fields['factionName'];
+        	 	$temp[$a]['damageDone'] = $this->rs_attackers->fields['damageDone'];
+        	 	$temp[$a]['finalBlow'] = $this->rs_attackers->fields['finalBlow'];
+        	 	$temp[$a]['shipType'] = $this->rs_attackers->fields['shipType'];
+        	 	$temp[$a]['weaponType'] = $this->rs_attackers->fields['weaponType'];
+
+         		$this->rs_attackers->MoveNext();
+				$a++;
+				}            	
+            	
+            	$this->rarray_attackers=$temp;
+            	
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
             }
@@ -99,12 +123,13 @@ class killDetail
     /**
      * killList::fetchDetail()
      * 
-     * Use this to fetch detail on a kill
+     * Use this to fetch detail on a kill // process results and load into dwoo data
      * 
      * @param mixed $ID
-     * @return void
+     * @param object data
+     * @return object data
      */
-    function fetchDetail($killID) {
+    function fetchDetail($killID, $data) {
             //Get ADODB Factory INSTANCE
             $instance = ADOdbFactory::getInstance();
             //Get DB Connection
@@ -113,14 +138,21 @@ class killDetail
             
             $sql = 'SELECT * FROM `corpKillLog` kl'
         . ' JOIN corpVictim cv ON cv.`killID`=kl.`killID`'
+        . ' JOIN mapSolarSystems map ON kl.`solarSystemID` = map.solarSystemID'
         . ' WHERE kl.`killID`='.$killID.' LIMIT 1 '; 
         
 
             if($this->rs_detail=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
             	$this->rarray_detail=$this->rs_detail->GetAssoc();
+            	foreach($this->rarray_detail[$killID] as $key => $data2){
+				    if(!is_numeric($key)){
+				    	$data->assign($key, $data2);				    	
+				    }
+				}
+				return $data;
             } else {
-            	trigger_error('SQL Query Failed', E_USER_ERROR);
-            }
+            	rigger_error('SQL Query Failed', E_USER_ERROR);
+            } 
             
     }
 }

@@ -62,16 +62,14 @@ if(TemplateHandler::getInstance()->isCached($template))
 $kd = New killDetail();
 
 //GET the kill detail
-$kd->fetchDetail($killID);
 $kd->fetchAttackers($killID);
-$detail=$kd->rarray_detail;
 $attackers=$kd->rarray_attackers;
 
 //assign Data to Dwoo
 $data = new Dwoo_Data();
 
 //menu
-$nav = new Navigation();
+$nav = new kss_navigation();
 $menu = $nav->generateMenu();
 $w = floor(100 / count($menu));
 $data->assign('menu_w',$w.'%');
@@ -86,16 +84,19 @@ $data->assign('theme_url', $theme_url);
 
 
 //Page data
-$alist = array('attackers' => $attackers);
-$data->assign($detail, 'detail');
-$data->assign($alist, 'alist');
+$attackers = array('attack' => $attackers);
+$data->assign($attackers, 'attack');
+$data = $kd->fetchDetail($killID, $data);
+
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
+var_dump($data);
+
 debug_var('Kill Detail', print_r($detail, true));
+debug_var('Attackers', print_r($attackers, true));
 echo"<br><hr><br>\n";
-echo"<pre>";print_r($attackers);echo"</pre><br>\n";
 echo TemplateHandler::fetch($template, $data);
 ?>
