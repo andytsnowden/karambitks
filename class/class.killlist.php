@@ -98,7 +98,8 @@ class killList
         .' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
         .' WHERE '.$WHERE.' '
         .' AND caf.`finalBlow`=1' 
-        .' AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year; 
+        .' AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year
+        .' ORDER BY kl.`killTime` DESC'; 
         
 
             if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
