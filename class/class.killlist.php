@@ -89,24 +89,26 @@ class killList
                 $WHERE=' ca.corporationID='.$ID.'';
             }
             
-            $sql = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.allianceName as valliName, kl.solarSystemID,'
-        .' caf.characterName as killerName, it.graphicID, kl.killTime'
+            $sql = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.allianceName as valliName, map.solarSystemName, map.security,'
+        .' caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID'
         .' FROM `corpKillLog` kl'
-        . ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`'
+        .' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`'
         .' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
         .' JOIN `corpAttackers` caf ON caf.`killID`=cv.`killID`'
         .' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`'
+        .' JOIN `mapSolarSystems` map ON map.`solarSystemID` = kl.`solarSystemID`'
         .' WHERE '.$WHERE.' '
         .' AND caf.`finalBlow`=1' 
         .' AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year
-        .' ORDER BY kl.`killTime` DESC'; 
-        
+        .' ORDER BY kl.`killTime` DESC';        
 
             if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
             	$this->rarray=$this->rs->GetAssoc();
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
             }
+            
+            echo $sql;
             
     }
 }

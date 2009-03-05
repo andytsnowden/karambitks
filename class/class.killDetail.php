@@ -151,7 +151,7 @@ class killDetail
 				}
 				return $data;
             } else {
-            	rigger_error('SQL Query Failed', E_USER_ERROR);
+            	trigger_error('SQL Query Failed', E_USER_ERROR);
             } 
             
     }
