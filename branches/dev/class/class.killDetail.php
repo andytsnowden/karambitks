@@ -33,15 +33,15 @@
 
 
 /**
- * killList
+ * killDetail
  * 
  * @package KarambitKS
  * @author Stephen Gulick
  * @copyright 2009
- * @version $Id: class.killlist.php 31 2009-03-04 09:28:54Z stephenmg12 $
+ * @version $Id$
  * @access public
  */
-class killList 
+class killDetail
 {   
     /**
      * 
@@ -75,21 +75,21 @@ class killList
      * @param mixed $ID
      * @return void
      */
-    function fetchAttackers(int $killID) {
+    function fetchAttackers($killID) {
             //Get ADODB Factory INSTANCE
             $instance = ADOdbFactory::getInstance();
             //Get DB Connection
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT `allianceID`, `allianceName`, `characterID`, `characterName`, `corporationID`, `corporationName`, `factionID`, `factionName`, `damageDone`, `finalBlow`, st.typeName AS shipType, wt.typeName AS weaponType FROM `corpAttackers` ca'
+            $sql = 'SELECT `killID`, `allianceID`, `allianceName`, `characterID`, `characterName`, `corporationID`, `corporationName`, `factionID`, `factionName`, `damageDone`, `finalBlow`, st.typeName AS shipType, wt.typeName AS weaponType FROM `corpAttackers` ca'
         . ' JOIN invTypes st ON st.typeID=ca.`shipTypeID`'
         . ' JOIN invTypes wt ON wt.typeID=ca.`weaponTypeID`'
-        . ' WHERE kl.`killID`='.$killID.' LIMIT 0, 50 '; 
+        . ' WHERE ca.`killID`='.$killID; 
         
 
-            if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
-            	$this->rarray_attackers=$this->rs_attackers->GetAssoc();
+            if($this->rs_attackers=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
+            	$this->rarray_attackers=$this->rs_attackers->GetArray();
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
             }
@@ -104,7 +104,7 @@ class killList
      * @param mixed $ID
      * @return void
      */
-    function fetchDetail(int $killID) {
+    function fetchDetail($killID) {
             //Get ADODB Factory INSTANCE
             $instance = ADOdbFactory::getInstance();
             //Get DB Connection
@@ -116,7 +116,7 @@ class killList
         . ' WHERE kl.`killID`='.$killID.' LIMIT 1 '; 
         
 
-            if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
+            if($this->rs_detail=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
             	$this->rarray_detail=$this->rs_detail->GetAssoc();
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
