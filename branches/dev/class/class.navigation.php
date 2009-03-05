@@ -31,36 +31,63 @@
  * @link       http://www.eve-online.com/
  */
  
- 
-class Navigation{
+/**
+ * kss_navigation
+ * 
+ * @package KarambitKS
+ * @author Andy Snowden
+ * @copyright 2009
+ * @version $Id$
+ * @access public
+ * @abstract based on EDK classes.
+ */
+class kss_navigation{
 
-	function Navigation()
+	/**
+	 * class constructor
+	 * runs prechecks on nav table or loads defaults
+	 */
+	function kss_navigation()
 	{
 		// checking if a minimum navigation exists
-		$this->check_navigationtable();  
+		$this->check_navtable();  
 		
 		$this->sql_start = "SELECT * FROM navigation";
         $this->sql_end = " ORDER BY posnr";
         //$this->type_ = 'top';      
 	}
-
-	function execQuery()
+	
+	/**
+	 * connection function // returns active connection or establishes new sql con
+	 */
+	function get_connection()
 	{
 		//Get ADODB Factory INSTANCE
         $instance = ADOdbFactory::getInstance();
         //Get DB Connection
-        $con = $instance->factory(KKS_DSN);				
+        $con = $instance->factory(KKS_DSN);
+        return $con;
+	}
+
+	/**
+	 * kss_navigation::execQuery()
+	 * Called by kss_navigation::generateMenu() - Queries menu against Db depending on kb settings.
+	 * @return Array of data in assocative array.
+	 */
+	function execQuery()
+	{		
+        //Get DB Connection
+        $con = 	$this->get_connection();	
 	
 		$sql = $this->sql_start;
 		$sql .= " WHERE 1=1";
-
-		/* Disabled until we add contracts/campigns
-		if (killboard::hasContracts() == false){
-			$sql .= " AND url NOT LIKE '?a=contracts'";
+		
+		if ($this->hasContracts() == false){
+			$sql .= " AND url NOT LIKE '?v=contracts'";
 		}
-		if (killboard::hasCampaigns() == false){
-			$sql .= " AND url NOT LIKE '?a=campaigns'";
-		} */
+		if ($this->hasCampaigns() == false){
+			$sql .= " AND url NOT LIKE '?v=campaigns'";
+		} 
 		if (kss_config::get('public_losses'))
 		{
 			$sql .= " AND url NOT LIKE '?v=losses'";
@@ -70,37 +97,48 @@ class Navigation{
 			$sql .= " AND url NOT LIKE '?v=stats'";
 		}
 		$sql .= " AND hidden = 0";
-		$sql .= $this->sql_end;		
-		
-		if($this->qry=$con->CacheExecute(0, $sql)){
+		$sql .= $this->sql_end;	
+				
+		if($this->qry=$con->CacheExecute(3600, $sql)){
             $this->qry=$this->qry->GetAssoc();
+            $this->sql = $sql;
+            return true;
         } else {
-            trigger_error('SQL Query Failed', E_USER_ERROR);
+            return false;
         }
 	}
 	
 
-
+	/**
+	 * kss_navigation::generateMenu()
+	 * Calls kss_navigation::execQuery() to pull and generate a data array with the menu contents.
+	 * @return returns assocative menu array
+	 */
 	function generateMenu()
-    {
-    	$this->execQuery();
-    	
-    	$a=0;
-    	foreach($this->qry as $key => $data){
-    		
-			$menu[$a]['link'] = $data['url']. '" target="' . $data['target'];
-			$menu[$a]['text'] = $data['descr'];
-    		$a++;
-    	}    
-        return $menu;
+    {    	
+    	//make sure we get data from the query    	
+    	if (!$this->execQuery()){   	    	
+        	trigger_error('No data returned from Query', E_USER_ERROR);
+        } else {
+			      $a=0;
+	    	foreach($this->qry as $key => $data){
+	    		
+				$menu[$a]['link'] = $data['url']. '" target="' . $data['target'];
+				$menu[$a]['text'] = $data['descr'];
+	    		$a++;
+	    	}    
+	        return $menu;  	
+        }        
     }
 
-    function check_navigationtable(){
+	/**
+	 * kss_navigation::check_navtable()
+	 * Checks if navigation table is empty, if so fills in default values
+	 */
+    function check_navtable(){
     	
-    	//Get ADODB Factory INSTANCE
-        $instance = ADOdbFactory::getInstance();
-        //Get DB Connection
-        $con = $instance->factory(KKS_DSN); 
+    	//Get DB Connection
+        $con = 	$this->get_connection();
         
 		if (KKS_KBCORPID)
 		{
@@ -137,5 +175,83 @@ class Navigation{
 			$con->Execute($sql);
 		} 
 	}
+	
+	/**
+	 * Campaign/Contract
+	 * Returns data if active else returns false
+	 * @author EDK // Modified for use with KKS
+	 */
+	function hasCampaigns($active = false)
+    {
+        //Get DB Connection
+        $con = 	$this->get_connection();
+        
+        $sql = "select ctr_id from contracts where ctr_campaign = 1";
+        if ($active) $sql .= " and ( ctr_ended is null or now() <= ctr_ended )";
+        if ($query = $con->Execute($sql)){
+	        if ($query->RecordCount() > 0){
+	        	return $query->RecordCount();
+	        } else {
+	        	return FALSE;
+	        }
+        } else {
+        	return FALSE;
+        }
+    }
+
+    function hasContracts($active = false)
+    {
+        //Get DB Connection
+        $con = 	$this->get_connection();
+        
+        $sql = "select ctr_id from contracts where ctr_campaign = 0";
+        if ($active) $sql .= " and ( ctr_ended is null or now() <= ctr_ended )";
+        if ($query = $con->Execute($sql)){
+	        if ($query->RecordCount() > 0){
+	        	return $query->RecordCount();
+	        } else {
+	        	return FALSE;
+	        }
+        } else {
+        	return FALSE;
+        }
+    }
+    
+    /**
+     * kss_navigation::addmenu
+     * Adds menu items
+     * @var Desc - Display Name
+     * @var url - internal/external link
+     * @var target - SELF, blank (Do not sent _ just the word)
+     * @var hidden (optional) - will hide from view.
+     * @return True/False -- will throw errors for sql related issues.
+     */
+    function addmenu($desc, $url, $target, $hidden=0)
+    {
+    	//Get DB Connection
+        $con = 	$this->get_connection();
+    	
+    	if (!empty($desc) AND !empty($url) AND !empty($target)){
+    		
+    		$sql = "SELECT posnr FROM navigation ORDER BY posnr DESC LIMIT 1";
+    		if ($recordSet = $con->Execute($sql)){
+    			$this->lastposnr = ($recordSet->fields[0] + 1);
+    			
+    			$sql = "INSERT INTO `navigation` (`ID`, `descr`, `url`, `target`, `posnr`, `hidden`) VALUES (NULL, '$desc', '$url', '_$target', '$this->lastposnr', '$hidden');";
+    			if ($query = $con->Execute($sql)){
+    				//success now lets flush the cache and reload the menu
+    				$this->execQuery();
+    				$con->CacheFlush($this->sql);
+    				return true;
+    			} else {
+    				trigger_error('unable to insert record', E_USER_ERROR);	
+    			}    			
+    		} else {
+    			trigger_error('unable to run query', E_USER_ERROR);
+    		}    		
+    	} else {
+    		return false;
+    	}
+    }
 }
 ?>
