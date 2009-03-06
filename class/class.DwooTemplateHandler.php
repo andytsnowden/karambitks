@@ -95,7 +95,7 @@ class TemplateHandler extends Dwoo
  
         // set the path to your template directory
         $ds = DIRECTORY_SEPARATOR;
-        $path = KKS_TPL.'karambitks'.$ds.'default'.$ds;
+        $path = KKS_STYLE.'karambitks'.$ds.'tpl'.$ds.'default'.$ds;
  
         // look if there is a custom template for the current site language
         /*

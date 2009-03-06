@@ -88,7 +88,7 @@ class kss_navigation{
 		if ($this->hasCampaigns() == false){
 			$sql .= " AND url NOT LIKE '?v=campaigns'";
 		} 
-		if (kss_config::get('public_losses'))
+		if (kss_config::get('public_losses')=='0')
 		{
 			$sql .= " AND url NOT LIKE '?v=losses'";
 		}		
