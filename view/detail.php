@@ -58,7 +58,7 @@ if(TemplateHandler::getInstance()->isCached($template))
     $data = array();
 } else {
 
-//New KillList
+//New KillDetial
 $kd = New killDetail();
 
 //GET the kill detail

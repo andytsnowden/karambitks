@@ -100,15 +100,13 @@ class killList
         .' WHERE '.$WHERE.' '
         .' AND caf.`finalBlow`=1' 
         .' AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year
-        .' ORDER BY kl.`killTime` DESC';        
+        .' ORDER BY kl.`killTime` DESC';     
 
             if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
             	$this->rarray=$this->rs->GetAssoc();
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
             }
-            
-            echo $sql;
             
     }
 }

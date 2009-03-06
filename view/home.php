@@ -35,6 +35,7 @@
 require_once KKS_CLASS.'class.killlist.php';
 require_once KKS_CLASS.'class.shipclassstats.php';
 require_once KKS_CLASS.'class.navigation.php';
+require_once KKS_CLASS.'class.toplist.php';
 
 //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
@@ -71,15 +72,19 @@ if(TemplateHandler::getInstance()->isCached($template))
 $kl = New killList();
 //New Statslist
 $sc= New shipClassStats();
+//New Top List
+$tl = New toplist();
 
 //Get the list
 $kl->fetchList(KKS_KBCORPID, false, $week, $year);
 $sc->fetchShipLostList(KKS_KBCORPID, false, $week, $year);
 $sc->fetchShipKIllList(KKS_KBCORPID, false, $week, $year);
+$tl->char_corplist(KKS_KBCORPID, 10);
 //Get the results
 $list=$kl->rarray;
 $table=$sc->fetchShipClassTableArray(KKS_KBCORPID, false, $week, $year);
 $sc->fetchShipClassTableArray();
+$charCorpTop=$tl->ra_char_corp;
 //assign Data to Dwoo
 $data = new Dwoo_Data();
 
@@ -102,8 +107,10 @@ $data->assign('theme_url', $theme_url);
 //Page data
 $sckill = array('table' => $table);
 $recent = array('recent' => $list);
+$chartl = array('chartoplist' => $charCorpTop);
 $data->assign($recent, 'recent');
 $data->assign($sckill, 'table');
+$data->assign($chartl, 'chartl');
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
