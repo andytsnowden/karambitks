@@ -42,20 +42,19 @@ define('KKS_DEV_MODE', 'Just needs to be defined');
 
 //Check to see if Week and Year are set
 if(isset($_GET['w']) && is_numeric($_GET['w'])) {
-    (int) $week=$_GET['w'];
+    $week=$_GET['w'];
 }
 else {
-    $week='';
-    $date=date_parse(strtotime("now"));
+    $week=date('W');
 }
 if(isset($_GET['y']) && is_numeric($_GET['y'])) {
-    (int) $year=$_GET['y'];
+    $year=$_GET['y'];
     $y=$year;
 }
 else {
-    $year='';
-    $date=date_parse(strtotime("now"));
-    $y=$date['year'];
+    $year=date('Y');
+    $y=$year;
+
 }
 //Generate Cache ID
 $cacheID='home_id'.KKS_KBCORPID.'a0w'.$week.'y'.$year;
@@ -70,13 +69,21 @@ if(TemplateHandler::getInstance()->isCached($template))
 } else {
 //New KillList
 $kl = New killList();
+
+//Set needed KillList options
+$kl->corpID=KKS_KBCORPID;
+$kl->fetchCorp=TRUE;
+$kl->week=$week;
+$kl->year=$year;
+
+
 //New Statslist
 $sc= New shipClassStats();
 //New Top List
 $tl = New toplist();
 
 //Get the list
-$kl->fetchList(KKS_KBCORPID, false, $week, $year);
+$kl->fetchList();
 $sc->fetchShipLostList(KKS_KBCORPID, false, $week, $year);
 $sc->fetchShipKIllList(KKS_KBCORPID, false, $week, $year);
 $tl->char_corplist(KKS_KBCORPID, 10);
