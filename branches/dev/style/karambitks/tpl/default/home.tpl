@@ -8,10 +8,10 @@
 </table>
 
 <table width="750" border="1" class="kb-table" align="right">
-{foreach $chartl char}
-<tr><td>{$char.charactername}</td><td>{$char.stats}</td></tr>
-</table>
+{foreach $chartoplist char}
+<tr><td>{$char.characterName}</td><td>{$char.stats}</td></tr>
 {/foreach}
+</table>
 
 <table width="750" border="1" class="main-table kb-table" align="right">
 <tr><th>Ship Type</th><th>Victim</th><th>Final Blow</th><th>System Name</th><th>Time</th></tr>
