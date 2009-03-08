@@ -67,7 +67,37 @@ class shipClassStats
      */
     public $rarray_sckill;
     
+    public $fetchAlliance = false;
 
+    public $fetchCorp = false;
+
+    public $fetchFaction = false;
+    
+    public $fetchWeek=true;
+
+    public $corpID = 0;
+
+    public $allianceID = 0;
+
+    public $factionID = 0;
+
+    public $week = NULL; // 1-53
+
+    public $year = NULL;
+
+    public $countInvolved = false;
+
+    public $filterClass = null;
+    
+    function __construct()
+    {
+        //Begining of SQL statements
+        $this->SQL_start='SELECT sc.groupID, sc.groupName,';        
+        $this->SQL_joins='FROM `corpVictim` cv JOIN `invTypes` it ON it.typeID=cv.shipTypeID JOIN `corpKillLog` kl ON kl.`killID`=cv.`killID` RIGHT JOIN `invShipclass` sc ON sc.groupID=it.groupID';
+        $this->SQL_end=' GROUP BY sc.groupID ORDER BY sc.groupName LIMIT 0, 40;';
+        
+    }
+    
     /**
      * lossList::fetchShipLostList()
      * 
@@ -79,38 +109,46 @@ class shipClassStats
      * @param mixed $year
      * @return void
      */
-    function fetchShipLostList($ID=KKS_KBCORPID, $isAlliance=FALSE,$week=NULL, $year=NULL) {
-            //Get ADODB Factory INSTANCE
-            $instance = ADOdbFactory::getInstance();
-            //Get DB Connection
-            $con = $instance->factory(KKS_DSN);
+    function fetchShipLostList() {
+        $con = $this->get_connection();
             
-            if(!is_int($ID)) {
-                $ID=KKS_KBCORPID;            
-            }
-            if(!is_int($week) && $week<=0 || $week>=53) {
-                $week='WEEK(NOW())';   
-            }
-            if(!is_int($year)) {
-                $year='YEAR(NOW())';            
-            }
-            if($isAlliance){
-                $WHERE=' cv.allianceID='.$ID.'';
-            }
-            else {
-                $WHERE=' cv.corporationID='.$ID.'';
-            }
-            $sql = 'SELECT sc.groupID, sc.groupName, count(cv.killID) as shiplosscount FROM `corpVictim` cv'
-        . ' JOIN `invTypes` it ON it.typeID=cv.shipTypeID'
-        . ' JOIN `corpKillLog` kl ON kl.`killID`=cv.`killID`'
-        . ' RIGHT JOIN `invShipclass` sc ON sc.groupID=it.groupID'
-        . ' WHERE '.$WHERE.' '
-        .'AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year.''
-        . ' GROUP BY sc.groupID'
-        . ' ORDER BY sc.groupName'
-        . ' LIMIT 0, 40;';
-            
-
+        //Change Week and Year to format we can use
+        if(!isset($this->week) && !is_numeric($this->week)) {
+            $this->week = date('W');
+        }
+        if(!isset($this->year) && !is_numeric($this->year)) {
+            $this->year = date('Y');
+        }
+        if($this->week<10) {
+            $week=$this->week;
+            $pad=str_pad($week, 2, 0, STR_PAD_LEFT);
+            $this->week=substr($pad, -2, 2);
+        }
+        $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
+        $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));
+        
+        $sql  = $this->SQL_start;
+        $sql .=' count(cv.killID) as shiplosscount ';
+        $sql .= $this->SQL_joins;
+        $sql .= ' WHERE';
+        if ($this->fetchCorp == true && $this->corpID > 0)
+        {
+            $sql .= ' cv.corporationID=' . $this->corpID;
+        }
+        elseif ($this->fetchAlliance == true && $this->allianceID > 0)
+        {
+            $sql .= ' cv.allianceID=' . $this->allianceID;
+        }
+        elseif ($this->fetchFaction == true && $this->factionID > 0)
+        {
+            $sql .= ' cv.factionID=' . $this->factionID;
+        }
+        if($this->fetchWeek == true) {
+            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
+        }
+        $sql .=$this->SQL_end;
+                
+        //Execute Query
             if($this->rs_scloss=$con->CacheExecute(KKS_CACHE_STATS, $sql)){
             	$this->rarray_scloss=$this->rs_scloss->GetAssoc();
             } else {
@@ -131,43 +169,52 @@ class shipClassStats
      * @return void
      */
     function fetchShipKillList($ID=KKS_KBCORPID, $isAlliance=FALSE,$week=NULL, $year=NULL) {
-            //Get ADODB Factory INSTANCE
-            $instance = ADOdbFactory::getInstance();
-            //Get DB Connection
-            $con = $instance->factory(KKS_DSN);
+        $con = $this->get_connection();
             
-            if(!is_int($corporationID)) {
-                $corporationID=KKS_KBCORPID;            
-            }
-            if(!is_int($week) && $week<=0 || $week>=53) {
-                $week='WEEK(NOW())';   
-            }
-            if(!is_int($year)) {
-                $year='YEAR(NOW())';            
-            }
-            if($isAlliance){
-                $WHERE=' ca.allianceID='.$ID.'';
-            }
-            else {
-                $WHERE=' ca.corporationID='.$ID.'';
-            }
-            $sql = 'SELECT sc.groupID, sc.groupName, count(cv.killID) as shipkillcount FROM `corpVictim` cv'
-        . ' JOIN `invTypes` it ON it.typeID=cv.shipTypeID'
-        . ' JOIN `corpKillLog` kl ON kl.`killID`=cv.`killID`'
-        . ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`'
-        . ' RIGHT JOIN `invShipclass` sc ON sc.groupID=it.groupID'
-        . ' WHERE '.$WHERE.' '
-        .'AND WEEK( kl.`killTime` ) = '.$week.' AND YEAR(kl. `killTime`)='.$year.''
-        . ' GROUP BY sc.groupID'
-        . ' ORDER BY sc.groupName'
-        . ' LIMIT 0, 40;';
-            
-
+        //Change Week and Year to format we can use
+        if(!isset($this->week) && !is_numeric($this->week)) {
+            $this->week = date('W');
+        }
+        if(!isset($this->year) && !is_numeric($this->year)) {
+            $this->year = date('Y');
+        }
+        if($this->week<10) {
+            $week=$this->week;
+            $pad=str_pad($week, 2, 0, STR_PAD_LEFT);
+            $this->week=substr($pad, -2, 2);
+        }
+        $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
+        $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));
+        
+        $sql  = $this->SQL_start;
+        $sql .=' count(cv.killID) as shipkillcount ';
+        $sql .= $this->SQL_joins;
+        $sql .= ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID` ';
+        $sql .= ' WHERE';
+        if ($this->fetchCorp == true && $this->corpID > 0)
+        {
+            $sql .= ' ca.corporationID=' . $this->corpID;
+        }
+        elseif ($this->fetchAlliance == true && $this->allianceID > 0)
+        {
+            $sql .= ' ca.allianceID=' . $this->allianceID;
+        }
+        elseif ($this->fetchFaction == true && $this->factionID > 0)
+        {
+            $sql .= ' ca.factionID=' . $this->factionID;
+        }
+        if($this->fetchWeek == true) {
+            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
+        }
+        $sql .=$this->SQL_end;
+        
+        //Execute Query
             if($this->rs_sckill=$con->CacheExecute(KKS_CACHE_STATS, $sql)){
             	$this->rarray_sckill=$this->rs_sckill->GetAssoc();
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
             }
+            
     }
     
     /**
@@ -179,7 +226,7 @@ class shipClassStats
      * @param mixed $year
      * @return array $table
      */
-    function fetchShipClassTableArray($ID=KBCORPID, $isAlliance=FALSE, $week=NULL, $year=NULL) {
+    function fetchShipClassTableArray() {
             //Get ADODB Factory INSTANCE
             $instance = ADOdbFactory::getInstance();
             //Get DB Connection
@@ -192,6 +239,8 @@ class shipClassStats
             } else {
             	trigger_error('SQL Query Failed', E_USER_ERROR);
             }
+            $this->fetchShipKillList();
+            $this->fetchShipLostList();
             $scloss=$this->rarray_scloss;
             $sckill=$this->rarray_sckill;
             foreach($sclasses as $key=>$sc) {
@@ -204,6 +253,15 @@ class shipClassStats
                 $table[$key]=array('shipclass'=>$sc, 'shipkill'=>$sckill[$key]['shipkillcount'], 'shiploss'=>$scloss[$key]['shiplosscount']);
             }
             return $table;
+    }
+    
+    private function get_connection()
+    {
+        //Get ADODB Factory INSTANCE
+        $instance = ADOdbFactory::getInstance();
+        //Get DB Connection
+        $con = $instance->factory(KKS_DSN);
+        return $con;
     }
 }
 
