@@ -1,6 +1,7 @@
 <!-- header file --!>
 {include file="header.tpl"}
 <table width="190" class="kb-shipclass" align="left" border="1">
+<tr><th>Ship Class</th><th>K</th><th>L</th></tr>
 {foreach $table sc}
 <tr><td>{$sc.shipclass}</td><td>{$sc.shipkill}</td><td>{$sc.shiploss}</td></tr>
 {/foreach}

@@ -79,18 +79,22 @@ $kl->year=$year;
 
 //New Statslist
 $sc= New shipClassStats();
+
+//Set needed KillList options
+$sc->corpID=KKS_KBCORPID;
+$sc->fetchCorp=TRUE;
+$sc->week=$week;
+$sc->year=$year;
+
 //New Top List
 $tl = New toplist();
 
 //Get the list
 $kl->fetchList();
-$sc->fetchShipLostList(KKS_KBCORPID, false, $week, $year);
-$sc->fetchShipKIllList(KKS_KBCORPID, false, $week, $year);
 $tl->char_corplist(KKS_KBCORPID, 10);
 //Get the results
 $list=$kl->rarray;
-$table=$sc->fetchShipClassTableArray(KKS_KBCORPID, false, $week, $year);
-$sc->fetchShipClassTableArray();
+$table=$sc->fetchShipClassTableArray();
 $charCorpTop=$tl->ra_char_corp;
 //assign Data to Dwoo
 $data = new Dwoo_Data();
