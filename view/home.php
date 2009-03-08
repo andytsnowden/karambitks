@@ -127,6 +127,5 @@ $data->assign($chartl, 'chartl');
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
-//debug_var('list', print_r($table, true));
 echo TemplateHandler::fetch($template, $data);
 ?>
