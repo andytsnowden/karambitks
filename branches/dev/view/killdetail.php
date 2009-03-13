@@ -49,7 +49,7 @@ if(is_numeric($_GET['kid'])) {
 //Generate Cache ID
 $cacheID='detail_id'.$killID;
 //Generate Template
-$template = TemplateHandler::createTemplate('detail', 21600, $cacheID);
+$template = TemplateHandler::createTemplate('killdetail', 21600, $cacheID);
 
 //Check to see if template was cached
 if(TemplateHandler::getInstance()->isCached($template))
