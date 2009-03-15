@@ -39,7 +39,7 @@ if ($sectionFile == basename($_SERVER['PHP_SELF'])) {
 //  'corpIndustryJobs', 'corpMarketOrders', 'corpMemberTracking',
 //  'corpStarbaseList', 'corpWalletJournal', 'corpWalletTransactions'
 //);
-$apis = array('corpCorporationSheet', 'corpKillLog'
+$apis = array('corpKillLog'
 );
 $serverName = 'Tranquility';
 require_once YAPEAL_CLASS . 'api' . $ds . 'ACorporation.php';
@@ -75,9 +75,8 @@ foreach ($apis as $api) {
   $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
   $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
   $instance = new $api($params);
-  if ($instance->apiFetch()) {
-    $instance->apiStore();
-  };
+  $instance->apiFetch();
+  $instance->apiStore();
   $instance = null;
 };// foreach $apis ...
 ?>
