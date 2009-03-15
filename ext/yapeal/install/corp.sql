@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS `corpItems` (
   `qtyDropped` BIGINT UNSIGNED NOT NULL ,
   `qtyDestroyed` BIGINT UNSIGNED NOT NULL ,
   `typeID` BIGINT UNSIGNED NOT NULL ,
-  PRIMARY KEY (`killID`, `typeID`) )
+  PRIMARY KEY (`killID`, `lft`) )
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci
@@ -231,24 +231,6 @@ ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
 
-CREATE TABLE IF NOT EXISTS `corpVictim` (
-  `allianceID` BIGINT UNSIGNED NOT NULL ,
-  `allianceName` VARCHAR(255) NULL ,
-  `characterID` BIGINT UNSIGNED NOT NULL ,
-  `characterName` VARCHAR(255) NULL ,
-  `corporationID` BIGINT UNSIGNED NOT NULL ,
-  `corporationName` VARCHAR(255) NULL ,
-  `damageTaken` BIGINT UNSIGNED NOT NULL ,
-  `factionID` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
-  `factionName` VARCHAR(255) NOT NULL DEFAULT '' ,
-  `killID` BIGINT UNSIGNED NOT NULL ,
-  `shipTypeID`  BIGINT UNSIGNED NOT NULL ,
-  PRIMARY KEY (`killID`, `characterID`) )
-ENGINE = InnoDB
-DEFAULT CHARACTER SET = utf8
-COLLATE = utf8_unicode_ci
-COMMENT = 'Sub-table from KillLog';
-
 CREATE TABLE IF NOT EXISTS `corpMemberTracking` (
   `base` VARCHAR(255) NULL DEFAULT NULL ,
   `baseID` BIGINT UNSIGNED NULL DEFAULT NULL ,
@@ -284,6 +266,24 @@ CREATE TABLE IF NOT EXISTS `corpStarbaseList` (
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8
 COLLATE = utf8_unicode_ci;
+
+CREATE TABLE IF NOT EXISTS `corpVictim` (
+  `allianceID` BIGINT UNSIGNED NOT NULL ,
+  `allianceName` VARCHAR(255) NULL ,
+  `characterID` BIGINT UNSIGNED NOT NULL ,
+  `characterName` VARCHAR(255) NULL ,
+  `corporationID` BIGINT UNSIGNED NOT NULL ,
+  `corporationName` VARCHAR(255) NULL ,
+  `damageTaken` BIGINT UNSIGNED NOT NULL ,
+  `factionID` BIGINT UNSIGNED NOT NULL DEFAULT 0 ,
+  `factionName` VARCHAR(255) NOT NULL DEFAULT '' ,
+  `killID` BIGINT UNSIGNED NOT NULL ,
+  `shipTypeID`  BIGINT UNSIGNED NOT NULL ,
+  PRIMARY KEY (`killID`, `characterID`) )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_unicode_ci
+COMMENT = 'Sub-table from KillLog';
 
 CREATE TABLE IF NOT EXISTS `corpWalletDivisions` (
   `accountKey` SMALLINT UNSIGNED NOT NULL ,

@@ -360,18 +360,18 @@ function multipleUpsertAttributes($datum, array $types, $table, $dsn,
   if (count($datum) > 0) {
     $data = array();
     $row = array();
-    foreach($datum as $record) {
+    foreach ($datum as $record) {
       $row = $extras;
       foreach ($record->attributes() as $k => $v) {
         $row[$k] = (string)$v;
       };
       $data[] = $row;
-    }; // foreach $datum
+    };// foreach $datum
     $mess = 'Before multipleUpsert for ' . $table . ' in ' . basename(__FILE__);
     $tracing->activeTrace(YAPEAL_TRACE_DATABASE, 2) &&
     $tracing->logTrace(YAPEAL_TRACE_DATABASE, $mess);
     multipleUpsert($data, $types, $table, $dsn);
-  }; // if $datum>0
+  };// if $datum>0
 }// function multipleUpsertAttributes
 /**
  * Function to build, prepare, execute an insert ... on duplicate key update
