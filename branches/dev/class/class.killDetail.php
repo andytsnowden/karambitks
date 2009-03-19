@@ -100,7 +100,7 @@ class killDetail
         	 	$temp[$a]['characterID'] = $this->rs_attackers->fields['characterID'];
         	 	$temp[$a]['characterName'] = $this->rs_attackers->fields['characterName'];
         	 	$temp[$a]['corporationID'] = $this->rs_attackers->fields['corporationID'];
-        	 	$temp[$a]['corporatiionName'] = $this->rs_attackers->fields['corporatiionName'];
+        	 	$temp[$a]['corporationName'] = $this->rs_attackers->fields['corporationName'];
         	 	$temp[$a]['factionID'] = $this->rs_attackers->fields['factionID'];
         	 	$temp[$a]['factionName'] = $this->rs_attackers->fields['factionName'];
         	 	$temp[$a]['damageDone'] = $this->rs_attackers->fields['damageDone'];

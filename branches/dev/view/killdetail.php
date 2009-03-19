@@ -93,10 +93,5 @@ $data = $kd->fetchDetail($killID, $data);
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
-var_dump($data);
-
-debug_var('Kill Detail', print_r($detail, true));
-debug_var('Attackers', print_r($attackers, true));
-echo"<br><hr><br>\n";
 echo TemplateHandler::fetch($template, $data);
 ?>
