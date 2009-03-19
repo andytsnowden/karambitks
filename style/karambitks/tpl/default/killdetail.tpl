@@ -6,12 +6,10 @@ Testing:
 {foreach $attack at}
 <tr>
 	<td>{$at.killID}</td>
-	<td>{$at.allianceID}</td>
-	<td>{$at.allianceName}</td>
+	<td><a href="index.php?v=detail&id={$at.allianceID}&g=alliance">{$at.allianceName}</a></td>
 	<td>{$at.characterID}</td>
 	<td>{$at.characterName}</td>
-	<td>{$at.corporationID}</td>
-	<td>{$at.corporationName}</td>
+	<td><a href="index.php?v=detail&id={$at.corporationID}&g=corp">{$at.corporationName}</a></td>
 	<td>{$at.factionID}</td>
 	<td>{$at.factionName}</td>
 	<td>{$at.damageDone}</td>

@@ -56,8 +56,31 @@ else {
     $y=$year;
 
 }
+if(is_numeric($_GET['id'])) {
+    $id=$_GET['id'];
+}
+if(isset($_GET['g'])) {
+    switch ($_GET['g']){ 
+	case 'alliance':
+	   $g='alliance';
+    break;
+
+	case 'faction':
+	   $g='faction';
+	break;
+
+	case 'corp':
+	   $g='corp';
+	break;
+    case 'character':
+        $g='character';
+    break;
+	default :
+	   $g='corp';
+}
+}
 //Generate Cache ID
-$cacheID='home_id'.KKS_KBCORPID.'a0w'.$week.'y'.$year;
+$cacheID='detail_id'.$id.'g'.$g.'w'.$week.'y'.$year;
 //Generate Template
 $template = TemplateHandler::createTemplate('home', KKS_CACHE_DWOO, $cacheID);
 
@@ -69,45 +92,57 @@ if(TemplateHandler::getInstance()->isCached($template))
 } else {
 //New KillList
 $kl = New killList();
-
-//Set needed KillList options
-$kl->corpID=KKS_KBCORPID;
-$kl->fetchCorp=TRUE;
-$kl->week=$week;
-$kl->year=$year;
-
-
 //New Statslist
 $sc= New shipClassStats();
 
 //Set needed KillList options
-$sc->corpID=KKS_KBCORPID;
-$sc->fetchCorp=TRUE;
+/*$kl->week=$week;
+$kl->year=$year;
 $sc->week=$week;
 $sc->year=$year;
+*/
 
-//New Top List
-$tl= New toplist();
-$tl->getCharacter=TRUE;
-$tl->fetchCorp=TRUE;
-$tl->corpID=KKS_KBCORPID;
-$list=$tl->fetchList();
+$kl->fetchWeek=FALSE;
+$sc->fetchWeek=FALSE;
+switch ($g){ 
+	case 'corp':
+	    $kl->corpID=$id;
+        $kl->fetchCorp=TRUE;
+        $sc->corpID=$id;
+        $sc->fetchCorp=TRUE;
+	break;
+
+	case 'alliance':
+	    $kl->allianceID=$id;
+        $kl->fetchAlliance=TRUE;
+        $sc->allianceID=$id;
+        $sc->fetchAlliance=TRUE;
+	break;
+
+	case 'faction':
+	    $kl->factionID=$id;
+        $kl->fetchFaction=TRUE;
+        $sc->factionID=$id;
+        $sc->fetchFaction=TRUE;
+	break;
+
+}
+
 
 //Get the list
 $kl->fetchList();
-$charCorpTop=$tl->fetchList();
 //Get the results
 $list=$kl->rarray;
 $table=$sc->fetchShipClassTableArray();
 //assign Data to Dwoo
 $data = new Dwoo_Data();
-
 //menu
 $nav = new kss_navigation();
 $menu = $nav->generateMenu();
 $w = floor(100 / count($menu));
 $data->assign('menu_w',$w.'%');
 $data->assign('menu', $menu);
+//$menu = $nav->addmenu('123','123','123');
 
 //template data
 $data->assign('kb_title', $kb_title);
@@ -120,14 +155,14 @@ $data->assign('theme_url', $theme_url);
 //Page data
 $sckill = array('table' => $table);
 $recent = array('recent' => $list);
-$chartl = array('chartoplist' => $charCorpTop);
 $data->assign($recent, 'recent');
 $data->assign($sckill, 'table');
-$data->assign($chartl, 'chartl');
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
 }
 
 echo TemplateHandler::fetch($template, $data);
+
+
 ?>
