@@ -127,6 +127,7 @@ class shipClassStats
         $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
         $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));
         
+		$put_an_and_at_the_end = true;
         $sql  = $this->SQL_start;
         $sql .=' count(cv.killID) as shiplosscount ';
         $sql .= $this->SQL_joins;
@@ -143,8 +144,17 @@ class shipClassStats
         {
             $sql .= ' cv.factionID=' . $this->factionID;
         }
-        if($this->fetchWeek == true) {
-            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
+	    else
+        {
+            $put_an_and_at_the_end = false;
+        }
+        if($this->fetchWeek == true)
+        {
+            if($put_an_and_at_the_end == true)
+            {
+                $sql .= ' AND';
+            }
+            $sql .= ' kl.killTime BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
         }
         $sql .=$this->SQL_end;
                 
@@ -186,6 +196,7 @@ class shipClassStats
         $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
         $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));
         
+		$put_an_and_at_the_end = true;
         $sql  = $this->SQL_start;
         $sql .=' count(cv.killID) as shipkillcount ';
         $sql .= $this->SQL_joins;
@@ -203,8 +214,16 @@ class shipClassStats
         {
             $sql .= ' ca.factionID=' . $this->factionID;
         }
+        else
+        {
+            $put_an_and_at_the_end = false;
+        }
         if($this->fetchWeek == true) {
-            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
+            if($put_an_and_at_the_end == true)
+            {
+                $sql .= ' AND';
+            }
+            $sql .= ' kl.killTime BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
         }
         $sql .=$this->SQL_end;
         
