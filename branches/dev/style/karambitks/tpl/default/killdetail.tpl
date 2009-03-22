@@ -45,6 +45,16 @@ Testing:
 </tr>
 </table>
 
+<table class="kb-table">
+{foreach $items item}
+<tr>
+	<td>{$item.killID}</td>
+	<td>{$item.typeName}</td>
+	<td>{$item.qtyDropped}</td>
+	<td>{$item.qtyDestroyed}</td>
+</tr>
+{/foreach}
+</table>
 
 <!-- footer file --!>
 {include file="footer.tpl"}

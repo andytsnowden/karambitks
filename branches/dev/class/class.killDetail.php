@@ -120,6 +120,39 @@ class killDetail
             
     }
     
+    function fetchItems($killID) {
+            //Get ADODB Factory INSTANCE
+            $instance = ADOdbFactory::getInstance();
+            //Get DB Connection
+            $con = $instance->factory(KKS_DSN);
+            
+            
+            $sql = 'SELECT im.`killID`, it.`typeName`, im.`qtyDropped`, im.`qtyDestroyed` FROM `corpItems` im'
+        . ' JOIN invTypes it ON it.`typeID`=im.`typeID`'
+        . ' WHERE im.`killID`='.$killID.' AND im.`lft`!=1 LIMIT 0, 100 '; 
+
+            if($this->rs_items=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
+            	
+            	$a=0;
+            	while (!$this->rs_items->EOF) {
+        	 	
+        	 	$temp[$a]['killID'] = $this->rs_items->fields['killID'];
+                $temp[$a]['typeName'] = $this->rs_items->fields['typeName'];
+                $temp[$a]['qtyDropped'] = $this->rs_items->fields['qtyDropped'];
+                $temp[$a]['qtyDestroyed'] = $this->rs_items->fields['qtyDestroyed'];
+
+         		$this->rs_items->MoveNext();
+				$a++;
+				}            	
+            	
+            	return $this->rarray_items=$temp;
+            	
+            } else {
+            	trigger_error('SQL Query Failed', E_USER_ERROR);
+            }
+            
+    }
+    
     /**
      * killList::fetchDetail()
      * 
