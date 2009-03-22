@@ -64,6 +64,8 @@ $kd = New killDetail();
 //GET the kill detail
 $kd->fetchAttackers($killID);
 $attackers=$kd->rarray_attackers;
+$kd->fetchItems($killID);
+$items=$kd->rarray_items;
 
 //assign Data to Dwoo
 $data = new Dwoo_Data();
@@ -85,9 +87,10 @@ $data->assign('theme_url', $theme_url);
 
 //Page data
 $attackers = array('attack' => $attackers);
+$items = array('items' => $items);
 $data->assign($attackers, 'attack');
 $data = $kd->fetchDetail($killID, $data);
-
+$data->assign($items, 'items');
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
