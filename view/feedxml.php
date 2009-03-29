@@ -40,12 +40,12 @@
     header("Cache-Control: must-revalidate, post-check=0, pre-check=0");
     header("Cache-Control: public");
    // header("Content-Description: File Transfer");
-    //header('Content-Type: text/xml');
+    header('Content-Type: text/xml');
    
     
     //Create DoM Doc
     $doc = new DOMDocument('1.0', 'iso-8859-1');
-    $doc->formatOutput = true;
+    //$doc->formatOutput = true;
     
     //Create Root Element
     $root = $doc->createElement('kksfeed');
@@ -81,6 +81,7 @@
 
 //Get Needed Classes
 require_once KKS_CLASS.'class.xmlfeed.php';
+require_once KKS_INC.'functions.xmlfeed.inc';
 
 //Check to see if Week and Year are set //TODO:interval may change
 if(isset($_GET['w']) && is_numeric($_GET['w'])) {
@@ -102,11 +103,11 @@ else {
 $kl = New xmlFeed();
 
 
-if(is_numeric($_GET['id'] && !empty($_GET['id']))) {
-    if(!empty($_GET['type']) && is_string($_GET['type'])) {
+if(is_numeric($_REQUEST['id'])) {
+    if(!empty($_REQUEST['type']) && is_string($_REQUEST['type'])) {
         //Shorter vars to work with
-        $type=$_GET['type'];
-        $id=$_GET['id'];
+        $type=$_REQUEST['type'];
+        $id=$_REQUEST['id'];
         //Set options for killlist
         switch ($type){ 
 	case 'char':
@@ -166,6 +167,9 @@ foreach ($kills as $kill)
     $victim->setAttribute('corporationID', $kill['vcorpID']);
     $victim->setAttribute('corporationName', $kill['vcorpName']);
     $victim->setAttribute('allianceID', $kill['valliID']);
+    $victim->setAttribute('allianceName', $kill['valliName']);
+    $victim->setAttribute('factionID', $kill['vfactID']);
+    $victim->setAttribute('factionName', $kill['vfactName']);
     $victim->setAttribute('damageTaken', $kill['damageTaken']); 
     $victim->setAttribute('shipTypeID', $kill['shipTypeID']);
     
@@ -176,7 +180,7 @@ foreach ($kills as $kill)
     
       //Add Atributes to rowset
     $attackrs->setAttribute('name', 'attackers');
-    $attackrs->setAttribute('columns', 'characterID,characterName,corporationID,corporationName,allianceID,allianceName,securityStatus,damageDone,finalBlow,weaponTypeID,shipTypeID');
+    $attackrs->setAttribute('columns', 'characterID,characterName,corporationID,corporationName,allianceID,allianceName,factionID,factionName,securityStatus,damageDone,finalBlow,weaponTypeID,shipTypeID');
     
     $attackerlist=$kl->getAttackers($kill['killID']);
     foreach($attackerlist AS $killer)
@@ -191,8 +195,13 @@ foreach ($kills as $kill)
             $attacker->setAttribute('corporationName', $killer['corporationName']);
             $attacker->setAttribute('allianceID', $killer['allianceID']);
             $attacker->setAttribute('allianceName', $killer['allianceName']);
-            
-            
+            $attacker->setAttribute('factionID', $killer['factionID']);
+            $attacker->setAttribute('factionName', $killer['factionName']);
+            $attacker->setAttribute('securityStatus', $killer['securityStatus']);
+            $attacker->setAttribute('damageDone', $killer['damageDone']);
+            $attacker->setAttribute('finalBlow', $killer['finalBlow']);
+            $attacker->setAttribute('weaponTypeID', $killer['weaponTypeID']);
+            $attacker->setAttribute('shipTypeID', $killer['shipTypeID']);
     }
     
 
@@ -205,22 +214,23 @@ foreach ($kills as $kill)
     $items->setAttribute('name', 'items');
     $items->setAttribute('columns', 'typeID,flag,qtyDropped,qtyDestroyed');
     
-    $itemslist=$kl->getItems($kill['killID']);
-    //echo"<pre>";print_r($itemslist);echo"</pre></br><hr>";
-    
-    foreach($itemslist as $kitem) {
-            //Add Item element
-            $item = $doc->createElement(row);
-            $item = $items->appendChild($item);
-            
-            //Add Attributes to Item Row
-            $item->setAttribute('typeID', $kitem['typeID']);
-            $item->setAttribute('lft', $kitem['lft']);
-            $item->setAttribute('rgt', $kitem['rgt']);
-            $item->setAttribute('typeName', $kitem['typeName']);
-    }
+    $theShip=getRootItem($kill['killID']);
+    //$sxmlNode=simplexml_import_dom($items);
+    itemsTreeXML($theShip['lvl'], $kill['killID'], $items, $doc, $theShip['lft'], $theShip['rgt']);
     
 }
+//Record Set Count
+$rc=$kl->rs->RowCount();
+$comment = $doc->createComment('Row Count: '.$rc);
+$comment = $root->appendChild($comment);
+//Get Current Memory Usage
+$mem=memory_get_usage();
+
+//Memory Comment
+$comment = $doc->createComment('Current memory: '.$mem);
+$comment = $root->appendChild($comment);
+
+//Print XML
 $xml_string = $doc->saveXML();
 echo $xml_string;
 
