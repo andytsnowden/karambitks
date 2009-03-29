@@ -96,13 +96,19 @@ class ADOdbFactory {
     $hash = sha1($dsn . $section);
     if (!array_key_exists($hash,$this->connections)) {
       //require_once KKS_CLASS . 'ADODB_Exception.class.php';
+      require_once KKS_ADODB . 'adodb-exceptions.inc.php';
       require_once KKS_ADODB . 'adodb.inc.php';
       $ds = DIRECTORY_SEPARATOR;
       $ADODB_CACHE_DIR =  KKS_CACHE.'ADODB_CACHE';
       //$mess = 'Before NewADOConnection in ' . basename(__FILE__);
       //$tracing->activeTrace(YAPEAL_TRACE_DATABASE, 0) &&
       //$tracing->logTrace(YAPEAL_TRACE_DATABASE, $mess);
-      $con = NewADOConnection($dsn);
+      try {
+        $con = NewADOConnection($dsn);
+      } catch (exception $e) {
+            print_r($e);
+            exit;
+      }
       $con->LogSQL(KKS_ADODBLOG);
       $con->debug = False;
       $con->Execute('set names utf8');
