@@ -41,7 +41,7 @@ function itemsTreeXML($curLevel, $killID, $node, $dom, $_left, $_right) {
     //SQL to get currentl level items
     $sql = 'SELECT  ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `corpItems` ci'
         . ' JOIN invTypes it ON it.`typeID`=ci.`typeID`'
-        . ' WHERE `killID`='.$killID.' AND ci.`lft` BETWEEN '.$_left.' AND '.$_right.' AND ci.lvl='.$nextLevel.' ORDER BY `lft`'; 
+        . ' WHERE `killID`='.$killID.' AND ci.`lft` BETWEEN '.$_left.' AND '.$_right.' AND ci.lvl='.$nextLevel.' ORDER BY `lft`;'; 
         
     if($rarray=$con->GetAssoc($sql)) {
         foreach($rarray AS $_item) {
@@ -65,7 +65,7 @@ function itemsTreeXML($curLevel, $killID, $node, $dom, $_left, $_right) {
                 //call self recursively
                 itemsTreeXML($_item['lvl'], $_item['killID'], $item, $dom, $_item['lft'], $_item['rgt']);
             } // if children
-        } //foreach item 
+        } //foreach item
         return true;     
     } // execute sql assoc
     return false;
@@ -79,7 +79,7 @@ function getRootItem($killID) {
     
     //SQL to get root item (the ship)
     $sql = 'SELECT ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `corpItems` ci JOIN invTypes it ON it.`typeID`=ci.`typeID` '
-        . ' WHERE `killID`=6268346 AND ci.`lft`=1 LIMIT 1'; 
+        . ' WHERE `killID`='.$killID.' AND ci.`lft`=1 LIMIT 1'; 
      
     //Get first row (should only be one)   
     return $rarray=$con->GetRow($sql);
