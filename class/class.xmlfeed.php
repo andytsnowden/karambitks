@@ -46,7 +46,7 @@ class xmlFeed
      * 
      * @var object
      */
-    private $rs;
+    public $rs;
 
     /**
      * 
@@ -79,10 +79,10 @@ class xmlFeed
     function __construct()
     {   
         require_once KKS_ADODB.'adodb-exceptions.inc.php';
-        $this->SQL_start = 'SELECT  cv.characterName as victimName, cv.characterID as victimID, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, kl.solarSystemID, kl.killTime, kl.killID, kl.moonID, cv.shipTypeID, cv.damageTaken';
+        $this->SQL_start = 'SELECT  cv.characterName as victimName, cv.characterID as victimID, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, cv.factionID as vfactID, cv.factionName as vfactName, kl.solarSystemID, kl.killTime, kl.killID, kl.moonID, cv.shipTypeID, cv.damageTaken';
         $this->SQL_joins = ' FROM `corpKillLog` kl' .
             ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`' .
-            ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`' .
+            ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`';
         $this->SQL_end = ' ORDER BY kl.`killID`;';
     }
 
@@ -118,28 +118,30 @@ class xmlFeed
         
         $sql = $this->SQL_start;
         $sql .= $this->SQL_joins;
-        $sql .= ' WHERE caf.`finalBlow`=1';
+        $sql .= ' WHERE 1=1';
         if ($this->fetchCorp == true && $this->corpID > 0)
         {
-            $sql .= ' AND ca.corporationID=' . $this->corpID.' AND cv.corporationID-'.$this->corpID;
+            $sql .= ' AND ca.corporationID=' . $this->corpID.' AND cv.corporationID='.$this->corpID;
         }
         if ($this->fetchAlliance == true && $this->allianceID > 0)
         {
-            $sql .= ' AND ca.allianceID=' . $this->allianceID.' AND cv.allianceID-'.$this->allianceID;
+            $sql .= ' AND ca.allianceID=' . $this->allianceID.' AND cv.allianceID='.$this->allianceID;
         }
         if ($this->fetchFaction == true && $this->factionID > 0)
         {
-            $sql .= ' AND ca.factionID=' . $this->factionID.' AND cv.cfactionID-'.$this->factionID;
+            $sql .= ' AND ca.factionID=' . $this->factionID.' AND cv.cfactionID='.$this->factionID;
         }
         if($this->fetchWeek == true) {
-            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';
+            //$sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';
         }
         $sql .= $this->SQL_end;
 
-        if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
+        if($this->rs=$con->Execute($sql)){
+
         $this->rarray=$this->rs->GetAssoc();
         } else {
-        trigger_error('SQL Query Failed', E_USER_ERROR);       
+            echo $sql.PHP_EOL;
+            trigger_error('SQL Query Failed', E_USER_ERROR);       
         } 
 
     }
@@ -148,8 +150,8 @@ class xmlFeed
             //Get Connection
             $con = $this->get_connection();
             
-            $con->debug=true;
-            $sql = 'SELECT `characterID`, `characterName`, `corporationID`, `corporationName`, `allianceID`, `allianceName`,`factionID`, `factionName`, `finalBlow`, `securityStatus`, `shipTypeID`, `weaponTypeID` FROM `corpAttackers` WHERE `killID`='.$killID.' LIMIT 0, 100 ';
+
+            $sql = 'SELECT `characterID`, `characterName`, `corporationID`, `corporationName`, `allianceID`, `allianceName`,`factionID`, `factionName`, `finalBlow`, `damageDone`, `securityStatus`, `shipTypeID`, `weaponTypeID` FROM `corpAttackers` WHERE `killID`='.$killID.' LIMIT 0, 100 ';
             
             
             try {if($this->rs_attackers=$con->Execute($sql)){
@@ -175,13 +177,14 @@ class xmlFeed
         . ' WHERE `killID`='.$killID.' ORDER BY `lft`'; 
             
             //echo $sql.PHP_EOL;
-            if($this->rs_items=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
+            if($this->rs_items=$con->Execute($sql)){
                 $this->rarray_items=$this->rs_items->GetAssoc();
             } else {
                 trigger_error('SQL Query Failed', E_USER_ERROR);
             }
+            //$rs=$con->Execute($sql);
             //echo"<pre>";print_r($this->rs_items);echo("</pre><hr>");
-            unset($this->_rs_items);
+            //unset($this->_rs_items);
             return $this->rarray_items;
     }
 
@@ -197,8 +200,10 @@ class xmlFeed
         //Get ADODB Factory INSTANCE
         $instance = ADOdbFactory::getInstance();
         //Get DB Connection
-        $con = $instance->factory(KKS_DSN);
-        return $con;
+        if($con = $instance->factory(KKS_DSN)){
+            return $con; 
+        }
+        else { trigger_error('SQL Connection ERROR', E_USER_ERROR);}
     }
 }
 
