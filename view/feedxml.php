@@ -30,6 +30,9 @@
  * @link       http://code.google.com/p/karambitks/
  * @link       http://www.eve-online.com/
  */
+ 
+ //Get Current Memory Usage
+    $mem1=memory_get_usage();
 
 @set_time_limit(120);
 
@@ -55,6 +58,13 @@
     //Add comment for tracker
     $comment = $doc->createComment('KKS XML Feed');
     $comment = $root->appendChild($comment);
+    
+    
+
+    //Memory Comment
+    $comment = $doc->createComment('Current memory: '.$mem1);
+    $comment = $root->appendChild($comment);
+    $mem1=NULL;
     
     // Add Current Time Elelement
     //Get and format time
@@ -202,6 +212,7 @@ foreach ($kills as $kill)
             $attacker->setAttribute('finalBlow', $killer['finalBlow']);
             $attacker->setAttribute('weaponTypeID', $killer['weaponTypeID']);
             $attacker->setAttribute('shipTypeID', $killer['shipTypeID']);
+            unset($killer);
     }
     
 
@@ -217,6 +228,7 @@ foreach ($kills as $kill)
     $theShip=getRootItem($kill['killID']);
     //$sxmlNode=simplexml_import_dom($items);
     itemsTreeXML($theShip['lvl'], $kill['killID'], $items, $doc, $theShip['lft'], $theShip['rgt']);
+    unset($theShip);
     
 }
 //Record Set Count
