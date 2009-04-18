@@ -1,0 +1,1 @@
+<div class="counter"><sub>{$gen}s </sub></div>
