@@ -1,0 +1,120 @@
+@charset "utf-8";
+/**
+ * EVE MultiPurpose Application
+ *
+ * style.css - Where all the default styles go
+ *
+ * PHP version 5
+ *
+ * LICENSE: This file is part of EVE MultiPurpose Application also know as EMPA.
+ * EMPA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, version 3 of the License.
+ *
+ * EMPA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with EMPA.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @author     Ben Cole <wengole@gmail.com>
+ * @author     Claus Pedersen <satissis@gmail.com>
+ * @author     Michael Cummings <dragonrun1@gmail.com>
+ * @author     Stephen Gulick <stephenmg12@gmail.com>
+ * @copyright  2008-2009 (C) Ben Cole, Claus Pedersen, Stephen Gulick, and Michael Cummings
+ * @license    http://www.gnu.org/licenses/gpl-3.0.html GPL 3.0
+ * @package    EMPA
+ * @subpackage Install
+ * @version    SVN: $Id$ (Only to be used in key files)
+ * @link       http://code.google.com/p/empa/
+ * @link       http://www.eve-online.com/
+ */
+
+/* CSS Document */
+body {
+  background-color: #666666;
+  color: #FFFFFF;
+  margin: 0;
+}
+h1 {
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: #00CCFF;
+}
+h2 {
+  color: #00CCFF;
+}
+h3 {
+  color: #00CCFF;
+}
+table {
+  background-color: #333333;
+  margin : 0.5em auto;
+  text-align : left;
+  width: 40em;
+}
+.notable {
+  background:none;
+  margin : 0.0em auto;
+  text-align : left;
+  width: auto;
+}
+.input_text {
+  width: 250px;
+}
+th {
+  text-align: center;
+  font-size: 24px;
+  letter-spacing: 5px;
+  background-color: #808080;
+  color: White;
+  font-weight: bold;
+}
+.tableinfolbl {
+  background-color: #5E6E79;
+  color: white;
+  font-weight: bold;
+  text-align: right;
+  margin-right: 0.5em;
+}
+td {
+  background: #606060;
+  color: white;
+  margin: 0.25em auto;
+  padding: 3px;
+  vertical-align: top;
+}
+.notd {
+  background:none;
+  color: white;
+  margin: 0.0em auto;
+  padding: 0px;
+  vertical-align: top;
+}
+.warning {
+  color: #FF3333;
+}
+.good {
+  color: #00FF00;
+}
+.notis {
+  color: #FFFF00;
+}
+a {
+  color: #FFA800;
+  text-decoration: none;
+}
+a:hover {
+  color: #09C500;
+  text-decoration: none;
+}
+#wrapper {
+  margin: 0 auto;
+  padding-top: 1em;
+  text-align: center;
+}
+#submit_select {
+  padding-bottom: 1em;
+}
