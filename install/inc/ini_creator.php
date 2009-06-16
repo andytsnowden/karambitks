@@ -38,9 +38,9 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
   exit();
 };
 /*
-* Set path to empa.ini
+* Set path to kks.ini
 */
-$empaConfigFile = EMPA_CONFIG;
+$empaConfigFile = KKS_CONFIG;
 /**
  * Set true or false value
  *
@@ -57,13 +57,13 @@ function trueOrFalse($value) {
   }; // if ($value)
 }
 /*
-* Build empa.ini
+* Build kks.ini
 *
 * If run from setup.php
 */
 if (defined('UPDATE_EMPA')) {
   $EMPAinidata = ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Comments on setting up config/empa.ini manually can be found in
+; Comments on setting up config/kks.ini manually can be found in
 ; config/empa-example.ini.
 ; Additional information can be found in the Wiki at:
 ; http://code.google.com/p/empa/
@@ -72,7 +72,7 @@ if (defined('UPDATE_EMPA')) {
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 date="$Date:: ' . date('Y-m-d H:i:s', time()) . ' #$"
 stability="alpha"
-version="' . EMPA_VERSION . '"
+version="' . KKS_VERSION . '"
 salt="' . $iniVars['salt'] . '"
 
 ; Used for Yapeal
@@ -98,12 +98,6 @@ username="' . $iniVars['Database']['username'] . '"
 password="' . $iniVars['Database']['password'] . '"
 xmldriver="' . $iniVars['Database']['xmldriver'] . '"
 
-; Used for EMPA
-[EMPALogging]
-error_log="empa_error.log"
-log_level=E_ALL
-notice_log="empa_notice.log"
-warning_log="empa_warning.log"
 
 ; Used for Yapeal
 [Logging]
@@ -123,16 +117,16 @@ empa="' . $iniVars['Prefix']['empa'] . '"
 yapeal="' . $iniVars['Prefix']['yapeal'] . '"
 eve="' . $iniVars['Prefix']['eve'] . '"';
 
-  // Create empa.ini
-  $fp = fopen(EMPA_CONFIG . 'empa.ini', 'w');
+  // Create kks.ini
+  $fp = fopen(KKS_CONFIG . 'kks.ini', 'w');
   fwrite($fp, $EMPAinidata);
   fclose($fp);
-  if (!(@is_readable(EMPA_CONFIG . 'empa.ini') ||
-    @is_file(EMPA_CONFIG . 'empa.ini') ||
-    @parse_ini_file(EMPA_CONFIG . 'empa.ini'))) {
+  if (!(@is_readable(KKS_CONFIG . 'kks.ini') ||
+    @is_file(KKS_CONFIG . 'kks.ini') ||
+    @parse_ini_file(KKS_CONFIG . 'kks.ini'))) {
     OutPut(array(
             'action' => 'Create',
-            'info' => 'empa.ini (Config file)',
+            'info' => 'kks.ini (Config file)',
             'status' => 'Failed' ,
             'check' => 0
           ));
@@ -140,7 +134,7 @@ eve="' . $iniVars['Prefix']['eve'] . '"';
   } else {
     OutPut(array(
             'action' => 'Create',
-            'info' => 'empa.ini (Config file)',
+            'info' => 'kks.ini (Config file)',
             'status' => 'Done' ,
             'check' => 1
           ));
@@ -150,7 +144,7 @@ eve="' . $iniVars['Prefix']['eve'] . '"';
 */
 } else {
   $EMPAinidata = ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Comments on setting up config/empa.ini manually can be found in
+; Comments on setting up config/kks.ini manually can be found in
 ; config/empa-example.ini.
 ; Additional information can be found in the Wiki at:
 ; http://code.google.com/p/empa/
@@ -159,7 +153,7 @@ eve="' . $iniVars['Prefix']['eve'] . '"';
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 date="$Date:: ' . date('Y-m-d H:i:s', time()) . ' #$"
 stability="alpha"
-version="' . $EMPA_Version . '"
+version="' . $KKS_Version . '"
 salt="' . $_REQUEST['siteSalt'] . '"
 
 ; Used for Yapeal
@@ -185,13 +179,6 @@ username="' . $_REQUEST['DB_Username'] . '"
 password="' . $_REQUEST['DB_Password'] . '"
 xmldriver="mysql://"
 
-; Used for EMPA
-[EMPALogging]
-error_log="empa_error.log"
-log_level=E_ALL
-notice_log="empa_notice.log"
-warning_log="empa_warning.log"
-
 ; Used for Yapeal
 [Logging]
 error_log="yapeal_error.log"
@@ -209,16 +196,16 @@ trace_section=YAPEAL_TRACE_NONE
 empa="' . $prefix['empa'] . '"
 yapeal="' . $prefix['yapeal'] . '"
 eve="' . $prefix['db_dump'] . '"';
-  // Create empa.ini
-  $fp = fopen(EMPA_CONFIG . 'empa.ini', 'w');
+  // Create kks.ini
+  $fp = fopen(KKS_CONFIG . 'kks.ini', 'w');
   fwrite($fp, $EMPAinidata);
   fclose($fp);
-  if (!(@is_readable(EMPA_CONFIG . 'empa.ini') ||
-    @is_file(EMPA_CONFIG . 'empa.ini') ||
-    @parse_ini_file(EMPA_CONFIG . 'empa.ini'))) {
+  if (!(@is_readable(KKS_CONFIG . 'kks.ini') ||
+    @is_file(KKS_CONFIG . 'kks.ini') ||
+    @parse_ini_file(KKS_CONFIG . 'kks.ini'))) {
     $inis = array(
       'action' => 'Create:',
-      'info' => 'empa.ini (Config file)',
+      'info' => 'kks.ini (Config file)',
       'status' => 'Failed',
       'check' => 0
     );
@@ -228,7 +215,7 @@ eve="' . $prefix['db_dump'] . '"';
   } else {
     $inis = array(
       'action' => 'Create:',
-      'info' => 'empa.ini (Config file)',
+      'info' => 'kks.ini (Config file)',
       'status' => 'Done',
       'check' => 1
     );

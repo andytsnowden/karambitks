@@ -55,8 +55,6 @@ $data = new Dwoo_Data();
  */
 $path = str_replace('install/setup.php', '', $_SERVER['SCRIPT_NAME']);
 $data->assign('link', 'http://' . $_SERVER['HTTP_HOST'] . $path);
-$regchecks = array();
-$data->assign('regchecks', $regchecks);
 $outputs = array();
 $data->assign('outputs', $outputs);
 $inis = array();
@@ -64,7 +62,7 @@ $data->assign('inis', $inis);
 /*
  * Get ADOdb Class to handle database
  */
-require_once (EMPA_EXT . 'ADOdb' . $ds . 'adodb.inc.php');
+require_once (KKS_ADODB. 'adodb.inc.php');
 /*
  * Check DB connection
  */
@@ -132,74 +130,6 @@ if ($stop == 0) {
     $step1++;
   };
 }; // if $stop == 0
-/*
- * Registration form validation
- */
-if ($stop == 0) {
-  /*
-   * Check Username
-   */
-  if (!ereg("^[A-Za-z0-9]{5,15}$", $_REQUEST['regUsername'])) {
-    $regchecks = array(
-      'action' => 'Username',
-      'status' => 'Invalid Username'
-    );
-    $data->append('regchecks', $regchecks);
-    unset($regchecks);
-    $stop++;
-    $step1++;
-  } else {
-    $query = "SELECT COUNT(*) FROM `" . $prefix['empa'] .
-      "Users` WHERE LOWER(`UserName`) = '" . strtolower($_REQUEST['regUsername']) . "'";
-    $rs = $con->GetOne($query);
-    if ($rs > 0) {
-      $regchecks = array(
-        'action' => 'Username',
-        'status' => '<b>' . $_REQUEST['regUsername'] . '</b> is taken'
-      );
-      $data->append('regchecks', $regchecks);
-      unset($regchecks);
-      $stop++;
-      $step1++;
-    };
-  };// Check Username
-  /*
-   * Check Email
-   */
-  $re = "^[^\W][a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\@[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*\.[a-zA-Z]{2,4}$";
-  if (!ereg($re, $_REQUEST['regEmail'])) {
-    $regchecks = array(
-      'action' => 'E-Mail',
-      'status' => 'Invalid E-Mail Address'
-    );
-    $data->append('regchecks', $regchecks);
-    unset($regchecks);
-    $stop++;
-    $step1++;
-  };//Check Email
-  /*
-   * Check Password
-   */
-  if (!ereg("^[A-Za-z0-9]{6,24}$", $_REQUEST['regPass'])) {
-    $regchecks = array(
-      'action' => 'Password',
-      'status' => 'Invalid Password'
-    );
-    $data->append('regchecks', $regchecks);
-    unset($regchecks);
-    $stop++;
-    $step1++;
-  } elseif ($_REQUEST['regPass'] !== $_REQUEST['regCheckPass']) {
-    $regchecks = array(
-      'action' => 'Password',
-      'status' => 'Password and password check did not match'
-    );
-    $data->append('regchecks', $regchecks);
-    unset($regchecks);
-    $stop++;
-    $step1++;
-  };// Check Password
-};// if $stop == 0
 /*
  * If no errors.
  */
@@ -555,93 +485,11 @@ if ($stop == 0) {
     /*
      * Configuere EMPA
      */
-    if ($stop == 0) {
-      /*
-       * Put Config Info In Config
-       */
-      $dbdata = array(
-        array(
-          'corporationID' => $charInfo[$_REQUEST['charName']]['corpId'],
-          'defaultTheme' => 'empa',
-          'mailFromEmail' => 'noreply@' . $_SERVER['HTTP_HOST'],
-          'mailFromName' => $charInfo[$_REQUEST['charName']]['corpName'],
-          'version' => $EMPA_Version
-        )
-      );
-      $types = array('corporationID' => 'I', 'defaultTheme' => 'C',
-        'mailFromEmail' => 'C', 'mailFromName' => 'C',
-        'version' => 'N'
-      );
-      $query = BuildInsertUpdateQuery($dbdata, $types, $prefix['empa'] . 'Config');
-      try {
-        $con->Execute($query);
-        $outputs = array(
-          'action' => 'Database: Add Info To',
-          'info' => $prefix['empa'] . 'Config',
-          'status' => 'Done',
-          'check' => 1
-        );
-        $data->append('outputs', $outputs);
-        unset($outputs);
-      }
-      catch(ADODB_Exception $e) {
-        $outputs = array(
-          'action' => 'Database: Add Info To',
-          'info' => $prefix['empa'] . 'Config',
-          'status' => $e->getMessage() ,
-          'check' => 0
-        );
-        $data->append('outputs', $outputs);
-        unset($outputs, $apilist);
-        $stop++;
-        $step2++;
-      }
-    }; // if $stop == 0
-    /*
-     * Register account in Users
-     */
-    if ($stop == 0) {
-      $salt = substr(md5(uniqid(rand() , true)) , 0, 8);
-      $password = substr(sha1($_REQUEST['siteSalt'] .
-        $_REQUEST['regPass'] . $salt) , 4, 32);
-      $query = 'INSERT INTO `' . $prefix['empa'] . 'Users`';
-      $query .= ' (`ApiKey`,`ApiStatus`,`ApiUserID`,`CharacterID`,`hasFullApiKey`,`regTime`,`UserFix`,';
-      $query .= '`UserName`,`UserPass`,`UserMail`,`IsAdmin`,`IsSuperAdmin`)';
-      $query .= ' VALUES (';
-      $query .= "'" . $_REQUEST['api_key'] . "',0,'" . $_REQUEST['api_user_id'] . "',";
-      $query .= "'" . $charInfo[$_REQUEST['charName']]['charId'] . "',1,";
-      $query .= "'" . time() . "','" . $salt . "',";
-      $query .= "'" . $_REQUEST['regUsername'] . "','" . $password . "',";
-      $query .= "'" . $_REQUEST['regEmail'] . "',1,1)";
-      try {
-        $con->Execute($query);
-        $outputs = array(
-          'action' => 'Database: Register Account In',
-          'info' => $prefix['empa'] . 'Users',
-          'status' => 'Done',
-          'check' => 1
-        );
-        $data->append('outputs', $outputs);
-        unset($outputs);
-      }
-      catch(ADODB_Exception $e) {
-        $outputs = array(
-          'action' => 'Database: Register Account In',
-          'info' => $prefix['empa'] . 'Users',
-          'status' => $e->getMessage() ,
-          'check' => 0
-        );
-        $data->append('outputs', $outputs);
-        unset($outputs);
-        $stop++;
-        $step2++;
-      }
-    };// if $stop = 0
     /*
      * Greate empa.ini and yapeal.ini file
      */
     if ($stop == 0) {
-      require_once (EMPA_INSTALL . 'inc' . $ds . 'ini_creator.php');
+      require_once (KKS_INSTALL . 'inc' . $ds . 'ini_creator.php');
     };// if $stop = 0
   };// if $con->IsConnected()
 };// if $stop == 0
