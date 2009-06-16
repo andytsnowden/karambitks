@@ -98,14 +98,13 @@ unset($req);
 $write = array();
 $data->assign('write', $write);
 WritChecker('cache' . $ds);
-WritChecker('cache' . $ds . 'dwoo' . $ds);
-WritChecker('cache' . $ds . 'dwoo' . $ds . 'cache' . $ds);
-WritChecker('cache' . $ds . 'dwoo' . $ds . 'compiled' . $ds);
-WritChecker('cache' . $ds . 'log' . $ds);
-WritChecker('cache' . $ds . 'log' . $ds . 'empa_error.log');
-WritChecker('cache' . $ds . 'log' . $ds . 'empa_notice.log');
-WritChecker('cache' . $ds . 'log' . $ds . 'empa_setup_error.log');
-WritChecker('cache' . $ds . 'log' . $ds . 'empa_warning.log');
+WritChecker('cache' . $ds . 'Dwoo_Cache');
+WritChecker('cache' . $ds . 'Dwoo_Compile');
+//WritChecker('cache' . $ds . 'log' . $ds);
+//WritChecker('cache' . $ds . 'log' . $ds . 'empa_error.log');
+//WritChecker('cache' . $ds . 'log' . $ds . 'empa_notice.log');
+//WritChecker('cache' . $ds . 'log' . $ds . 'empa_setup_error.log');
+//WritChecker('cache' . $ds . 'log' . $ds . 'empa_warning.log');
 WritChecker('cache' . $ds . 'yapeal' . $ds);
 WritChecker('cache' . $ds . 'yapeal' . $ds . 'account' . $ds);
 WritChecker('cache' . $ds . 'yapeal' . $ds . 'char' . $ds);
@@ -119,7 +118,6 @@ WritChecker('cache' . $ds . 'yapeal' . $ds . 'log' . $ds . 'yapeal_warning.log')
 WritChecker('cache' . $ds . 'yapeal' . $ds . 'map' . $ds);
 WritChecker('cache' . $ds . 'yapeal' . $ds . 'server' . $ds);
 WritChecker('config' . $ds);
-WritChecker('mods' . $ds);
 unset($write);
 /*
  * check if there was an extension or write premission that was not set corect

@@ -42,7 +42,7 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
 /**
  * @internal Load functions that is both used by EMPA and EMPA Setup
  */
-require_once(EMPA_INC.'globalfunctions.php');
+require_once(KKS_INC.'globalfunctions.php');
 
 //////////////////////////////////
 // Functions
@@ -221,7 +221,7 @@ function DBHandler($dbtype, $info = "", $data = "", $types = "") {
  */
 function WritChecker($path) {
   global $data, $dwoo, $chmodcheck;
-  if (is_file(EMPA_BASE . $path)) {
+  if (is_file(KKS_BASE . $path)) {
     $type = '(File)';
     $cmod = 'file to 666';
     $mod = 0666;
@@ -230,14 +230,14 @@ function WritChecker($path) {
     $cmod = 'dir to 777';
     $mod = 0777;
   };
-  if (is_writable(EMPA_BASE . $path)) {
+  if (is_writable(KKS_BASE . $path)) {
     $write = array(
       'path' => $type . ' ' . $path,
       'status' => 'Yes',
       'check' => 1
     );
   } else {
-    if (chmod(EMPA_BASE . $path, $mod)) {
+    if (chmod(KKS_BASE . $path, $mod)) {
       $write = array(
         'path' => $type . ' ' . $path,
         'status' => 'Yes',
@@ -250,7 +250,7 @@ function WritChecker($path) {
         'check' => 0
       );
       $chmodcheck++;
-    }; // if (chmod(EMPA_BASE.$path,$mod))
+    }; // if (chmod(KKS_BASE.$path,$mod))
   };
   $data->append('write', $write);
   unset($write);

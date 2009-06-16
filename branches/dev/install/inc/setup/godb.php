@@ -70,7 +70,7 @@ $modnum = 0;
 /*
  * Check DB connection
  */
-require_once (EMPA_EXT . 'ADOdb' . $ds . 'adodb.inc.php');
+require_once (KKS_ADODB. 'adodb.inc.php');
 /*
  * Check DB connection
  */
@@ -86,6 +86,7 @@ catch(ADODB_Exception $e) {
     'status' => $e->getMessage() ,
     'check' => 0
   ));
+  echo "ERROR";
   $stop++;
 }
 if (isset($con) && $con->IsConnected()) {
@@ -103,9 +104,9 @@ if (isset($con) && $con->IsConnected()) {
   /*
    * Create Tables
    */
-  $schemaDir['empa'] = EMPA_INSTALL;
-  $schemaDir['yapeal'] = EMPA_INSTALL . 'yapeal' . $ds;
-  $schemaDir['db_dump'] = EMPA_INSTALL . 'static' . $ds;
+  $schemaDir['empa'] = KKS_INSTALL;
+  $schemaDir['yapeal'] = KKS_INSTALL . 'yapeal' . $ds;
+  $schemaDir['db_dump'] = KKS_INSTALL . 'static' . $ds;
   foreach ($schemas as $type => $schemaFiles) {
     foreach ($schemaFiles as $schemaFile) {
       if ($stop == 0) {
@@ -139,7 +140,7 @@ if (isset($con) && $con->IsConnected()) {
             'status' => 'Error',
             'check' => 0
           ));
-          $schema->SaveSQL(EMPA_CACHE . $type . '_' . $schemaFile . '_missed_tables.sql');
+          $schema->SaveSQL(KKS_CACHE . $type . '_' . $schemaFile . '_missed_tables.sql');
           $stop++;
         } else {
           OutPut(array(
@@ -217,7 +218,7 @@ $data->assign('siteSalt', substr(md5(uniqid(rand() , true)) , 0, 20));
 $dwoo->output($tpl, $data);
 unset($tpl, $data);
 setupFooter();
-if (isset($con) && $con->IsConnected()) {
+if (isset($con) && $con!=FALSE && $con->IsConnected()) {
   $con->close();
 };
 ?>

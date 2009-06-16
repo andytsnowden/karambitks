@@ -44,20 +44,20 @@ require_once ($baseDir . $ds . '..' . $ds . 'inc' . $ds . 'common_paths.php');
  * Check if empa.ini and yapeal.ini is created.
  * If they exists, then goto main page.
  */
-if (file_exists(EMPA_CONFIG . 'empa.ini')) {
+if (file_exists(KKS_CONFIG . 'empa.ini')) {
   $path = str_replace('install/setup.php', '', $_SERVER['SCRIPT_NAME']);
   header('Location: http://' . $_SERVER['HTTP_HOST'] . $path);
 };
 /** @ignore */
 // Require the common_backend.php
-require_once (EMPA_INSTALL . 'inc' . $ds . 'common_backend.php');
+require_once (KKS_INSTALL . 'inc' . $ds . 'common_backend.php');
 // Require the function file
 /** @ignore */
-require_once (EMPA_INSTALL . 'inc' . $ds . 'function.php');
+require_once (KKS_INSTALL . 'inc' . $ds . 'function.php');
 // Require the value file
 /** @ignore */
 require_once (EMPA_INSTALL . 'inc' . $ds . 'values.php');
-
+echo "test";
 // Check if the browser is IGB (Ingame Browser)
 if (isIGB()) {
   // Generate IGB error site
@@ -75,7 +75,7 @@ if (isIGB()) {
 } else {
   // Get Page Switcher
   /** @ignore */
-  require_once (EMPA_INSTALL . 'inc' . $ds . 'setup' . $ds . 'main.php');
+  require_once (KKS_INSTALL . 'inc' . $ds . 'setup' . $ds . 'main.php');
 };
 if (isset($con) && $con->IsConnected()) {
   $con->Close();
