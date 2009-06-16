@@ -73,7 +73,7 @@ setupHeader('Corporation Select');
 $dwoo->output($tpl, $data);
 unset($tpl, $data);
 if ($loadcharsel) {
-  require_once (EMPA_INSTALL . 'inc' . $ds . 'setup' . $ds . 'char_select.php');
+  require_once (KKS_INSTALL . 'inc' . $ds . 'setup' . $ds . 'char_select.php');
 };
 setupFooter();
 ?>
