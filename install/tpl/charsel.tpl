@@ -27,27 +27,6 @@
   {/foreach}
 </table>
 <br />
-<table>
-  <tr>
-    <th colspan="2">User Registration</th>
-  </tr>
-  <tr>
-    <td class="tableinfolbl">Username</td>
-    <td><input type="text" name="regUsername" /> Must be 5 - 15 character long</td>
-  </tr>
-  <tr>
-    <td class="tableinfolbl">E-Mail</td>
-    <td><input type="text" name="regEmail" /></td>
-  </tr>
-  <tr>
-    <td class="tableinfolbl">Password</td>
-    <td><input type="password" name="regPass" /> Must be 6 - 24 character long</td>
-  </tr>
-  <tr>
-    <td class="tableinfolbl">Retype Password</td>
-    <td><input type="password" name="regCheckPass" /></td>
-  </tr>
-</table>
 {$inputHiddenPost}
 <input type="submit" value="Next" />
 </form>

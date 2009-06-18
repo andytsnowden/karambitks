@@ -86,7 +86,6 @@ catch(ADODB_Exception $e) {
     'status' => $e->getMessage() ,
     'check' => 0
   ));
-  echo "ERROR";
   $stop++;
 }
 if (isset($con) && $con->IsConnected()) {
@@ -104,7 +103,7 @@ if (isset($con) && $con->IsConnected()) {
   /*
    * Create Tables
    */
-  $schemaDir['empa'] = KKS_INSTALL;
+  $schemaDir['kks'] = KKS_INSTALL;
   $schemaDir['yapeal'] = KKS_INSTALL . 'yapeal' . $ds;
   $schemaDir['db_dump'] = KKS_INSTALL . 'static' . $ds;
   foreach ($schemas as $type => $schemaFiles) {
@@ -123,7 +122,7 @@ if (isset($con) && $con->IsConnected()) {
         $schema->SetPrefix($prefix[$type], FALSE);
         $xml = _file_get_contents($schemaDir[$type] . $schemaFile . '.xml');
         $sql = $schema->ParseSchemaString($xml);
-        $result = $schema->ExecuteSchema($sql);
+        $result = $schema->ExecuteSchema($sql);   
         if ($result == 2) {
           $Stop = microtime(true);
           $LoadTime = $Stop - $Start;
@@ -159,11 +158,13 @@ if (isset($con) && $con->IsConnected()) {
   /*
    * Update AccessPerApi
    */
-  if ($stop == 0) {
-    $Start = microtime(true);
+   
+  //if ($stop == 0) {
+    //$Start = microtime(true);
     /*
      * Insert some data
      */
+     /*
     $dbdata = array();
     foreach ($accessPerApi as $level => $ApiList) {
       $dbdata[] = array('Id' => $level, 'ApiList' => implode(' ', $ApiList));
@@ -192,6 +193,7 @@ if (isset($con) && $con->IsConnected()) {
       $stop++;
     }
   }; // if $stop = 0
+  */
   /*
    * Stop time. Used to tell how long the queryes is taking total
    */

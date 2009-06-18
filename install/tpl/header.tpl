@@ -8,4 +8,3 @@
 
 <body>
 <div id="wrapper">
-<img src="../img/empasetuplogo.png" /><br />

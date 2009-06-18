@@ -44,7 +44,7 @@ require_once ($baseDir . $ds . '..' . $ds . 'inc' . $ds . 'common_paths.php');
  * Check if empa.ini and yapeal.ini is created.
  * If they exists, then goto main page.
  */
-if (file_exists(KKS_CONFIG . 'empa.ini')) {
+if (file_exists(KKS_CONFIG . 'kks.ini')) {
   $path = str_replace('install/setup.php', '', $_SERVER['SCRIPT_NAME']);
   header('Location: http://' . $_SERVER['HTTP_HOST'] . $path);
 };
