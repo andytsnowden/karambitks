@@ -56,8 +56,7 @@ require_once (KKS_INSTALL . 'inc' . $ds . 'common_backend.php');
 require_once (KKS_INSTALL . 'inc' . $ds . 'function.php');
 // Require the value file
 /** @ignore */
-require_once (EMPA_INSTALL . 'inc' . $ds . 'values.php');
-echo "test";
+require_once (KKS_INSTALL . 'inc' . $ds . 'values.php');
 // Check if the browser is IGB (Ingame Browser)
 if (isIGB()) {
   // Generate IGB error site

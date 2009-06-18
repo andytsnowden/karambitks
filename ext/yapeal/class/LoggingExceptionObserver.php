@@ -1,6 +1,6 @@
 <?php
 /**
- * Builds and checks the path constants.
+ * Includes LoggingExceptionObserver class.
  *
  * PHP version 5
  *
@@ -31,29 +31,49 @@
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
   exit();
 };
-// Used to over come path issues caused by how script is ran on server.
-$incDir = realpath(dirname(__FILE__));
-$ds = DIRECTORY_SEPARATOR;
+require_once YAPEAL_CLASS . 'IYapealObserver.php';
+require_once YAPEAL_INC . 'elog.php';
 /**
- * Since this file has to be in the 'inc' directory we can set that path now and
- * all the other paths are relative to it.
+ * Logs any exceptions its observing to a log file.
  *
+ * @package Yapeal
+ * @subpackage Observer
+ * @uses YapealObserver
+ * @uses elog
  */
-define('YAPEAL_INC', $incDir . $ds);
-/* **************************************************************************
- * Paths
- * **************************************************************************/
-$settings = array('ADODB' => '../ADOdb/', 'BASE' => '../',
-  'BACKEND' => '../backend/', 'CACHE' => '../cache/', 'CLASS' => '../class/',
-  'CONFIG' => '../config/');
-foreach ($settings as $k => $v) {
-  $realpath = realpath($incDir . $ds . $v);
-  if ($realpath && is_dir($realpath)) {
-    define('YAPEAL_' . $k, $realpath . $ds);
-  } else {
-    $mess = 'Nonexistent directory defined for YAPEAL_' . $k . ' constant';
-    trigger_error($mess, E_USER_ERROR);
-  };
-};// foreach $settings ...
-
+class LoggingExceptionObserver implements YapealObserver {
+  /**
+   * @var string Holds the name of the log file to use.
+   */
+  private $file = YAPEAL_ERROR_LOG;
+  /**
+   * Constructor
+   *
+   * @param string $filename Optional filename to log messages to.
+   */
+  public function __construct($filename = YAPEAL_ERROR_LOG) {
+    if (!empty($filename) && is_string($filename)) {
+      $this->file = $filename;
+    };
+  }
+  /**
+   * Method the 'object' calls to let us know something has happened.
+   *
+   * @param object $e The 'object' we're observing.
+   */
+  public function YapealUpdate(YapealSubject $e) {
+    $message = PHP_EOL;
+    $message .= <<<MESS
+EXCEPTION:
+     Code: {$e->getCode()}
+  Message: {$e->getMessage()}
+     File: {$e->getFile()}
+     Line: {$e->getLine()}
+Backtrace:
+{$e->getTraceAsString()}
+MESS;
+    $message .= PHP_EOL . str_pad(' END TRACE ', 30, '-', STR_PAD_BOTH);
+    elog($message, $this->file);
+  }
+}
 ?>

@@ -77,7 +77,7 @@ require_once (KKS_ADODB. $ds . 'adodb-xmlschema03.inc.php');
  * Dwoo template engine include
  */
 if (!(is_writable(KKS_CACHE.'Dwoo_Compile') && is_writable(KKS_CACHE.'Dwoo_Cache'))) {
-  echo 'ERROR:<br />This folders need to be writeable:<br />' . PHP_EOL . KKS_CACHE . 'Dwoo_Cachep' . $ds . 'compiled' . $ds . '<br />' . PHP_EOL . EMPA_CACHE . 'dwoo' . $ds . 'cache' . $ds . '<br />' . PHP_EOL;
+  echo 'ERROR:<br />This folders need to be writeable:<br />' . PHP_EOL . KKS_CACHE . 'Dwoo_Cachep' . $ds . 'compiled' . $ds . '<br />' . PHP_EOL . KKS_CACHE . 'dwoo' . $ds . 'cache' . $ds . '<br />' . PHP_EOL;
   trigger_error('Before Dwoo Init: Cache and compiled folder not write able', E_USER_ERROR);
   exit;
 }

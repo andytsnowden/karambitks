@@ -100,7 +100,7 @@ $nonexist = 'Nonexistent directory defined for ';
 /* **************************************************************************
  * Paths
  * **************************************************************************/
-require_once $incDir . $ds . 'common_paths.inc';
+require_once $incDir . $ds . 'common_paths.php';
 // Check writable paths
 if (!is_writable(YAPEAL_CACHE)) {
   trigger_error($realpath . ' is not writeable', E_USER_ERROR);
@@ -130,7 +130,7 @@ if (!is_writable($realpath)) {
  * Logging section
  * **************************************************************************/
 // Load tracing code so constants are defined.
-require_once YAPEAL_CLASS . 'YapealTracing.class.php';
+require_once YAPEAL_CLASS . 'YapealTracing.php';
 // Grab the info from ini file again now that our constants are defined.
 $iniVars = parse_ini_file($iniFile, TRUE);
 // Get an instance of our tracing so we can pass it on.
@@ -160,6 +160,9 @@ if (defined('YAPEAL_DEBUG')) {
     'trace_section');
   foreach ($settings as $setting) {
     if (isset($iniVars['Logging'][$setting])) {
+      /**
+       * @ignore
+       */
       define('YAPEAL_' . strtoupper($setting), $iniVars['Logging'][$setting]);
     } else {
       trigger_error($req1 . $setting . $req2, E_USER_ERROR);
@@ -178,8 +181,8 @@ if (defined('YAPEAL_DEBUG')) {
 // Change some error logging settings.
 ini_set('error_log', YAPEAL_ERROR_LOG);
 ini_set('log_errors', 1);
-require_once YAPEAL_INC . 'elog.inc';
-require_once YAPEAL_CLASS . 'YapealErrorHandler.class.php';
+require_once YAPEAL_INC . 'elog.php';
+require_once YAPEAL_CLASS . 'YapealErrorHandler.php';
 // Start using custom error handler.
 set_error_handler(array('YapealErrorHandler', 'handle'));
 if (defined('YAPEAL_DEBUG')) {
@@ -190,18 +193,18 @@ if (defined('YAPEAL_DEBUG')) {
 $mess = str_pad(' Custom handler started ', 75, '-', STR_PAD_BOTH);
 trigger_error($mess, E_USER_NOTICE);
 // Setup custom exception handlers
-require_once YAPEAL_CLASS . 'YapealApiException.class.php';
-require_once YAPEAL_CLASS . 'ADODB_Exception.class.php';
-require_once YAPEAL_CLASS . 'LoggingExceptionObserver.class.php';
-require_once YAPEAL_CLASS . 'PrintingExceptionObserver.class.php';
+require_once YAPEAL_CLASS . 'YapealApiException.php';
+//require_once YAPEAL_CLASS . 'ADODB_Exception.php';
+require_once YAPEAL_CLASS . 'LoggingExceptionObserver.php';
+require_once YAPEAL_CLASS . 'PrintingExceptionObserver.php';
 // Setup exception observers.
 $logObserver = new LoggingExceptionObserver(YAPEAL_WARNING_LOG);
 $printObserver = new PrintingExceptionObserver();
 // Attach (start) our custom printing and logging of exceptions.
 YapealApiException::attach($logObserver);
 YapealApiException::attach($printObserver);
-ADODB_Exception::attach($logObserver);
-ADODB_Exception::attach($printObserver);
+//ADODB_Exception::attach($logObserver);
+//ADODB_Exception::attach($printObserver);
 unset($logObserver, $printObserver);
 /* **************************************************************************
  * Logging init file if debugging.

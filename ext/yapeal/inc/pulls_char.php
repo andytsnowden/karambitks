@@ -1,11 +1,11 @@
 <?php
 /**
- * Used to get corp information from Eve-online API.
+ * Used to get char information from Eve-online API.
  *
  * PHP version 5
  *
  * LICENSE: This file is part of Yet Another Php Eve Api library also know
- * as Yapeal.
+ * as Yapeal which will be used to refer to it in the rest of this license.
  *
  *  Yapeal is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU Lesser General Public License as published by
@@ -33,28 +33,41 @@ if ($sectionFile == basename($_SERVER['PHP_SELF'])) {
   exit();
 };
 /****************************************************************************
-* Per corp API pulls
+* Per character API pulls
 ****************************************************************************/
-//$apis = array('corpCorporationSheet', 'corpAccountBalance', 'corpAssetList',
-//  'corpIndustryJobs', 'corpMarketOrders', 'corpMemberTracking',
-//  'corpStarbaseList', 'corpWalletJournal', 'corpWalletTransactions'
-//);
-$apis = array('corpKillLog'
+$availableApis = array('charAccountBalance', 'charAssetList',
+  'charCharacterSheet', 'charIndustryJobs', 'charKillLog', 'charMarketOrders',
+  'charSkillQueue', 'charStandings', 'charWalletJournal',
+  'charWalletTransactions'
 );
+$apis = explode(' ', $activeAPI);
+if (count($apis) == 0) {
+  $mess = 'No active APIs listed for ' . $charID;
+  $mess .= ' in ' . $sectionFile;
+  trigger_error($mess, E_USER_NOTICE);
+  continue;
+};
 $serverName = 'Tranquility';
-require_once YAPEAL_CLASS . 'api' . $ds . 'ACorporation.php';
+require_once YAPEAL_CLASS . 'api' . $ds . 'ACharacter.php';
 foreach ($apis as $api) {
+  $api = trim($api);
+  if (!in_array($api, $availableApis)) {
+    $mess = 'Invalid API ' . $api . ' in database table for ' . $charID;
+    $mess .= ' in ' . $sectionFile;
+    trigger_error($mess, E_USER_WARNING);
+    continue;
+  };
   require_once YAPEAL_CLASS . 'api' . $ds . $api . '.php';
   $tableName = YAPEAL_TABLE_PREFIX . $api;
-  $mess = 'Before dontWait for ' . $tableName . $corpID;
+  $mess = 'Before dontWait for ' . $tableName . $charID;
   $mess .= ' in ' . $sectionFile;
-  $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-  $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
+  $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
+  $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
   // Should we wait to get API data
-  if (dontWait($tableName, (int)$corpID)) {
+  if (dontWait($tableName, (int)$charID)) {
     // Set it so we wait a bit before trying again if something goes wrong.
     $data = array('tableName' => $tableName,
-      'ownerID' => (int)$corpID, 'cachedUntil' => YAPEAL_START_TIME);
+      'ownerID' => (int)$charID, 'cachedUntil' => YAPEAL_START_TIME);
     $mess = 'Before upsert for ' . $tableName . ' in ' . $sectionFile;
     $tracing->activeTrace(YAPEAL_TRACE_CACHE, 1) &&
     $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
@@ -67,13 +80,12 @@ foreach ($apis as $api) {
     continue;
   };// else dontWait ...
   $params = array('apiKey' => $apiKey, 'characterID' => (int)$charID,
-    'corporationID' => (int)$corpID, 'serverName' => $serverName,
-    'userID' => (int)$userID
+    'serverName' => $serverName, 'userID' => (int)$userID
   );
-  $mess = 'Before instance for ' . $tableName . $corpID;
+  $mess = 'Before instance for ' . $tableName . $charID;
   $mess .= ' in ' . $sectionFile;
-  $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-  $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
+  $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
+  $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
   $instance = new $api($params);
   $instance->apiFetch();
   $instance->apiStore();
