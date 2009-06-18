@@ -150,7 +150,7 @@ abstract class ACharacter implements IFetchApiTable, IStoreApiTable {
         return FALSE;
       };
     }
-    catch(YapealApiErrorException $e) {
+    catch (YapealApiErrorException $e) {
       // Some error codes give us a new time to retry after that should be
       // used for cached until time.
       switch ($e->getCode()) {
@@ -159,14 +159,17 @@ abstract class ACharacter implements IFetchApiTable, IStoreApiTable {
         case 115: // Assets already downloaded.
         case 116: // Industry jobs already downloaded.
         case 117: // Market orders already downloaded.
-        case 120: // Kills exhausted.
+        case 119: // Kills exhausted.
           $cuntil = substr($e->getMessage() , -21, 20);
           $data = array( 'tableName' => $tableName,
             'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
           );
           upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
             YAPEAL_DSN);
-        break;
+          break;
+        case 211: // Login denied by account status.
+          // The character's account isn't active no use trying any of the other APIs.
+          break 2;// switch, foreach $apis
         default:
           // Do nothing but logging by default
       };// switch $e->getCode()

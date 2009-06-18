@@ -84,35 +84,35 @@ abstract class ACorporation implements IFetchApiTable, IStoreApiTable {
       $this->apiKey = $params['apiKey'];
     } else {
       $mess = 'Missing required parameter $params["apiKey"] to constructor';
-      $mess .= ' for ' . $this->api . ' from corp section in ' . __FILE__;
+      $mess .= ' for ' . $this->api . ' in ' . __FILE__;
       throw new LengthException($mess, 1);
     };// else isset $params['apikey'] ...
     if (isset($params['characterID']) && is_int($params['characterID'])) {
       $this->characterID = $params['characterID'];
     } else {
       $mess = 'Missing required parameter $params["characterID"] to constructor';
-      $mess .= ' for ' . $this->api . ' from corp section in ' . __FILE__;
+      $mess .= ' for ' . $this->api . ' in ' . __FILE__;
       throw new LengthException($mess, 2);
     };// else isset $params['characterID'] ...
     if (isset($params['corporationID']) && is_int($params['corporationID'])) {
       $this->corporationID = $params['corporationID'];
     } else {
       $mess = 'Missing required parameter $params["corporationID"] to constructor';
-      $mess .= ' for ' . $this->api . ' from corp section in ' . __FILE__;
+      $mess .= ' for ' . $this->api . ' in ' . __FILE__;
       throw new LengthException($mess, 3);
     };// else isset $params['corporationID'] ...
     if (isset($params['serverName']) && is_string($params['serverName'])) {
       $this->serverName = $params['serverName'];
     } else {
       $mess = 'Missing required parameter $params["serverName"] to constructor';
-      $mess .= ' for ' . $this->api . ' from corp section in ' . __FILE__;
+      $mess .= ' for ' . $this->api . ' in ' . __FILE__;
       throw new LengthException($mess, 4);
     };// else isset $params['serverName'] ...
     if (isset($params['userID']) && is_int($params['userID'])) {
       $this->userID = $params['userID'];
     } else {
       $mess = 'Missing required parameter $params["userID"] to constructor';
-      $mess .= ' for ' . $this->api . ' from corp section in ' . __FILE__;
+      $mess .= ' for ' . $this->api . ' in ' . __FILE__;
       throw new LengthException($mess, 5);
     };// else isset $params['userID'] ...
   }// function __construct
@@ -134,13 +134,13 @@ abstract class ACorporation implements IFetchApiTable, IStoreApiTable {
       $cacheName .= $this->corporationID . '.xml';
       // Try to get XML from local cache first if we can.
       $mess = 'getCachedXml for ' . $cacheName;
-      $mess .= ' from corp section in ' . __FILE__;
+      $mess .= ' in ' . __FILE__;
       $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
       $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
       $xml = YapealApiRequests::getCachedXml($cacheName, YAPEAL_API_CORP);
       if ($xml === FALSE) {
         $mess = 'getAPIinfo for ' . $this->api;
-        $mess .= ' from corp section in ' . __FILE__;
+        $mess .= ' in ' . __FILE__;
         $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
         $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
         $xml = YapealApiRequests::getAPIinfo($this->api, YAPEAL_API_CORP,
@@ -156,12 +156,12 @@ abstract class ACorporation implements IFetchApiTable, IStoreApiTable {
         return TRUE;
       } else {
         $mess = 'No XML found for ' . $tableName;
-        $mess .= ' from corp section in ' . __FILE__;
+        $mess .= ' in ' . __FILE__;
         trigger_error($mess, E_USER_NOTICE);
         return FALSE;
       };
     }
-    catch(YapealApiErrorException $e) {
+    catch (YapealApiErrorException $e) {
       // Some error codes give us a new time to retry after that should be
       // used for cached until time.
       switch ($e->getCode()) {
@@ -170,14 +170,17 @@ abstract class ACorporation implements IFetchApiTable, IStoreApiTable {
         case 115: // Assets already downloaded.
         case 116: // Industry jobs already downloaded.
         case 117: // Market orders already downloaded.
-        case 120: // Kills exhausted.
+        case 119: // Kills exhausted.
           $cuntil = substr($e->getMessage() , -21, 20);
           $data = array( 'tableName' => $tableName,
             'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
           );
           upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
             YAPEAL_DSN);
-        break;
+          break;
+        case 211: // Login denied by account status.
+          // The corporation's account isn't active no use trying any of the other APIs.
+          break 2;// switch, foreach $apis
         default:
           // Do nothing but logging by default
       };// switch $e->getCode()
