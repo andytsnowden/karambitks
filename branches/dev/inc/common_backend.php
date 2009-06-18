@@ -114,6 +114,7 @@ $mess = '';
 if (!is_writable(KKS_CACHE)) {
   $mess .= realpath(KKS_CACHE) . ' is not writeable<br />' . PHP_EOL;
 };
+/*
 $sections = array('dwoo');
 foreach ($sections as $section) {
   $realpath = realpath(KKS_CACHE . $section);
@@ -124,6 +125,7 @@ foreach ($sections as $section) {
     $mess .= KKS_CACHE . $section . ' is not writeable<br />' . PHP_EOL;
   };
 };// foreach $sections ...
+*/
 //Set in common Paths
 /*$subsections = array('cache', 'compiled');
 foreach ($subsections as $section) {
@@ -198,7 +200,7 @@ unset($logObserver);
 /* **************************************************************************
  * Prefix section
  * **************************************************************************/
-$settings = array('empa', 'yapeal', 'eve');
+$settings = array('kks', 'yapeal', 'eve');
 foreach ($settings as $setting) {
   // Set to section value if it exists.
   if (isset($iniVars['Prefix'][$setting])) {

@@ -41,7 +41,7 @@ if (basename(__FILE__) == basename($_SERVER['SCRIPT_NAME'])) {
 /**
  * @internal Load functions that is both used by EMPA and EMPA Setup
  */
-require_once(EMPA_INC.'globalfunctions.php');
+require_once(KKS_INC.'globalfunctions.php');
 
 /**
  * Output site header.

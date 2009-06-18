@@ -90,6 +90,8 @@ if (PHP_SAPI == 'cli') {
 // Move down to 'inc' directory to read common_backend.php
 $ds = DIRECTORY_SEPARATOR;
 $path = $dir . $ds . 'inc' . $ds . 'common_backend.php';
+$test=realpath($path);
+var_dump($test);echo PHP_EOL;
 require_once realpath($path);
 /* **************************************************************************
 * NOTHING BELOW THIS POINT SHOULD NEED TO BE CHANGED WHEN PORTING TO NEW

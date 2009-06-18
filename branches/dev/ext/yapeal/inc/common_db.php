@@ -31,8 +31,8 @@
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
   exit();
 };
-// Assumes this file is in same directory as common_backend.inc
-require_once YAPEAL_CLASS . 'ADOdbFactory.class.php';
+// Assumes this file is in same directory as common_backend.php
+require_once YAPEAL_CLASS . 'ADOdbFactory.php';
 /**
  * Function used to connect to a DB.
  * @param string $dsn An ADOdb compatible connection string.
@@ -102,8 +102,8 @@ function dontWait($api, $owner = 0, $randomize = TRUE) {
     // Get to wait a while longer
     if ($rand == $mod) {
       return FALSE;
-    }; // if $rand==$mod ...
-  }; // if $randomize ...
+    };// if $rand==$mod ...
+  };// if $randomize ...
     $mess .= 'Get ' . $api . ' for ' . $owner;
     trigger_error($mess, E_USER_NOTICE);
   return TRUE;
@@ -143,7 +143,8 @@ function getRegisteredCharacters() {
   global $tracing;
   $con = connect(YAPEAL_DSN, 'Yapeal');
   /* Generate a list of character(s) we need to do updates for */
-  $sql = 'select u.userID "userID",u.fullApiKey "apiKey",chr.characterID "charID"';
+  $sql = 'select u.userID "userID",u.fullApiKey "apiKey",';
+  $sql .= 'chr.characterID "charID", chr.activeAPI';
   $sql .= ' from ';
   $sql .= '`' . YAPEAL_TABLE_PREFIX . 'utilRegisteredCharacter` as chr,';
   $sql .= '`' . YAPEAL_TABLE_PREFIX . 'utilRegisteredUser` as u';
@@ -167,7 +168,7 @@ function getRegisteredCorporations() {
   $con = connect(YAPEAL_DSN, 'Yapeal');
   // Generate a list of corporation(s) we need to do updates for
   $sql = 'select cp.corporationID "corpID",u.userID "userID",';
-  $sql .= 'u.fullApiKey "apiKey",cp.characterID "charID"';
+  $sql .= 'u.fullApiKey "apiKey",cp.characterID "charID", cp.activeAPI';
   $sql .= ' from ';
   $sql .= '`' . YAPEAL_TABLE_PREFIX . 'utilRegisteredCorporation` as cp,';
   $sql .= '`' . YAPEAL_TABLE_PREFIX . 'utilRegisteredCharacter` as chr,';
@@ -221,10 +222,10 @@ function makeMultiUpsert(array $data, array $params, $table, $dsn) {
   $pkeys = array_keys($params);
   $dkeys = array_keys($data[0]);
   // Check for missing fields
-  $missing = array_diff($pkeys,$dkeys);
+  $missing = array_diff($pkeys, $dkeys);
   if (count($missing)) {
     $mess = 'Missing required fields (' . implode(', ', $missing);
-    $mess .= ') found while making upsert for ' .$table;
+    $mess .= ') found while making upsert for ' . $table;
     throw new UnexpectedValueException($mess,1);
   };
   // Check for extra unknown fields
@@ -253,7 +254,7 @@ function makeMultiUpsert(array $data, array $params, $table, $dsn) {
       };// else in_array $params...
     };// foreach $fields ...
     $sets[] = '(' . implode(',', $set) . ')';
-  };
+  };// foreach $data ...
   $values .= ' ' . implode(',', $sets);
   $dupup = ' on duplicate key update ';
   // Loop thru and build update section.
@@ -332,7 +333,7 @@ function multipleUpsert(array $data, array $types, $table, $dsn) {
       // the caller to catch.
       $con->RollbackTrans();
     }
-  }; // if count $data > 10&&...
+  };// if count $data > 10&&...
   $mess = 'Before non-transaction Execute for ' . $table . ' in ' . basename(__FILE__);
   $tracing->activeTrace(YAPEAL_TRACE_DATABASE, 1) &&
   $tracing->logTrace(YAPEAL_TRACE_DATABASE, $mess);
