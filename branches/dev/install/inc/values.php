@@ -49,7 +49,7 @@ $Yapeal_Version = 786;
  * This is schema xml files to use in AXMLS + it curently version
  */
 $schemas = array(
-  'empa' => array('KKStables') ,
+  'kks' => array('KKStables') ,
   'yapeal' => array('util', 'account', 'char', 'corp', 'eve', 'map', 'server') ,
   'db_dump' => array()
 );

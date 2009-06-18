@@ -21,8 +21,8 @@
     <td><input type="text" name="DB_Database" value="empa" /></td>
   </tr>
   <tr>
-    <td class="tableinfolbl">EMPA Prefix:</td>
-    <td><input type="text" name="Prefix[empa]" value="empa" /></td>
+    <td class="tableinfolbl">KKS Prefix:</td>
+    <td><input type="text" name="Prefix[kks]" value="empa" /></td>
   </tr>
   <tr>
     <td class="tableinfolbl">Yapeal Prefix:</td>

@@ -94,10 +94,10 @@
       <KEY/>
       <AUTOINCREMENT/>
     </field>
-    <field name="descr" type="C">
+    <field name="descr" type="C" size="255">
       <NOTNULL/>
     </field>
-    <field name="url" type="C">
+    <field name="url" type="C" size="255">
       <NOTNULL/>
     </field>
     <field name="target" type="C" size="10">
@@ -110,16 +110,5 @@
       <NOTNULL/>
       <DEFAULT value="0"/>
     </field>
-    <data>
-      <row><f>21</f><f>About</f><f>?v=about</f><f>_self</f><f>10</f><f>0</f></row>
-      <row><f>20</f><f>Admin</f><f>?v=admin</f><f>_self</f><f>9</f><f>0</f></row>
-      <row><f>19</f><f>Search</f><f>?v=search</f><f>_self</f><f>8</f><f>0</f></row>
-      <row><f>17</f><f>Post Mail</f><f>?v=post</f><f>_self</f><f>6</f><f>0</f></row>
-      <row><f>15</f><f>Kills</f><f>?v=kills</f><f>_self</f><f>4</f><f>0</f></row>
-      <row><f>16</f><f>Losses</f><f>?v=losses</f><f>_self</f><f>5</f><f>0</f></row>
-      <row><f>14</f><f>Contracts</f><f>?v=contracts</f><f>_self</f><f>3</f><f>0</f></row>
-      <row><f>13</f><f>Campaigns</f><f>?v=campaigns</f><f>_self</f><f>2</f><f>0</f></row>
-      <row><f>12</f><f>Home</f><f>?v=home</f><f>_self</f><f>1</f><f>0</f></row>
-    </data>
   </table>
 </schema>
