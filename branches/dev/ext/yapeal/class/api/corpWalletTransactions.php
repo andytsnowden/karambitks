@@ -70,30 +70,30 @@ class corpWalletTransactions extends ACorporation {
     global $cachetypes;
     $accounts = array(1000, 1001, 1002, 1003, 1004, 1005, 1006);
     $ret = 0;
-    $xml = FALSE;
     $tableName = $this->tablePrefix . $this->api;
     $oldest = strtotime('7 days ago');
     foreach ($accounts as $account) {
       $beforeID = 0;
       do {
+        $cnt = 0;
         $postData = array('accountKey' => $account, 'apiKey' => $this->apiKey,
           'beforeTransID' => $beforeID, 'characterID' => $this->characterID,
           'userID' => $this->userID
         );
-        $cnt = 0;
+        $xml = FALSE;
         try {
           // Build base part of cache file name.
           $cacheName = $this->serverName . $tableName;
           $cacheName .= $this->corporationID . $account . $beforeID . '.xml';
           // Try to get XML from local cache first if we can.
           $mess = 'getCachedXml for ' . $cacheName;
-          $mess .= ' from corp section in ' . __FILE__;
+          $mess .= ' in ' . __FILE__;
           $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
           $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
           $xml = YapealApiRequests::getCachedXml($cacheName, YAPEAL_API_CORP);
           if ($xml === FALSE) {
             $mess = 'getAPIinfo for ' . $this->api;
-            $mess .= ' from corp section in ' . __FILE__;
+            $mess .= ' in ' . __FILE__;
             $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
             $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
             $xml = YapealApiRequests::getAPIinfo($this->api, YAPEAL_API_CORP,
@@ -131,18 +131,18 @@ class corpWalletTransactions extends ACorporation {
               }; // if $oldest<$lastDT
             } else {
               $mess = 'No records for ' . $tableName;
-              $mess .= ' from corp section in ' . __FILE__;
+              $mess .= ' in ' . __FILE__;
               trigger_error($mess, E_USER_NOTICE);
               break;
             }
           } else {
             $mess = 'No XML found for ' . $tableName;
-            $mess .= ' from corp section in ' . __FILE__;
+            $mess .= ' in ' . __FILE__;
             trigger_error($mess, E_USER_NOTICE);
             continue 2;
           };// else $xml !== FALSE ...
         }
-        catch(YapealApiErrorException $e) {
+        catch (YapealApiErrorException $e) {
           // Some error codes give us a new time to retry after that should be
           // used for cached until time.
           switch ($e->getCode()) {
@@ -154,12 +154,16 @@ class corpWalletTransactions extends ACorporation {
                 'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
               );
               upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-              YAPEAL_DSN);
-            break;
+                YAPEAL_DSN);
+              break;
+            case 211: // Login denied by account status.
+              // The corporation's account isn't active no use trying any of the
+              // other APIs.
+              break 4;// switch, while, foreach $accounts, foreach $apis
             default:
               // Do nothing but logging by default
           };// switch $e->getCode()
-          continue 2;
+          continue 2;// while, foreach $accounts
         }
         catch (YapealApiException $e) {
           continue 2;
@@ -189,14 +193,19 @@ class corpWalletTransactions extends ACorporation {
     $tableName = $this->tablePrefix . $this->api;
     if (empty($this->xml)) {
       $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' from corp section in ' . __FILE__;
+      $mess .= ' in ' . __FILE__;
       trigger_error($mess, E_USER_NOTICE);
       return FALSE;
     };// if empty $this->xml ...
     foreach ($accounts as $account) {
+      if (empty($this->xml[$account])) {
+        $mess = 'There was no XML data to store for ' . $tableName . $account;
+        $mess .= ' in ' . __FILE__;
+        trigger_error($mess, E_USER_NOTICE);
+      };// if empty $this->xml[$account] ...
       foreach ($this->xml[$account] as $xml) {
         $mess = 'Xpath for ' . $tableName . $account;
-        $mess .= ' from corp section in ' . __FILE__;
+        $mess .= ' in ' . __FILE__;
         $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
         $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
         $datum = $xml->xpath($this->xpath);
@@ -206,7 +215,7 @@ class corpWalletTransactions extends ACorporation {
             $extras = array('ownerID' => $this->corporationID,
               'accountKey' => $account);
             $mess = 'multipleUpsertAttributes for ' . $tableName . $account;
-            $mess .= ' from corp section in ' . __FILE__;
+            $mess .= ' in ' . __FILE__;
             $tracing->activeTrace(YAPEAL_TRACE_CORP, 1) &&
             $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
             multipleUpsertAttributes($datum, $this->types, $tableName, YAPEAL_DSN,
@@ -219,12 +228,12 @@ class corpWalletTransactions extends ACorporation {
           // This doesn't work until CCP fixes thier cachedUntil timer.
           // Now correcting the time in XML instead.
           $until = (string)$xml->cachedUntil[0];
-          if ($until > $cuntil) {
-            $cuntil = $until;
-          };
+          //if ($until > $cuntil) {
+          //  $cuntil = $until;
+          //};
         } else {
         $mess = 'There was no XML data to store for ' . $tableName . $account;
-        $mess .= ' from corp section in ' . __FILE__;
+        $mess .= ' in ' . __FILE__;
         trigger_error($mess, E_USER_NOTICE);
         };// else count $datum ...
       };// foreach $this->xml[$account] ...
@@ -241,7 +250,7 @@ class corpWalletTransactions extends ACorporation {
         'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
       );
       $mess = 'Upsert for '. $tableName;
-      $mess .= ' from corp section in ' . __FILE__;
+      $mess .= ' in ' . __FILE__;
       $tracing->activeTrace(YAPEAL_TRACE_CACHE, 0) &&
       $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
       upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',

@@ -45,12 +45,11 @@ class charWalletTransactions extends ACharacter {
   /**
    * @var array Holds the database column names and ADOdb types.
    */
-  private $types = array('accountKey' => 'I', 'characterID' => 'I',
-    'characterName' => 'C', 'clientID' => 'I', 'clientName' => 'C',
-    'ownerID' => 'I', 'price' => 'N', 'quantity' => 'I', 'stationID' => 'I',
-    'stationName' => 'C', 'transactionDateTime' => 'T', 'transactionFor' => 'C',
-    'transactionID' => 'I', 'transactionType' => 'C', 'typeID' => 'I',
-    'typeName' => 'C'
+  private $types = array('accountKey' => 'I', 'clientID' => 'I',
+    'clientName' => 'C', 'ownerID' => 'I', 'price' => 'N', 'quantity' => 'I',
+    'stationID' => 'I', 'stationName' => 'C', 'transactionDateTime' => 'T',
+    'transactionFor' => 'C', 'transactionID' => 'I', 'transactionType' => 'C',
+    'typeID' => 'I', 'typeName' => 'C'
   );
   /**
    * @var array Hold an array of the XML return from API.
@@ -70,17 +69,17 @@ class charWalletTransactions extends ACharacter {
     global $cachetypes;
     $accounts = array(1000);
     $ret = 0;
-    $xml = FALSE;
     $tableName = $this->tablePrefix . $this->api;
     $oldest = strtotime('7 days ago');
     foreach ($accounts as $account) {
       $beforeID = 0;
       do {
+        $cnt = 0;
         $postData = array('accountKey' => $account, 'apiKey' => $this->apiKey,
           'beforeTransID' => $beforeID, 'characterID' => $this->characterID,
           'userID' => $this->userID
         );
-        $cnt = 0;
+        $xml = FALSE;
         try {
           // Build base part of cache file name.
           $cacheName = $this->serverName . $tableName;
@@ -139,10 +138,10 @@ class charWalletTransactions extends ACharacter {
             $mess = 'No XML found for ' . $tableName;
             $mess .= ' from char section in ' . __FILE__;
             trigger_error($mess, E_USER_NOTICE);
-            continue 2;
+            continue 2;// while, foreach $accounts
           };// else $xml !== FALSE ...
         }
-        catch(YapealApiErrorException $e) {
+        catch (YapealApiErrorException $e) {
           // Some error codes give us a new time to retry after that should be
           // used for cached until time.
           switch ($e->getCode()) {
@@ -155,11 +154,15 @@ class charWalletTransactions extends ACharacter {
               );
               upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
                 YAPEAL_DSN);
-            break;
+              break;
+            case 211: // Login denied by account status.
+              // The character's account isn't active no use trying any of the
+              // other APIs.
+              break 4;// switch, while, foreach $accounts, foreach $apis
             default:
               // Do nothing but logging by default
           };// switch $e->getCode()
-          continue 2;
+          continue 2;// while, foreach $accounts
         }
         catch (YapealApiException $e) {
           continue 2;
@@ -170,7 +173,7 @@ class charWalletTransactions extends ACharacter {
       } while ($cnt == 1000);
       ++$ret;
     };// foreach $accounts ...
-    if ($ret == 7) {
+    if ($ret == 1) {
       return TRUE;
     };
     return FALSE;
@@ -194,6 +197,11 @@ class charWalletTransactions extends ACharacter {
       return FALSE;
     };// if empty $this->xml ...
     foreach ($accounts as $account) {
+      if (empty($this->xml[$account])) {
+        $mess = 'There was no XML data to store for ' . $tableName . $account;
+        $mess .= ' in ' . __FILE__;
+        trigger_error($mess, E_USER_NOTICE);
+      };// if empty $this->xml[$account] ...
       foreach ($this->xml[$account] as $xml) {
         $mess = 'Xpath for ' . $tableName . $account;
         $mess .= ' from char section in ' . __FILE__;
@@ -219,9 +227,9 @@ class charWalletTransactions extends ACharacter {
           // This doesn't work until CCP fixes thier cachedUntil timer.
           // Now correcting the time in XML instead.
           $until = (string)$xml->cachedUntil[0];
-          if ($until > $cuntil) {
-            $cuntil = $until;
-          };
+          //if ($until > $cuntil) {
+          //  $cuntil = $until;
+          //};
         } else {
         $mess = 'There was no XML data to store for ' . $tableName . $account;
         $mess .= ' from char section in ' . __FILE__;

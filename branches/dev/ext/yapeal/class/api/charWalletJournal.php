@@ -68,17 +68,17 @@ class charWalletJournal extends ACharacter {
     global $cachetypes;
     $accounts = array(1000);
     $ret = 0;
-    $xml = FALSE;
     $tableName = $this->tablePrefix . $this->api;
     $oldest = strtotime('7 days ago');
     foreach ($accounts as $account) {
       $beforeID = 0;
       do {
+        $cnt = 0;
         $postData = array('accountKey' => $account, 'apiKey' => $this->apiKey,
           'beforeRefID' => $beforeID, 'characterID' => $this->characterID,
           'userID' => $this->userID
         );
-        $cnt = 0;
+        $xml = FALSE;
         try {
           // Build base part of cache file name.
           $cacheName = $this->serverName . $tableName;
@@ -137,10 +137,10 @@ class charWalletJournal extends ACharacter {
             $mess = 'No XML found for ' . $tableName;
             $mess .= ' from char section in ' . __FILE__;
             trigger_error($mess, E_USER_NOTICE);
-            continue 2;
+            continue 2;// while, foreach $accounts
           };// else $xml !== FALSE ...
         }
-        catch(YapealApiErrorException $e) {
+        catch (YapealApiErrorException $e) {
           // Some error codes give us a new time to retry after that should be
           // used for cached until time.
           switch ($e->getCode()) {
@@ -151,12 +151,17 @@ class charWalletJournal extends ACharacter {
               $data = array( 'tableName' => $tableName,
                 'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
               );
-              upsert($data, $cachetypes, 'utilCachedUntil', YAPEAL_DSN);
-            break;
+              upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
+                YAPEAL_DSN);
+              break;
+            case 211: // Login denied by account status.
+              // The character's account isn't active no use trying any of the
+              // other APIs.
+              break 4;// switch, while, foreach $accounts, foreach $apis
             default:
               // Do nothing but logging by default
           };// switch $e->getCode()
-          continue 2;
+          continue 2;// while, foreach $accounts
         }
         catch (YapealApiException $e) {
           continue 2;
@@ -191,6 +196,11 @@ class charWalletJournal extends ACharacter {
       return FALSE;
     };// if empty $this->xml ...
     foreach ($accounts as $account) {
+      if (empty($this->xml[$account])) {
+        $mess = 'There was no XML data to store for ' . $tableName . $account;
+        $mess .= ' in ' . __FILE__;
+        trigger_error($mess, E_USER_NOTICE);
+      };// if empty $this->xml[$account] ...
       foreach ($this->xml[$account] as $xml) {
         $mess = 'Xpath for ' . $tableName . $account;
         $mess .= ' from char section in ' . __FILE__;
@@ -248,7 +258,7 @@ class charWalletJournal extends ACharacter {
       // Already logged nothing to do here.
     }
     // If we stored everything correctly return TRUE.
-    if ($ret == 7) {
+    if ($ret == 1) {
       return TRUE;
     };
     return FALSE;

@@ -143,23 +143,27 @@ class corpKillLog extends ACorporation {
         // Some error codes give us a new time to retry after that should be
         // used for cached until time.
         switch ($e->getCode()) {
+          case 103: // Already returned one week of data.
           case 119: // Kills exhausted: retry after {0}.
             $cuntil = substr($e->getMessage() , -21, 20);
             $data = array( 'tableName' => $tableName,
               'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
             );
             upsert($data, $cachetypes, 'utilCachedUntil', YAPEAL_DSN);
-          break;
+            break;
+          case 211: // Login denied by account status.
+            // The character's account isn't active no use trying any of the other APIs.
+            break 3;// switch, while, foreach $apis
           default:
             // Do nothing but logging by default
         };// switch $e->getCode()
-        continue;
+        return FALSE;
       }
       catch (YapealApiException $e) {
-        continue;
+        return FALSE;
       }
       catch (ADODB_Exception $e) {
-        continue;
+        return FALSE;
       }
     } while ($cnt == 100);
     ++$ret;
@@ -192,8 +196,7 @@ class corpKillLog extends ACorporation {
       $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
       $kills = $xml->xpath('//rowset[@name="kills"]/row');
       $cnt = count($kills);
-      print $cnt . PHP_EOL;
-      if ($cnt > 0) {
+     if ($cnt > 0) {
         for ($i = 0; $i < $cnt; ++$i) {
           $kill = $kills[$i];
           $killID = (int)$kill['killID'];
@@ -322,7 +325,7 @@ class corpKillLog extends ACorporation {
    * @param SimpleXMLElement $kill Current kill to extract items from.
    * @param integer $killID The Id for this kill.
    *
-   * @return bool True if items were stored.
+   * @return void
    */
   protected function attackers($kill, $killID) {
     global $tracing;
@@ -332,17 +335,17 @@ class corpKillLog extends ACorporation {
     if (!empty($data)) {
       foreach ($data as $row) {
         $row->addAttribute('killID', $killID);
-        $this->attackersList[] = $row;
+        $this->attackersList[] = simplexml_load_string($row->asXML());
       };
     };
-  }
+  }//function attackers
   /**
    * Used to store XML to KillLog table.
    *
    * @param SimpleXMLElement $kill Current kill to extract items from.
    * @param integer $killID The Id for this kill.
    *
-   * @return Bool Return TRUE if store was successful.
+   * @return void
    */
   protected function killLog($kill, $killID) {
     global $tracing;
@@ -352,14 +355,14 @@ class corpKillLog extends ACorporation {
       unset($datum->victim[0], $datum->rowset[1], $datum->rowset[0]);
       $this->killList[] = simplexml_load_string($datum->asXML());
     };
-  }
+  }// function killLog
   /**
    * Handles the items rowsets.
    *
    * @param SimpleXMLElement $kill Current kill to extract items from.
    * @param integer $killID The Id for this kill.
    *
-   * @return bool True if items were stored.
+   * @return void
    */
   protected function items($kill, $killID) {
     global $tracing;
@@ -371,14 +374,14 @@ class corpKillLog extends ACorporation {
     $data .= $rgt . '" qtyDestroyed="1" qtyDropped="0" typeID="' . $typeID . '"/>';
     $root = new SimpleXMLElement($data);
     array_unshift($this->itemsList, $root);
-  }
+  }// function items
   /**
-   * Handles the attackers rowset.
+   * Handles the victim element.
    *
    * @param SimpleXMLElement $kill Current kill to extract items from.
    * @param integer $killID The Id for this kill.
    *
-   * @return bool True if items were stored.
+   * @return void
    */
   protected function victim($kill, $killID) {
     global $tracing;
@@ -389,7 +392,7 @@ class corpKillLog extends ACorporation {
       $data->addAttribute('killID', $killID);
       $this->victimList[] = simplexml_load_string($data->asXML());
     };
-  }
+  }// function victim
   /**
    * Navigates XML and adds lft and rgt attributes.
    *
@@ -407,11 +410,6 @@ class corpKillLog extends ACorporation {
    * @param integer $level Level of nesting.
    *
    * @return integer Current index for lft/rgt counting.
-   *
-   * @todo Look at adding a $level based on the rowset/row depth. Would pass it
-   * in as param and add increment inside of if ($children = ...).
-   * @todo Look at pre-sort the <row>s by flag so items in the same hanger etc
-   * are grouped together for lft/rgt.
    */
   protected function editItems($node, $killID, $index = 2, $level = 0) {
     $nodeName = $node->getName();
