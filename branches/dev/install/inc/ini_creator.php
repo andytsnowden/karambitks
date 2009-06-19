@@ -176,7 +176,7 @@ map_active=TRUE
 server_active=TRUE
 url_base="http://api.eve-online.com"
 
-; Used for EMPA and Yapeal
+; Used for KKS and Yapeal
 [Database]
 database="' . $_REQUEST['DB_Database'] . '"
 driver="mysqli://"
@@ -199,9 +199,16 @@ trace_log="yapeal_trace.log"
 trace_output="file"
 trace_section=YAPEAL_TRACE_NONE
 
-; Used for EMPA
+; Used for KKS
+[Cache]
+killlist=60
+stats=900
+killdetail=1800
+dwoo=300
+
+; Used for KKS
 [Prefix]
-empa="' . $prefix['empa'] . '"
+kks="' . $prefix['kks'] . '"
 yapeal="' . $prefix['yapeal'] . '"
 eve="' . $prefix['db_dump'] . '"';
   // Create kks.ini

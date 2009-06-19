@@ -65,6 +65,6 @@ $accessPerApi = array(
   0 => array(),
   1 => array('charCharacterSheet'),
   2 => array('charCharacterSheet'),
-  3 => array('corpCorporationSheet', 'corpMemberTracking')
+  3 => array('corpCorporationSheet', 'corpMemberTracking', 'corpKillLog')
 );
 ?>

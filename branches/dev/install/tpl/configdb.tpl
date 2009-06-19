@@ -18,11 +18,11 @@
   </tr>
   <tr>
     <td class="tableinfolbl">Database:</td>
-    <td><input type="text" name="DB_Database" value="empa" /></td>
+    <td><input type="text" name="DB_Database" value="kks" /></td>
   </tr>
   <tr>
     <td class="tableinfolbl">KKS Prefix:</td>
-    <td><input type="text" name="Prefix[kks]" value="empa" /></td>
+    <td><input type="text" name="Prefix[kks]" value="kks" /></td>
   </tr>
   <tr>
     <td class="tableinfolbl">Yapeal Prefix:</td>
@@ -30,7 +30,7 @@
   </tr>
   <tr>
     <td class="tableinfolbl">Eve DB Dump Prefix:</td>
-    <td><input type="text" name="Prefix[db_dump]" value="evedump" /></td>
+    <td><input type="text" name="Prefix[db_dump]" value="eve" /></td>
   </tr>
 </table>
 <input type="submit" value="Next" />
