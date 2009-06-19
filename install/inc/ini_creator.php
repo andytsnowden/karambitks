@@ -87,7 +87,7 @@ map_active=' . trueOrFalse($iniVars['Api']['map_active']) . '
 server_active=' . trueOrFalse($iniVars['Api']['server_active']) . '
 url_base="' . $iniVars['Api']['url_base'] . '"
 
-; Used for EMPA and Yapeal
+; Used for KKS and Yapeal
 [Database]
 database="' . $iniVars['Database']['database'] . '"
 driver="' . $iniVars['Database']['driver'] . '"
@@ -111,6 +111,7 @@ trace_log="yapeal_trace.log"
 trace_output="file"
 trace_section=YAPEAL_TRACE_NONE
 
+; Used for KKS
 [Cache]
 killlist=60
 stats=900
@@ -118,9 +119,9 @@ killdetail=1800
 dwoo=300
 
 
-; Used for EMPA
+; Used for KKS
 [Prefix]
-empa="' . $iniVars['Prefix']['empa'] . '"
+kks="' . $iniVars['Prefix']['kks'] . '"
 yapeal="' . $iniVars['Prefix']['yapeal'] . '"
 eve="' . $iniVars['Prefix']['eve'] . '"';
 

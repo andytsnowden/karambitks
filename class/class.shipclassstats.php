@@ -93,7 +93,7 @@ class shipClassStats
     {
         //Begining of SQL statements
         $this->SQL_start='SELECT sc.groupID, sc.groupName,';        
-        $this->SQL_joins='FROM `'.PREFIX_YAPEAL.'corpVictim` cv JOIN `invTypes` it ON it.typeID=cv.shipTypeID JOIN `'.PREFIX_YAPEAL.'corpKillLog` kl ON kl.`killID`=cv.`killID` RIGHT JOIN `'.PREFIX_EVE.'invShipclass` sc ON sc.groupID=it.groupID';
+        $this->SQL_joins='FROM `'.PREFIX_YAPEAL.'corpVictim` cv JOIN `'.PREFIX_EVE.'invTypes` it ON it.typeID=cv.shipTypeID JOIN `'.PREFIX_YAPEAL.'corpKillLog` kl ON kl.`killID`=cv.`killID` RIGHT JOIN `'.PREFIX_KKS.'invShipclass` sc ON sc.groupID=it.groupID';
         $this->SQL_end=' GROUP BY sc.groupID ORDER BY sc.groupName LIMIT 0, 40;';
         
     }
@@ -251,7 +251,7 @@ class shipClassStats
             //Get DB Connection
             $con = $instance->factory(KKS_DSN);
             //SQL to get a list of ship classes
-            $sql = 'SELECT `groupID`, `groupName` FROM `'.PREFIX_EVE.'invShipclass` LIMIT 0, 40 '; 
+            $sql = 'SELECT `groupID`, `groupName` FROM `'.PREFIX_KKS.'invShipclass` LIMIT 0, 40 '; 
             //It should not change often, so cache for 6 hours
             if ($this->rs_sckill=$con->CacheExecute(21600, $sql)){
             	$sclasses=$this->rs_sckill->GetAssoc();

@@ -99,7 +99,7 @@ class toplist
     function __construct()
     {
         $this->SQL_start = 'SELECT count(ca.killID) as stats,';
-        $this->SQL_table = ' FROM `corpAttackers` ca';
+        $this->SQL_table = ' FROM `'.PREFIX_YAPEAL.'corpAttackers` ca';
         $this->SQL_end = ' ORDER BY stats DESC';
     }
 
@@ -145,7 +145,7 @@ class toplist
         $sql .= $this->SQL_table;
         
         if($this->fetchWeek == true) {
-            $sql .= ' JOIN `corpKillLog` kl ON kl.killID=ca.killID';    
+            $sql .= ' JOIN `'.PREFIX_YAPEAL.'corpKillLog` kl ON kl.killID=ca.killID';    
         }
                 
         if($this->fetchCorp){
