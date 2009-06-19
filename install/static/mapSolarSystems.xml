@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema version="0.3" xmlns="http://www.mgcummings.com/xsd/yapeal/xmlschema03">
+  <!-- Create Table: mapSolarSystems -->
+  <sql prefixmethod="MANUAL">
+    <query platform="mysql">SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0</query>
+    <query platform="mysql">SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0</query>
+    <query platform="mysql">SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL'</query>
+  </sql>
+  <table name="mapSolarSystems">
+    <field name="regionID" type="I" size="10"/>
+    <field name="constellationID" type="I" size="10"/>
+    <field name="solarSystemID" type="I" size="10">
+      <NOTNULL/>
+    </field>
+    <field name="solarSystemName" type="C" size="200"/>
+    <field name="x" type="F"/>
+    <field name="y" type="F"/>
+    <field name="z" type="F"/>
+    <field name="xMin" type="F"/>
+    <field name="xMax" type="F"/>
+    <field name="yMin" type="F"/>
+    <field name="yMax" type="F"/>
+    <field name="zMin" type="F"/>
+    <field name="zMax" type="F"/>
+    <field name="luminosity" type="F"/>
+    <field name="border" type="I2" size="1"/>
+    <field name="fringe" type="I2" size="1"/>
+    <field name="corridor" type="I2" size="1"/>
+    <field name="hub" type="I2" size="1"/>
+    <field name="international" type="I2" size="1"/>
+    <field name="regional" type="I2" size="1"/>
+    <field name="constellation" type="I2" size="1"/>
+    <field name="security" type="F"/>
+    <field name="factionID" type="I" size="10"/>
+    <field name="radius" type="F"/>
+    <field name="sunTypeID" type="I4" size="5"/>
+    <field name="securityClass" type="C" size="2"/>
+    <index name="mapSolarSystems_IX_constellation">
+      <col>constellationID</col>
+    </index>
+    <index name="mapSolarSystems_IX_region">
+      <col>regionID</col>
+    </index>
+    <index name="mapSolarSystems_IX_security">
+      <col>security</col>
+    </index>
+    <index name="mapSolarSystems_PK">
+      <UNIQUE/>
+      <col>solarSystemID</col>
+    </index>
+    <opt platform="mysql"> ENGINE = INNODB COLLATE = utf8_unicode_ci</opt>
+  </table>
+  <sql prefixmethod="MANUAL">
+    <query platform="mysql">SET SQL_MODE=@OLD_SQL_MODE</query>
+    <query platform="mysql">SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS</query>
+    <query platform="mysql">SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS</query>
+  </sql>
+</schema>

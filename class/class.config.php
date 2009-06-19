@@ -64,7 +64,7 @@ class kss_config{
         //Get DB Connection
         $con = $instance->factory(KKS_DSN); 
 		       
-        $sql = "SELECT config_string,config_value FROM config";	
+        $sql = "SELECT config_string,config_value FROM ".PREFIX_KKS."config";	
 		
 		//short cache time while we'er still developing.. after we finish need to come up with a method to detect config changes and reload the config.. May look into shoving the config into memcache rather than using adobe's cache	       
         if($this->rs=$con->CacheExecute(3600, $sql)){
@@ -114,21 +114,21 @@ class kss_config{
         } else {
 			switch ($action){ 
 				case 1:
-		 		$sql = "INSERT INTO config (`config_string` ,`config_value`)VALUES('".$config_name."', '".$config_value."') ON DUPLICATE KEY UPDATE config_value = '".$config_value."';";
+		 		$sql = "INSERT INTO ".PREFIX_KKS."config (`config_string` ,`config_value`)VALUES('".$config_name."', '".$config_value."') ON DUPLICATE KEY UPDATE config_value = '".$config_value."';";
 				break;
 			
 				case 2:
-				$sql = "UPDATE config SET `config_value` = '".$config_value."' WHERE `config`.`config_string` = '".$config_name."' LIMIT 1 ;";
+				$sql = "UPDATE ".PREFIX_KKS."config SET `config_value` = '".$config_value."' WHERE `".PREFIX_KKS."config`.`config_string` = '".$config_name."' LIMIT 1 ;";
 				break;
 			
 				case 3:
-				$sql = "DELETE FROM config WHERE `config_string` = '".$config_name."' LIMIT 1";
+				$sql = "DELETE FROM ".PREFIX_KKS."config WHERE `config_string` = '".$config_name."' LIMIT 1";
 				break;
 }		 	
 		 	//execute the query
 		 	if ($con->Execute($sql)){
 		 		//clear the cache
-		 		$con->CacheFlush('SELECT config_string,config_value FROM config');	 	
+		 		$con->CacheFlush('SELECT config_string,config_value FROM '.PREFIX_KKS.'config');	 	
 		 		//reload the settings global array
 		 		kss_config::start_up();	 	
 		 		//sucess return turn

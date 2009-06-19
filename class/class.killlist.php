@@ -79,12 +79,12 @@ class killList
     function __construct()
     {
         $this->SQL_start = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.allianceName as valliName, map.solarSystemName, map.security, caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
-        $this->SQL_joins = ' FROM `corpKillLog` kl' .
-            ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`' .
-            ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`' .
-            ' JOIN `corpAttackers` caf ON caf.`killID`=cv.`killID`' .
-            ' JOIN `invTypes` it ON it.`typeID` = cv.`shipTypeID`' .
-            ' JOIN `mapSolarSystems` map ON map.`solarSystemID` = kl.`solarSystemID`';
+        $this->SQL_joins = ' FROM `'.PREFIX_YAPEAL.'corpKillLog` kl' .
+            ' JOIN `'.PREFIX_YAPEAL.'corpVictim` cv ON cv.`killID`=kl.`killID`' .
+            ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` ca ON ca.`killID`=cv.`killID`' .
+            ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` caf ON caf.`killID`=cv.`killID`' .
+            ' JOIN `'.PREFIX_EVE.'invTypes` it ON it.`typeID` = cv.`shipTypeID`' .
+            ' JOIN `'.PREFIX_EVE.'mapSolarSystems` map ON map.`solarSystemID` = kl.`solarSystemID`';
         $this->SQL_end = ' ORDER BY kl.`killTime` DESC';
     }
 

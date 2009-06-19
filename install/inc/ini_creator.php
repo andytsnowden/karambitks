@@ -111,6 +111,13 @@ trace_log="yapeal_trace.log"
 trace_output="file"
 trace_section=YAPEAL_TRACE_NONE
 
+[Cache]
+killlist=60
+stats=900
+killdetail=1800
+dwoo=300
+
+
 ; Used for EMPA
 [Prefix]
 empa="' . $iniVars['Prefix']['empa'] . '"

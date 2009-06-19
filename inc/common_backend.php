@@ -209,7 +209,7 @@ foreach ($settings as $setting) {
      *
      * This is the prefix to use in empa. there is 4 types
      * <pre>
-     * $prefix['kks']   = Empa core system table prefix
+     * $prefix['kks']   = KKS core system table prefix
      * $prefix['yapeal'] = Yapeal table prefix
      * $prefix['eve']    = EVE Static database dump table prefix
      * $prefix['mod']    = Mod table prefix
@@ -223,7 +223,7 @@ foreach ($settings as $setting) {
      *
      * This is the prefix to use in empa. there is 4 types
      * <pre>
-     * PREFIX_KKS   = Empa core system table prefix
+     * PREFIX_KKS   = KKS core system table prefix
      * PREFIX_YAPEAL = Yapeal table prefix
      * PREFIX_EVE    = EVE Static database dump table prefix
      * PREFIX_MOD    = Mod table prefix
@@ -237,6 +237,26 @@ foreach ($settings as $setting) {
     exit;
   };// else isset $iniVars...
 };// foreach $settings ...
+
+/* **************************************************************************
+ * Cache section
+ * **************************************************************************/
+$settings = array('killlist', 'stats', 'killdetail', 'dwoo');
+foreach ($settings as $setting) {
+  // Set to section value if it exists.
+  if (isset($iniVars['Cache'][$setting])) {
+        /**
+     * KKS_CACHE_XXX
+     *     
+     */
+    define("KKS_CACHE_" . strtoupper($setting), $iniVars['Cache'][$setting]);
+  } else {
+    echo $req1 . $setting . $req2 . ' section [Cache].';
+    exit;
+  };// else isset $iniVars...
+};// foreach $settings ...
+
+
 /* **************************************************************************
  * Salt value
  * **************************************************************************/
@@ -288,6 +308,13 @@ catch(ADODB_Exception $e) {
   die($e->getMessage());
 }
 /*
+* Turn ADODB Logging On/Off
+*/
+define('KKS_ADODB_LOG', 'FALSE');
+
+//Turn On/Off ADODB Debug
+define('KKS_ADODB_DEBUG', 'FALSE');
+/*
  * Get KKS config from database
  
 try {
@@ -313,4 +340,5 @@ catch(ADODB_Exception $e) {
   die($e->getMessage());
 }
 */
+define('KKS_KBCORPID', '170567768');
 ?>

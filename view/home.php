@@ -33,9 +33,9 @@
 
 //Get Needed Classes
 require_once KKS_CLASS.'class.killlist.php';
-require_once KKS_CLASS.'class.shipclassstats.php';
+//require_once KKS_CLASS.'class.shipclassstats.php';
 require_once KKS_CLASS.'class.navigation.php';
-require_once KKS_CLASS.'class.toplist.php';
+//require_once KKS_CLASS.'class.toplist.php';
 
 //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
@@ -78,27 +78,27 @@ $kl->year=$year;
 
 
 //New Statslist
-$sc= New shipClassStats();
+//$sc= New shipClassStats();
 
 //Set needed KillList options
-$sc->corpID=KKS_KBCORPID;
-$sc->fetchCorp=TRUE;
-$sc->week=$week;
-$sc->year=$year;
+//$sc->corpID=KKS_KBCORPID;
+//$sc->fetchCorp=TRUE;
+//$sc->week=$week;
+//$sc->year=$year;
 
 //New Top List
-$tl= New toplist();
+/*$tl= New toplist();
 $tl->getCharacter=TRUE;
 $tl->fetchCorp=TRUE;
 $tl->corpID=KKS_KBCORPID;
 $list=$tl->fetchList();
-
+*/
 //Get the list
 $kl->fetchList();
-$charCorpTop=$tl->fetchList();
+//$charCorpTop=$tl->fetchList();
 //Get the results
 $list=$kl->rarray;
-$table=$sc->fetchShipClassTableArray();
+//$table=$sc->fetchShipClassTableArray();
 //assign Data to Dwoo
 $data = new Dwoo_Data();
 

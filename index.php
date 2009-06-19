@@ -46,12 +46,12 @@ define('KKS_VERSION', '1.0');
  * LOAD ODD/END FUNCTIONS 
  */
  
-require_once'inc/common_paths.inc';
-require_once KKS_CONFIG.'config.php';
+require_once'inc/common_paths.php';
+require_once KKS_INC.'common_backend.php';
 require_once KKS_CLASS . 'ADOdbFactory.class.php';
 require_once KKS_CLASS . 'class.errors.php';
 require_once KKS_CLASS . 'class.config.php';
-require_once KKS_INC . 'functions.inc';
+require_once KKS_INC . 'functions.php';
 
 //Load config from SQL and some basic config needed for all pages
 $config = new kss_config();
@@ -85,7 +85,12 @@ if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
 unregister_globals('_POST', '_GET', '_REQUEST');
 
  //Find out what page the user wants to view & check for invalid request or empty request
- $view=$_GET['v'];
+if(isset($_GET['v'])) {
+    $view=$_GET['v'];
+ } //if is set $_GET['v']
+else {
+    $view='home'; 
+} //else if is set $_GET['v']
  //if the user tries to put anything but valid data in the broswer this check will fail.
  if ((!eregi("^[a-z_./]*$", $view) && !eregi("\\.\\.", $view))) {
  	//invalid data was sent to the header, Possible break/XSS attack
@@ -94,16 +99,14 @@ unregister_globals('_POST', '_GET', '_REQUEST');
 	} else {
 		//if its IGB, redirect to igp pages
 		if (substr($_SERVER['HTTP_USER_AGENT'], 0, 15) == 'EVE-minibrowser'){
-			
 			$loadPage='view/igb.php';
 			if(file_exists($loadPage)) {
 				include($loadPage);
 			}
 		
 		} else {
-		
 			if(ctype_alpha($view) OR !empty($view)) {
-				$loadPage='view/'.$view.'.php';
+				$loadPage=KKS_VIEW.$view.'.php';
 				if(file_exists($loadPage)) {
 					include($loadPage);
 				}
