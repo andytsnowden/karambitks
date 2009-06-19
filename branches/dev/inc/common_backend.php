@@ -139,7 +139,7 @@ foreach ($subsections as $section) {
 };// foreach $subsections ...
 */
 // log_dir is relative to YAPEAL_CACHE
-$realpath = realpath(KKS_CACHE . 'log');
+/*$realpath = realpath(KKS_CACHE . 'log');
 if ($realpath && is_dir($realpath)) {
   define('KKS_LOG', $realpath . $ds);
 } else {
@@ -147,7 +147,7 @@ if ($realpath && is_dir($realpath)) {
 };
 if (!is_writable($realpath)) {
   $mess .= $realpath . ' is not writeable<br />' . PHP_EOL;
-};
+};*/
 // Output file and dir check error
 if (!empty($mess)) {
   echo $mess;

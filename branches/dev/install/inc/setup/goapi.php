@@ -373,7 +373,7 @@ if ($stop == 0) {
           'characterID' => $charInfo[$_REQUEST['charName']]['charId'],
           'corporationID' => $charInfo[$_REQUEST['charName']]['corpId'],
           'corporationName' => $charInfo[$_REQUEST['charName']]['corpName'],
-          'isActive' => 1,
+          'isActive' => 0,
           'name' => $_REQUEST['charName'],
           'userID' => $_REQUEST['api_user_id']
         )
