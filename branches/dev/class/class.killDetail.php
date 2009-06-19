@@ -82,9 +82,9 @@ class killDetail
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT `killID`, `allianceID`, `allianceName`, `characterID`, `characterName`, `corporationID`, `corporationName`, `factionID`, `factionName`, `damageDone`, `finalBlow`, st.typeName AS shipType, wt.typeName AS weaponType FROM `corpAttackers` ca'
-        . ' JOIN invTypes st ON st.typeID=ca.`shipTypeID`'
-        . ' JOIN invTypes wt ON wt.typeID=ca.`weaponTypeID`'
+            $sql = 'SELECT `killID`, `allianceID`, `allianceName`, `characterID`, `characterName`, `corporationID`, `corporationName`, `factionID`, `factionName`, `damageDone`, `finalBlow`, st.typeName AS shipType, wt.typeName AS weaponType FROM `'.PREFIX_YAPEAL.'corpAttackers` ca'
+        . ' JOIN '.PREFIX_EVE.'invTypes st ON st.typeID=ca.`shipTypeID`'
+        . ' JOIN '.PREFIX_EVE.'invTypes wt ON wt.typeID=ca.`weaponTypeID`'
         . ' WHERE ca.`killID`='.$killID; 
         
 
@@ -127,8 +127,8 @@ class killDetail
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT im.`killID`, it.`typeName`, im.`qtyDropped`, im.`qtyDestroyed` FROM `corpItems` im'
-        . ' JOIN invTypes it ON it.`typeID`=im.`typeID`'
+            $sql = 'SELECT im.`killID`, it.`typeName`, im.`qtyDropped`, im.`qtyDestroyed` FROM `'.PREFIX_YAPEAL.'corpItems` im'
+        . ' JOIN '.PREFIX_EVE.'invTypes it ON it.`typeID`=im.`typeID`'
         . ' WHERE im.`killID`='.$killID.' AND im.`lft`!=1 LIMIT 0, 100 '; 
 
             if($this->rs_items=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
@@ -169,9 +169,9 @@ class killDetail
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT * FROM `corpKillLog` kl'
-        . ' JOIN corpVictim cv ON cv.`killID`=kl.`killID`'
-        . ' JOIN mapSolarSystems map ON kl.`solarSystemID` = map.solarSystemID'
+            $sql = 'SELECT * FROM `'.PREFIX_YAPEAL.'corpKillLog` kl'
+        . ' JOIN '.PREFIX_YAPEAL.'corpVictim cv ON cv.`killID`=kl.`killID`'
+        . ' JOIN '.PREFIX_EVE.'mapSolarSystems map ON kl.`solarSystemID` = map.solarSystemID'
         . ' WHERE kl.`killID`='.$killID.' LIMIT 1 '; 
         
 
