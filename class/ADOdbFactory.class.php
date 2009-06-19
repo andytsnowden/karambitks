@@ -109,7 +109,7 @@ class ADOdbFactory {
             print_r($e);
             exit;
       }
-      $con->LogSQL(KKS_ADODB_LOG);
+      $con->LogSQL(FALSE);
       $con->debug = False;
       $con->Execute('set names utf8');
       $this->connections[$hash] = $con;
