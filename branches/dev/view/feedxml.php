@@ -71,17 +71,17 @@
     $time        = time();
     $currentTime = gmdate("Y-m-d H:i:s", $time);
     //create xml for element
-    $cur_time = $doc->createElement(currentTime);
+    $cur_time = $doc->createElement('currentTime');
     $cur_time = $root->appendChild($cur_time);
     $value = $doc->createTextNode($currentTime);
     $value = $cur_time->appendChild($value);
     
     //Result Element
-    $result = $doc->createElement(result);
+    $result = $doc->createElement('result');
     $result = $root->appendChild($result);
     
     //Rowset Element
-    $rowset = $doc->createElement(rowset);
+    $rowset = $doc->createElement('rowset');
     $rowset = $result->appendChild($rowset);
     //Add Atributes to rowset
     $rowset->setAttribute('name', 'kills');
@@ -91,7 +91,7 @@
 
 //Get Needed Classes
 require_once KKS_CLASS.'class.xmlfeed.php';
-require_once KKS_INC.'functions.xmlfeed.inc';
+require_once KKS_INC.'functions.xmlfeed.php';
 
 //Check to see if Week and Year are set //TODO:interval may change
 if(isset($_GET['w']) && is_numeric($_GET['w'])) {
@@ -113,7 +113,7 @@ else {
 $kl = New xmlFeed();
 
 
-if(is_numeric($_REQUEST['id'])) {
+if(isset($_REQUEST['id']) && is_numeric($_REQUEST['id'])) {
     if(!empty($_REQUEST['type']) && is_string($_REQUEST['type'])) {
         //Shorter vars to work with
         $type=$_REQUEST['type'];
@@ -160,7 +160,7 @@ foreach ($kills as $kill)
 {
 
     //Row Element (kill)
-    $killrow = $doc->createElement(row);
+    $killrow = $doc->createElement('row');
     $killrow = $rowset->appendChild($killrow);
     //Adding attributes to kill row
     $killrow->setAttribute('killID', $kill['killID']);
@@ -169,7 +169,7 @@ foreach ($kills as $kill)
     $killrow->setAttribute('moonID', $kill['moonID']);
     
     //Add Victom element
-    $victim = $doc->createElement(victim);
+    $victim = $doc->createElement('victim');
     $victim = $killrow->appendChild($victim);
     //Add Attributes to Victom
     $victim->setAttribute('characterID', $kill['victimID']);
@@ -185,7 +185,7 @@ foreach ($kills as $kill)
     
     
     //Add Attacker rowset element
-    $attackrs = $doc->createElement(rowset);
+    $attackrs = $doc->createElement('rowset');
     $attackrs = $killrow->appendChild($attackrs);
     
       //Add Atributes to rowset
@@ -196,7 +196,7 @@ foreach ($kills as $kill)
     foreach($attackerlist AS $killer)
     {
             //Add Attacker element
-            $attacker = $doc->createElement(row);
+            $attacker = $doc->createElement('row');
             $attacker = $attackrs->appendChild($attacker);
             //Add Attributes to Attacker Row
             $attacker->setAttribute('characterID', $killer['characterID']);
@@ -217,7 +217,7 @@ foreach ($kills as $kill)
     
 
     //Add Item rowset element
-    $items = $doc->createElement(rowset);
+    $items = $doc->createElement('rowset');
     $items = $killrow->appendChild($items);
     
     
