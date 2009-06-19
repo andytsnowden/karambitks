@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<schema version="0.3">
+  <table name="config">
+    <field name="config_string" type="C" size="32">
+      <KEY/>
+    </field>
+    <field name="config_value" type="C" size="64">
+      <NOTNULL/>
+    </field>
+    <data>
+      <row><f>kb_host</f><f>http://www.eve-razor.com/testing/kkb/</f></row>
+      <row><f>theme_url</f><f>karambitks</f></row>
+      <row><f>style_url</f><f>style</f></row>
+      <row><f>kb_title</f><f>Karambitks Beta KB</f></row>
+      <row><f>banner</f><f>killboard.jpg</f></row>
+    </data>
+  </table>
+  <table name="contracts">
+    <field name="ctr_id" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="ctr_name" type="C" size="128">
+      <NOTNULL/>
+    </field>
+    <field name="ctr_campaign" type="I" size="6">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+    <field name="ctr_started" type="T">
+      <NOTNULL/>
+      <DEFAULT value="0000-00-00 00:00:00"/>
+    </field>
+    <field name="ctr_ended" type="T">
+      <DEFAULT value="0000-00-00 00:00:00"/>
+    </field>
+    <index name="ctr_id">
+      <col>ctr_id</col>
+      <col>ctr_campaign</col>
+      <col>ctr_ended</col>
+    </index>
+    <data>
+      <row><f>1</f><f>Insurgency</f><f>1</f><f>2008-03-01 00:00:00</f><f>2008-06-01 23:59:59</f></row>
+      <row><f>3</f><f>Centauris is a Cunt (NC Vs GBC)</f><f>1</f><f>2008-09-01 00:00:00</f><f>2008-12-01 23:59:59</f></row>
+      <row><f>4</f><f>NC Cleanup</f><f>1</f><f>2008-11-24 00:00:00</f><f>2009-01-01 23:59:59</f></row>
+    </data>
+  </table>
+  <table name="invShipclass">
+    <field name="groupID" type="I" size="20">
+      <KEY/>
+    </field>
+    <field name="groupName" type="C" size="255">
+      <NOTNULL/>
+    </field>
+    <data>
+      <row><f>25</f><f>Frigate</f></row>
+      <row><f>26</f><f>Cruiser</f></row>
+      <row><f>27</f><f>Battleship</f></row>
+      <row><f>28</f><f>Industrial</f></row>
+      <row><f>29</f><f>Capsule</f></row>
+      <row><f>30</f><f>Titan</f></row>
+      <row><f>31</f><f>Shuttle</f></row>
+      <row><f>237</f><f>Rookie ship</f></row>
+      <row><f>324</f><f>Assault Ship</f></row>
+      <row><f>358</f><f>Heavy Assault Ship</f></row>
+      <row><f>380</f><f>Transport Ship</f></row>
+      <row><f>381</f><f>Elite Battleship</f></row>
+      <row><f>419</f><f>Battlecruiser</f></row>
+      <row><f>420</f><f>Destroyer</f></row>
+      <row><f>463</f><f>Mining Barge</f></row>
+      <row><f>485</f><f>Dreadnought</f></row>
+      <row><f>513</f><f>Freighter</f></row>
+      <row><f>540</f><f>Command Ship</f></row>
+      <row><f>541</f><f>Interdictor</f></row>
+      <row><f>543</f><f>Exhumer</f></row>
+      <row><f>547</f><f>Carrier</f></row>
+      <row><f>659</f><f>Mothership</f></row>
+      <row><f>830</f><f>Covert Ops</f></row>
+      <row><f>831</f><f>Interceptor</f></row>
+      <row><f>832</f><f>Logistics</f></row>
+      <row><f>833</f><f>Force Recon Ship</f></row>
+      <row><f>834</f><f>Stealth Bomber</f></row>
+      <row><f>883</f><f>Capital Industrial Ship</f></row>
+      <row><f>893</f><f>Electronic Attack Ship</f></row>
+      <row><f>894</f><f>Heavy Interdictor</f></row>
+      <row><f>898</f><f>Black Ops</f></row>
+      <row><f>900</f><f>Marauder</f></row>
+      <row><f>902</f><f>Jump Freighter</f></row>
+      <row><f>906</f><f>Combat Recon Ship</f></row>
+    </data>
+  </table>
+    <table name="navigation">
+    <field name="ID" type="I" size="11">
+      <KEY/>
+      <AUTOINCREMENT/>
+    </field>
+    <field name="descr" type="C" size="255">
+      <NOTNULL/>
+    </field>
+    <field name="url" type="C" size="255">
+      <NOTNULL/>
+    </field>
+    <field name="target" type="C" size="10">
+      <NOTNULL/>
+    </field>
+    <field name="posnr" type="I" size="11">
+      <NOTNULL/>
+    </field>
+    <field name="hidden" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+    </field>
+  </table>
+</schema>
