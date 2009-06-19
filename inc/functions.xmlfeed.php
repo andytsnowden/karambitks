@@ -39,14 +39,14 @@ function itemsTreeXML($curLevel, $killID, $node, $dom, $_left, $_right) {
     $nextLevel=$curLevel+1;
     
     //SQL to get currentl level items
-    $sql = 'SELECT  ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `corpItems` ci'
-        . ' JOIN invTypes it ON it.`typeID`=ci.`typeID`'
+    $sql = 'SELECT  ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `'.PREFIX_YAPEAL.'corpItems` ci'
+        . ' JOIN '.PREFIX_EVE.'invTypes it ON it.`typeID`=ci.`typeID`'
         . ' WHERE `killID`='.$killID.' AND ci.`lft` BETWEEN '.$_left.' AND '.$_right.' AND ci.lvl='.$nextLevel.' ORDER BY `lft`;'; 
         
     if($rarray=$con->GetAssoc($sql)) {
         foreach($rarray AS $_item) {
             //Add Item element
-            $item = $dom->createElement(row);
+            $item = $dom->createElement('row');
             $item = $node->appendChild($item);
             
             //Add Attributes to Item Row
@@ -78,7 +78,7 @@ function getRootItem($killID) {
     $con = $instance->factory(KKS_DSN);
     
     //SQL to get root item (the ship)
-    $sql = 'SELECT ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `corpItems` ci JOIN invTypes it ON it.`typeID`=ci.`typeID` '
+    $sql = 'SELECT ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `'.PREFIX_YAPEAL.'corpItems` ci JOIN '.PREFIX_EVE.'invTypes it ON it.`typeID`=ci.`typeID` '
         . ' WHERE `killID`='.$killID.' AND ci.`lft`=1 LIMIT 1'; 
      
     //Get first row (should only be one)   

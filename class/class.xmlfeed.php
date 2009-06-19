@@ -80,9 +80,9 @@ class xmlFeed
     {   
         require_once KKS_ADODB.'adodb-exceptions.inc.php';
         $this->SQL_start = 'SELECT  cv.characterName as victimName, cv.characterID as victimID, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, cv.factionID as vfactID, cv.factionName as vfactName, kl.solarSystemID, kl.killTime, kl.killID, kl.moonID, cv.shipTypeID, cv.damageTaken';
-        $this->SQL_joins = ' FROM `corpKillLog` kl' .
-            ' JOIN `corpVictim` cv ON cv.`killID`=kl.`killID`' .
-            ' JOIN `corpAttackers` ca ON ca.`killID`=cv.`killID`';
+        $this->SQL_joins = ' FROM `'.PREFIX_YAPEAL.'corpKillLog` kl' .
+            ' JOIN `'.PREFIX_YAPEAL.'corpVictim` cv ON cv.`killID`=kl.`killID`' .
+            ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` ca ON ca.`killID`=cv.`killID`';
         $this->SQL_end = ' ORDER BY kl.`killID`;';
     }
 
@@ -151,7 +151,7 @@ class xmlFeed
             $con = $this->get_connection();
             
 
-            $sql = 'SELECT `characterID`, `characterName`, `corporationID`, `corporationName`, `allianceID`, `allianceName`,`factionID`, `factionName`, `finalBlow`, `damageDone`, `securityStatus`, `shipTypeID`, `weaponTypeID` FROM `corpAttackers` WHERE `killID`='.$killID.' LIMIT 0, 100 ';
+            $sql = 'SELECT `characterID`, `characterName`, `corporationID`, `corporationName`, `allianceID`, `allianceName`,`factionID`, `factionName`, `finalBlow`, `damageDone`, `securityStatus`, `shipTypeID`, `weaponTypeID` FROM `'.PREFIX_YAPEAL.'corpAttackers` WHERE `killID`='.$killID.' LIMIT 0, 100 ';
             
             
             try {if($this->rs_attackers=$con->Execute($sql)){
@@ -172,8 +172,8 @@ class xmlFeed
             //Get Connection
             $con = $this->get_connection();
             
-            $sql = 'SELECT  ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `corpItems` ci'
-        . ' JOIN invTypes it ON it.`typeID`=ci.`typeID`'
+            $sql = 'SELECT  ci.`lft`, ci.`rgt`, ci.`lvl`, ci.`killID`, ci.`flag`, ci.`qtyDropped`, ci.`qtyDestroyed`, ci.`typeID`, it.typeName FROM `'.PREFIX_YAPEAL.'corpItems` ci'
+        . ' JOIN '.PREFIX_EVE.'invTypes it ON it.`typeID`=ci.`typeID`'
         . ' WHERE `killID`='.$killID.' ORDER BY `lft`'; 
             
             //echo $sql.PHP_EOL;

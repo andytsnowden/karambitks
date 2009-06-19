@@ -412,7 +412,7 @@ if ($stop == 0) {
        */
       $dbdata = array(
         array(
-          'activeAPI' => $apilist[3],
+          'activeAPI' => 'corpKillLog',
           'characterID' => $charInfo[$_REQUEST['charName']]['charId'],
           'corporationID' => $charInfo[$_REQUEST['charName']]['corpId'],
           'isActive' => 1
