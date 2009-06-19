@@ -52,7 +52,7 @@ class kss_navigation{
 		// checking if a minimum navigation exists
 		$this->check_navtable();  
 		
-		$this->sql_start = "SELECT * FROM navigation";
+		$this->sql_start = "SELECT * FROM ".PREFIX_KKS."navigation";
         $this->sql_end = " ORDER BY posnr";
         //$this->type_ = 'top';      
 	}
@@ -148,7 +148,7 @@ class kss_navigation{
 		{
 		    $statlink = '?v=alliance_detail&all_id='.KKS_KBALLIANCEID;
 		}
-		$sql = "select count(ID) as count from navigation";
+		$sql = "select count(ID) as count from ".PREFIX_KKS."navigation";
 		if($query=$con->CacheExecute(0, $sql)){} 
 		else {
             trigger_error('SQL Query Failed', E_USER_ERROR);
@@ -160,7 +160,7 @@ class kss_navigation{
 			
 			// add a menu			
 			$sql = "
-			INSERT INTO `navigation` (`ID`, `descr`, `url`, `target`, `posnr`, `hidden`) VALUES
+			INSERT INTO `".PREFIX_KKS."navigation` (`ID`, `descr`, `url`, `target`, `posnr`, `hidden`) VALUES
 			(null, 'Home', '?v=home', '_self', 1, 0),
 			(null, 'Campaigns', '?v=campaigns', '_self', 2, 0),
 			(null, 'Contracts', '?v=contracts', '_self', 3, 0),
@@ -186,7 +186,7 @@ class kss_navigation{
         //Get DB Connection
         $con = 	$this->get_connection();
         
-        $sql = "select ctr_id from contracts where ctr_campaign = 1";
+        $sql = "select ctr_id from ".PREFIX_KKS."contracts where ctr_campaign = 1";
         if ($active) $sql .= " and ( ctr_ended is null or now() <= ctr_ended )";
         if ($query = $con->Execute($sql)){
 	        if ($query->RecordCount() > 0){
@@ -204,7 +204,7 @@ class kss_navigation{
         //Get DB Connection
         $con = 	$this->get_connection();
         
-        $sql = "select ctr_id from contracts where ctr_campaign = 0";
+        $sql = "select ctr_id from ".PREFIX_KKS."contracts where ctr_campaign = 0";
         if ($active) $sql .= " and ( ctr_ended is null or now() <= ctr_ended )";
         if ($query = $con->Execute($sql)){
 	        if ($query->RecordCount() > 0){
@@ -233,11 +233,11 @@ class kss_navigation{
     	
     	if (!empty($desc) AND !empty($url) AND !empty($target)){
     		
-    		$sql = "SELECT posnr FROM navigation ORDER BY posnr DESC LIMIT 1";
+    		$sql = "SELECT posnr FROM ".PREFIX_KKS."navigation ORDER BY posnr DESC LIMIT 1";
     		if ($recordSet = $con->Execute($sql)){
     			$this->lastposnr = ($recordSet->fields[0] + 1);
     			
-    			$sql = "INSERT INTO `navigation` (`ID`, `descr`, `url`, `target`, `posnr`, `hidden`) VALUES (NULL, '$desc', '$url', '_$target', '$this->lastposnr', '$hidden');";
+    			$sql = "INSERT INTO `".PREFIX_KKS."navigation` (`ID`, `descr`, `url`, `target`, `posnr`, `hidden`) VALUES (NULL, '$desc', '$url', '_$target', '$this->lastposnr', '$hidden');";
     			if ($query = $con->Execute($sql)){
     				//success now lets flush the cache and reload the menu
     				$this->execQuery();

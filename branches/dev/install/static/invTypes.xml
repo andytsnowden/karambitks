@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema version="0.3" xmlns="http://www.mgcummings.com/xsd/yapeal/xmlschema03">
+  <!-- Create Table: invTypes -->
+  <sql prefixmethod="MANUAL">
+    <query platform="mysql">SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0</query>
+    <query platform="mysql">SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0</query>
+    <query platform="mysql">SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL'</query>
+  </sql>
+  <table name="invTypes">
+    <field name="typeID" type="I4" size="5"/>
+    <field name="groupID" type="I4" size="5"/>
+    <field name="typeName" type="C" size="200"/>
+    <field name="description" type="C" size="6000"/>
+    <field name="graphicID" type="I4" size="5"/>
+    <field name="radius" type="F"/>
+    <field name="mass" type="F"/>
+    <field name="volume" type="F"/>
+    <field name="capacity" type="F"/>
+    <field name="portionSize" type="I" size="10"/>
+    <field name="raceID" type="I2" size="3"/>
+    <field name="basePrice" type="N" size="20"/>
+    <field name="published" type="I2" size="1"/>
+    <field name="marketGroupID" type="I4" size="5"/>
+    <field name="chanceOfDuplicating" type="F"/>
+    <index name="invTypes_IX_Group">
+      <col>groupID</col>
+    </index>
+    <index name="invTypes_PK">
+      <UNIQUE/>
+      <col>typeID</col>
+    </index>
+    <opt platform="mysql"> ENGINE = INNODB COLLATE = utf8_unicode_ci</opt>
+  </table>
+  <sql prefixmethod="MANUAL">
+    <query platform="mysql">SET SQL_MODE=@OLD_SQL_MODE</query>
+    <query platform="mysql">SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS</query>
+    <query platform="mysql">SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS</query>
+  </sql>
+</schema>
