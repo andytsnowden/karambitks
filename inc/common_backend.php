@@ -65,6 +65,10 @@ if (version_compare(PHP_VERSION, '5.2.1', '<')) {
   echo 'Need minimum of PHP 5.2.1 to use this software!';
   exit(1);
 };
+if(ini_get('safe_mode')) {
+    $error='Safe Mode is on and will cause problems with this software!';
+    trigger_error($error, E_USER_WARNING);
+}
 // Check for some required extensions
 $required = array('curl', 'date', 'mysqli', 'SimpleXML', 'SPL');
 $exts = get_loaded_extensions();
