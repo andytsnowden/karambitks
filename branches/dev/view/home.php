@@ -112,7 +112,7 @@ $data->assign('menu', $menu);
 //template data
 $data->assign('kb_title', $kb_title);
 $data->assign('style_url', $style_url);
-$data->assign('banner_link', $_SERVER['SCRIPT_URI']);
+$data->assign('banner_link', $_SERVER['PHP_SELF']);
 $data->assign('banner', $banner);
 $data->assign('theme_url', $theme_url);
 
