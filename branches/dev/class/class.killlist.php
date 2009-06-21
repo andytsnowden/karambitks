@@ -40,42 +40,8 @@
  * @version $Id$
  * @access public
  */
-class killList
+class killList extends kks
 {
-    /**
-     * 
-     * @var object
-     */
-    private $rs;
-
-    /**
-     * 
-     * @var array
-     */
-    public $rarray;
-
-    public $fetchAlliance = false;
-
-    public $fetchCorp = false;
-
-    public $fetchFaction = false;
-    
-    public $fetchWeek=true;
-
-    public $corpID = 0;
-
-    public $allianceID = 0;
-
-    public $factionID = 0;
-
-    public $week = NULL; // 1-53
-
-    public $year = NULL;
-
-    public $countInvolved = false;
-
-    public $filterClass = null;
-
     function __construct()
     {
         $this->SQL_start = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.allianceName as valliName, map.solarSystemName, map.security, caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
@@ -93,16 +59,14 @@ class killList
      * 
      * Use this to generate a list of kills
      * 
-     * @param mixed $ID
-     * @param bool  $isAlliance
-     * @param mixed $week
-     * @param mixed $year
      * @return void
      */
     function fetchList()
     {
+        $this->getTimeFrame();
+        
         $con = $this->get_connection();
-
+        /*
         //Change Week and Year to format we can use
         if(!isset($this->week) && !is_numeric($this->week)) {
             $this->week = date('W');
@@ -116,7 +80,7 @@ class killList
             $this->week=substr($pad, -2, 2);
         }
         $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
-        $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));
+        $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));*/
         
         $sql = $this->SQL_start;
         $sql .= $this->SQL_joins;
@@ -134,32 +98,15 @@ class killList
             $sql .= ' AND ca.factionID=' . $this->factionID;
         }
         if($this->fetchWeek == true) {
-            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
+            $sql .= ' AND kl.`killTime`BETWEEN "'.$this->startDate.'" AND "'.$this->endDate.'"';    
         }
         $sql .= $this->SQL_end;
-
         if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
         $this->rarray=$this->rs->GetAssoc();
         } else {
         trigger_error('SQL Query Failed', E_USER_ERROR);
         } 
 
-    }
-
-    /**
-     * killList::get_connection()
-     * 
-     * connection function // returns active connection or establishes new sql con
-     * 
-     * @return $con
-     */
-    function get_connection()
-    {
-        //Get ADODB Factory INSTANCE
-        $instance = ADOdbFactory::getInstance();
-        //Get DB Connection
-        $con = $instance->factory(KKS_DSN);
-        return $con;
     }
 }
 

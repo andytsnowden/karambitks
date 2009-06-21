@@ -263,10 +263,10 @@ class shipClassStats
             $scloss=$this->rarray_scloss;
             $sckill=$this->rarray_sckill;
             foreach($sclasses as $key=>$sc) {
-                if(!is_numeric($sckill[$key]['shipkillcount'])) {
+                if(empty($sckill[$key]) || !is_numeric($sckill[$key]['shipkillcount'])) {
                     $sckill[$key]['shipkillcount']=0;             
                 }
-                if(!is_numeric($scloss[$key]['shiplosscount']) || empty($scloss[$key]['shiplosscount'])) {
+                if(empty($scloss[$key]['shiplosscount']) || !is_numeric($scloss[$key]['shiplosscount'])) {
                     $scloss[$key]['shiplosscount']=0;             
                 }
                 $table[$key]=array('shipclass'=>$sc, 'shipkill'=>$sckill[$key]['shipkillcount'], 'shiploss'=>$scloss[$key]['shiplosscount']);

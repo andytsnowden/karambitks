@@ -13,7 +13,7 @@ Testing:
 	<td>{$at.factionID}</td>
 	<td>{$at.factionName}</td>
 	<td>{$at.damageDone}</td>
-	<td>{$at.finalblow}</td>
+	<!--<td>{$at.finalblow}</td>-->
 	<td>{$at.shipType}</td>
 	<td>{$at.weaponType}</td>
 </tr>

@@ -52,6 +52,7 @@ require_once KKS_CLASS . 'ADOdbFactory.class.php';
 require_once KKS_CLASS . 'class.errors.php';
 require_once KKS_CLASS . 'class.config.php';
 require_once KKS_INC . 'functions.php';
+require_once KKS_CLASS.'class.kks.php';
 
 //Load config from SQL and some basic config needed for all pages
 $config = new kss_config();
