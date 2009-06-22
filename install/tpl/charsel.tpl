@@ -19,7 +19,7 @@
           <td style="width: 64px;"><img src="http://img.eve.is/serv.asp?s=64&amp;c={$info.charId}" width="64" height="64" /></td>
           <td>{$info.charName}</td>
           <td style="text-align:right;">{$info.corpName}</td>
-          <td style="width: 64px;"><img src="http://www.evecorplogo.net/logo.php?id={$info.corpId}&amp;bgc=606060" width="64" height="64" /></td>
+          <td style="width: 64px;"><img src="http://www.evecorplogo.net/logo.php?id={$info.corpId}&amp;bgc=606060" width="64" height="64" />Install for Alliance/Faction? <input type="checkbox" id="allifact" name="allifact" /></td>
         </tr>
       </table>
     </td>
