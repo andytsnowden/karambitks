@@ -217,11 +217,11 @@ dwoo=300
 
 ;used for KKS
 [Killboard]
-corporationID="' . $kks['kks']['corporationID'] . '"
+corporationID=' . $kks['kks']['corporationID'] . '
 corporationName="' . $kks['kks']['corporationName'] . '"
-allianceID="' . $kks['kks']['allianceID'] . '"
+allianceID="' . $kks['kks']['allianceID'] . '
 allianceName="' . $kks['kks']['allianceName'] . '"
-factionID="' . $kks['kks']['factionID'] . '"
+factionID="' . $kks['kks']['factionID'] . '
 factionName="' . $kks['kks']['factionName'] . '"
 master=0
 

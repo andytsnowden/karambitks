@@ -57,7 +57,7 @@ else {
 
 }
 //Generate Cache ID
-$cacheID='home_id'.KKS_KBCORPID.'a0w'.$week.'y'.$year;
+$cacheID='home_id'.$kkskb['ID'].'a0w'.$week.'y'.$year;
 //Generate Template
 $template = TemplateHandler::createTemplate('home', KKS_CACHE_DWOO, $cacheID);
 
@@ -69,28 +69,75 @@ if(TemplateHandler::getInstance()->isCached($template))
 } else {
 //New KillList
 $kl = New killList();
-
-//Set needed KillList options
-$kl->corpID=KKS_KBCORPID;
-$kl->fetchCorp=TRUE;
-$kl->week=$week;
-$kl->year=$year;
-
-
 //New Statslist
 $sc= New shipClassStats();
-
-//Set needed KillList options
-$sc->corpID=KKS_KBCORPID;
-$sc->fetchCorp=TRUE;
-$sc->week=$week;
-$sc->year=$year;
-
 //New Top List
 $tl= New toplist();
 $tl->getCharacter=TRUE;
-$tl->fetchCorp=TRUE;
-$tl->corpID=KKS_KBCORPID;
+
+/**
+ * Set Weeks for needed Classes
+ */
+    /**
+    * Killlist
+    */
+    $kl->week=$week;
+    $kl->year=$year;
+    /**
+    * Ship Class
+    */
+    $sc->week=$week;
+    $sc->year=$year;
+/**
+ * Make sure type is set
+ */
+if(isset($kkskb['type'])) {
+    /**
+     * Set corp, alliance, or faction mode
+     */
+    switch ($kkskb['type']){ 
+	case 'corp':
+    	//Set needed KillList options
+        $kl->corpID=$kkskb['ID'];
+        $kl->fetchCorp=TRUE;
+        //Set needed Ship Class options
+        $sc->corpID=$kkskb['ID'];
+        $sc->fetchCorp=TRUE;
+        //Set Needed Top List options
+        $tl->fetchCorp=TRUE;
+        $tl->corpID=$kkskb['ID'];	
+	break;
+
+	case 'alliance':
+        //Set needed KillList options
+        $kl->allianceID=$kkskb['ID'];
+        $kl->fetchAlliance=TRUE;
+        //Set needed Ship Class options
+        $sc->allianceID=$kkskb['ID'];
+        $sc->fetchalliance=TRUE;
+        //Set Needed Top List options
+        $tl->fetchAlliance=TRUE;
+        $tl->allianceID=$kkskb['ID'];
+	break;
+
+	case 'faction':
+	   //Set needed KillList options
+        $kl->factionID=$kkskb['ID'];
+        $kl->fetchfaction=TRUE;
+        //Set needed Ship Class options
+        $sc->factionID=$kkskb['ID'];
+        $sc->fetchFaction=TRUE;
+        //Set Needed Top List options
+        $tl->fetchFaction=TRUE;
+        $tl->factionID=$kkskb['ID'];
+	break;
+}
+}
+
+
+
+
+
 $list=$tl->fetchList();
 
 //Get the list
