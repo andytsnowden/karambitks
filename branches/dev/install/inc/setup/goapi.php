@@ -42,6 +42,7 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
  */
 $prefix = $_REQUEST['Prefix'];
 $charInfo = $_REQUEST['charInfo'];
+$allifact = $_REQUEST['allifact'];
 $stop = 0;
 $step1 = 0;
 $step2 = 0;
@@ -222,7 +223,7 @@ if ($stop == 0) {
               'check' => 1
             );
             $data->append('outputs', $outputs);
-            unset($outputs, $corpxml);
+            unset($outputs);
           }
           catch(ADODB_Exception $e) {
             $outputs = array(
@@ -232,9 +233,77 @@ if ($stop == 0) {
               'check' => 0
             );
             $data->append('outputs', $outputs);
-            unset($outputs, $corpxml);
+            unset($outputs);
             $stop++;
             $step2++;
+          }
+          if($allifact=='on')
+          {
+                /**
+                 * Set var $allianceID to allianceID from API
+                 */
+
+                $allianceID=(integer) $corpxml->result->allianceID;
+                /**
+                 * Check to see if allianceID is 0 or NULL
+                 */
+                if(is_numeric($allianceID) && $allianceID!=0) {
+                    /**
+                     * Set Values for INI (alliance)
+                     */
+                    $kks['kks']['allianceID']=$allianceID;
+                    $kks['kks']['allianceName']=$corpxml->result->allianceName;
+                    $kks['kks']['factionID']=0;
+                    $kks['kks']['factionName']='';
+                    $kks['kks']['corporationID']=0;
+                    $kks['kks']['corporationName']='';
+                    echo "ALLiance Set".$allianceID."<br>";
+                } else {
+                    /**
+                     * Get Faction Info from API
+                     */
+                    $factionxml = getApiInfo($params, '	 /corp/FacWarStats.xml.aspx');
+                    if($factionxml)
+                    {
+                            /**
+                             * Handel XML Data
+                             */
+                            if (isset($factionxml->error)) {
+                                $outputs = array(
+                                'action' => 'Database: Put Character In',
+                                'info' => $prefix['yapeal'] . 'charCharacterSheet',
+                                'status' => 'Api Error:<br />' . $charxml->error,
+                                'check' => 0
+                              );
+                              $data->append('outputs', $outputs);
+                              unset($outputs);
+                              $stop++;
+                              $step2++;
+                              $stop++;
+                            } else {
+                                /**
+                                 * Set INI Vars
+                                 */
+                                 $kks['kks']['factionID']=(int)$factionxml->result->factionID;
+                                 $kks['kks']['factionName']=$factionxml->result->factionName;
+                                 $kks['kks']['allianceID']=0;
+                                 $kks['kks']['allianceName']='';
+                                 $kks['kks']['corporationID']=0;
+                                 $kks['kks']['corporationName']='';
+                            } //if else is set $factionxml->error
+                    }
+                    unset($outputs, $corpxml, $factionxml);                       
+                }                                                                                                
+          } else {
+            /**
+             * Set CorpID and Name
+             */
+             $kks['kks']['corporationID']=(int)$corpxml->result->corporationID;
+             $kks['kks']['corporationName']=$corpxml->result->corporationName;
+             $kks['kks']['allianceID']=0;
+             $kks['kks']['allianceName']='';
+             $kks['kks']['factionID']=0;
+             $kks['kks']['factionName']='';
           }
         };
       } else {
