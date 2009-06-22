@@ -344,5 +344,14 @@ catch(ADODB_Exception $e) {
   die($e->getMessage());
 }
 */
-define('KKS_KBCORPID', '170567768');
+if(isset($iniVars['Killboard'])) {
+    if($iniVars['Killboard']['corporationID']>0){
+        $kkskb=array('type'=>'corp', 'ID'=>$iniVars['Killboard']['corporationID'], 'name'=>$iniVars['Killboard']['corporationName']);
+    } elseif($iniVars['Killboard']['allianceID']>0) {
+         $kkskb=array('type'=>'alliance', 'ID'=>$iniVars['Killboard']['allianceID'], 'name'=>$iniVars['Killboard']['allianceName']);   
+    } else {
+        $kkskb=array('type'=>'faction', 'ID'=>$iniVars['Killboard']['factionID'], 'name'=>$iniVars['Killboard']['factionName']);    
+    }
+}
+
 ?>

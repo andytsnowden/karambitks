@@ -431,7 +431,7 @@ if ($stop == 0) {
       /*
        * Get AccessPerApi
        */
-      $query = "SELECT * FROM `" . $prefix['empa'] . "AccessPerApi`";
+      $query = "SELECT * FROM `" . $prefix['kks'] . "AccessPerApi`";
       $apilist = $con->GetAssoc($query);
       /*
        * Put Character In utilRegisteredCharacter
