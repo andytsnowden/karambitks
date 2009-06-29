@@ -125,7 +125,7 @@ class xmlFeed
         }
         if ($this->fetchAlliance == true && $this->allianceID > 0)
         {
-            $sql .= ' AND ca.allianceID=' . $this->allianceID.' AND cv.allianceID='.$this->allianceID;
+            //$sql .= ' AND ca.allianceID=' . $this->allianceID.' AND cv.allianceID='.$this->allianceID;
         }
         if ($this->fetchFaction == true && $this->factionID > 0)
         {
@@ -135,7 +135,7 @@ class xmlFeed
             //$sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';
         }
         $sql .= $this->SQL_end;
-
+        
         if($this->rs=$con->Execute($sql)){
 
         $this->rarray=$this->rs->GetAssoc();
