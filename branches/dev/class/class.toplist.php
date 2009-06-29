@@ -58,44 +58,9 @@
  * @version $Id: class.killlist.php 42 2009-03-08 05:41:15Z stephenmg12 $
  * @access public
  */
-class toplist
+class toplist extends kks
 {
-    /**
-     * 
-     * @var object
-     */
-    private $rs;
-
-    /**
-     * 
-     * @var array
-     */
-    public $rarray;
-
-    public $fetchAlliance = false;
-
-    public $fetchCorp = false;
-
-    public $fetchFaction = false;
-    
-    public $fetchWeek=true;
-
-    public $corpID = 0;
-
-    public $allianceID = 0;
-
-    public $factionID = 0;
-
-    public $week = NULL; // 1-53
-
-    public $year = NULL;
-    
-    public $getCharacter = false;
-    
-    public $getCorporation = false;
-    
-    public $limit;
-
+   
     function __construct()
     {
         $this->SQL_start = 'SELECT count(ca.killID) as stats,';
@@ -116,23 +81,10 @@ class toplist
      */
     function fetchList()
     {
-      $con = $this->get_connection();
-
-        //Change Week and Year to format we can use
-        if(!isset($this->week) && !is_numeric($this->week)) {
-            $this->week = date('W');
-        }
-        if(!isset($this->year) && !is_numeric($this->year)) {
-            $this->year = date('Y');
-        }
-        if($this->week<10) {
-            $week=$this->week;
-            $pad=str_pad($week, 2, 0, STR_PAD_LEFT);
-            $this->week=substr($pad, -2, 2);
-        }
-        $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
-        $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));
+        $this->getTimeFrame();
         
+        $con = $this->get_connection();
+    
         
         $sql = $this->SQL_start;
         
@@ -157,7 +109,7 @@ class toplist
         }
         
         if($this->fetchWeek == true) {
-            $sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';    
+            $sql .= ' AND kl.`killTime`BETWEEN "'.$this->startDate.'" AND "'.$this->endDate.'"';    
         }
         
         if($this->getCharacter) {
@@ -171,7 +123,6 @@ class toplist
         {
             $sql .='LIMIT 0,'.$this->limit;  
         }
-        
         
         if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
                 $a=0;
@@ -195,22 +146,6 @@ class toplist
             trigger_error('SQL Query Failed', E_USER_ERROR);
         } 
         
-    }
-
-    /**
-     * killList::get_connection()
-     * 
-     * connection function // returns active connection or establishes new sql con
-     * 
-     * @return $con
-     */
-    function get_connection()
-    {
-        //Get ADODB Factory INSTANCE
-        $instance = ADOdbFactory::getInstance();
-        //Get DB Connection
-        $con = $instance->factory(KKS_DSN);
-        return $con;
     }
 }
 

@@ -36,6 +36,8 @@ require_once KKS_CLASS.'class.killlist.php';
 require_once KKS_CLASS.'class.shipclassstats.php';
 require_once KKS_CLASS.'class.navigation.php';
 require_once KKS_CLASS.'class.toplist.php';
+require_once KKS_CLASS.'class.dailykills.php';
+require_once KKS_EXT.'gChart/class.gChart.php';
 
 //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
@@ -74,6 +76,8 @@ $sc= New shipClassStats();
 //New Top List
 $tl= New toplist();
 $tl->getCharacter=TRUE;
+//New Daily Kills
+$dk= New dailyKills();
 
 /**
  * Set Weeks for needed Classes
@@ -88,6 +92,16 @@ $tl->getCharacter=TRUE;
     */
     $sc->week=$week;
     $sc->year=$year;
+    /**
+    * Top List Class
+    */
+    $tl->week=$week;
+    $tl->year=$year;
+    /**
+    * Daily Kill Class
+    */
+    $dk->week=$week;
+    $dk->year=$year;
 /**
  * Make sure type is set
  */
@@ -105,7 +119,10 @@ if(isset($kkskb['type'])) {
         $sc->fetchCorp=TRUE;
         //Set Needed Top List options
         $tl->fetchCorp=TRUE;
-        $tl->corpID=$kkskb['ID'];	
+        $tl->corpID=$kkskb['ID'];
+        //Set Needed Daily Kill List options
+        $dk->fetchCorp=TRUE;
+        $dk->corpID=$kkskb['ID'];	
 	break;
 
 	case 'alliance':
@@ -142,12 +159,31 @@ $list=$tl->fetchList();
 
 //Get the list
 $kl->fetchList();
+$dk->fetchList();
 $charCorpTop=$tl->fetchList();
 //Get the results
 $list=$kl->rarray;
 $table=$sc->fetchShipClassTableArray();
+$dailykills=$dk->formatArray();
+
+//echo"<pre>";var_dump($dailykills);echo"</pre>";
+
+//Build Chart
+$barChart = new gGroupedBarChart;
+$barChart->width = 375;
+$barChart->height = 250;
+$barChart->barWidth=20;
+$barChart->addDataSet($dailykills);
+$barChart->valueLabels=array('kills', 'losses');
+$barChart->addDataSet(array(212,115,366,140));
+$barChart->dataColors = array("ff3344", "11ff11");
+$barChart->xAxisLabels= array('Mon','Tues','Wed','Thurs','Fri','Sat','Sun');
+
+echo "<img src='".$barChart->getUrl()."'/><br>";
+
 //assign Data to Dwoo
 $data = new Dwoo_Data();
+
 
 //menu
 $nav = new kss_navigation();

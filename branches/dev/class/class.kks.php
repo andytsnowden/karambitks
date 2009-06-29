@@ -80,6 +80,8 @@ class kks
     
     public $endDate;
     
+    public $limit;
+    
     protected function getTimeFrame()
     {
         if(!isset($this->year) && !is_numeric($this->year)) {
