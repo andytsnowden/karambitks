@@ -140,9 +140,11 @@ class kss_navigation{
     	//Get DB Connection
         $con = 	$this->get_connection();
         
-		if (KKS_KBCORPID)
+        global $kkskb;
+        
+		if ($kkskb['ID'])
 		{
-		    $statlink = '?v=corp_detail&crp_id='.KKS_KBCORPID;
+		    $statlink = '?v=corp_detail&crp_id='.$kkskb['ID'];
 		}
 		elseif (KKS_KBALLIANCEID)
 		{
