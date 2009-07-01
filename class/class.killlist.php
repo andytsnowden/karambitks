@@ -44,7 +44,7 @@ class killList extends kks
 {
     function __construct()
     {
-        $this->SQL_start = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.allianceName as valliName, map.solarSystemName, map.security, caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
+        $this->SQL_start = 'SELECT  it.typeName as shiptype, cv.characterName as victimName, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, map.solarSystemName, format(map.security,2) AS security,  caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
         $this->SQL_joins = ' FROM `'.PREFIX_YAPEAL.'corpKillLog` kl' .
             ' JOIN `'.PREFIX_YAPEAL.'corpVictim` cv ON cv.`killID`=kl.`killID`' .
             ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` ca ON ca.`killID`=cv.`killID`' .
