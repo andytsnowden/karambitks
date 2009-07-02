@@ -37,7 +37,9 @@ require_once KKS_CLASS.'class.shipclassstats.php';
 require_once KKS_CLASS.'class.navigation.php';
 require_once KKS_CLASS.'class.toplist.php';
 require_once KKS_CLASS.'class.dailykills.php';
-require_once KKS_EXT.'gChart/class.gChart.php';
+//Get Charting
+require_once KKS_EXT.'pChart/pChart.class.php';
+require_once KKS_EXT.'pChart/pData.class.php';
 
 //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
@@ -153,33 +155,18 @@ if(isset($kkskb['type'])) {
 
 
 
-
-
 $list=$tl->fetchList();
 
 //Get the list
 $kl->fetchList();
-$dk->fetchList();
+//$dk->fetchList();
 $charCorpTop=$tl->fetchList();
 //Get the results
 $list=$kl->rarray;
 $table=$sc->fetchShipClassTableArray();
-$dailykills=$dk->formatArray();
+//$dailykills=$dk->formatArray();
 
 //echo"<pre>";var_dump($dailykills);echo"</pre>";
-
-//Build Chart
-$barChart = new gGroupedBarChart;
-$barChart->width = 375;
-$barChart->height = 250;
-$barChart->barWidth=20;
-$barChart->addDataSet($dailykills);
-$barChart->valueLabels=array('kills', 'losses');
-$barChart->addDataSet(array(212,115,366,140));
-$barChart->dataColors = array("ff3344", "11ff11");
-$barChart->xAxisLabels= array('Mon','Tues','Wed','Thurs','Fri','Sat','Sun');
-
-echo "<img src='".$barChart->getUrl()."'/><br>";
 
 //assign Data to Dwoo
 $data = new Dwoo_Data();
@@ -207,6 +194,8 @@ $chartl = array('chartoplist' => $charCorpTop);
 $data->assign($recent, 'recent');
 $data->assign($sckill, 'table');
 $data->assign($chartl, 'chartl');
+$data->assign($week, 'week');
+$data->assign($year, 'year');
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));

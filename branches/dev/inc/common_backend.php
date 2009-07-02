@@ -45,7 +45,8 @@ $incDir = realpath(dirname(__FILE__));
 chdir($incDir);
 $ds = DIRECTORY_SEPARATOR;
 // Set some basic common settings so we know we'll get to see any errors etc.
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+//error_reporting(E_ALL);
 ini_set('ignore_repeated_errors', 0);
 ini_set('ignore_repeated_source', 0);
 ini_set('html_errors', 0);
@@ -353,5 +354,10 @@ if(isset($iniVars['Killboard'])) {
         $kkskb=array('type'=>'faction', 'ID'=>$iniVars['Killboard']['factionID'], 'name'=>$iniVars['Killboard']['factionName']);    
     }
 }
+
+/**
+ * Turn Compression On
+ */
+$compression=1; //Set to 0 to turn off
 
 ?>
