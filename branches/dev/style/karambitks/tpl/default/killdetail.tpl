@@ -1,7 +1,6 @@
 <!-- header file --!>
 {include file="header.tpl"}
 
-Testing:
 <table class="kb-table">
 {foreach $attack at}
 <tr>
@@ -9,11 +8,22 @@ Testing:
 	<td><a href="index.php?v=detail&id={$at.allianceID}&g=alliance">{$at.allianceName}</a></td>
 	<td>{$at.characterID}</td>
 	<td>{$at.characterName}</td>
+	<td><img src="http://www.evecorplogo.net/logo.php?id={$at.corporationID}&amp;bgc=606060" width="32" height="32" alt="{$at.corporationName}"/></td>
 	<td><a href="index.php?v=detail&id={$at.corporationID}&g=corp">{$at.corporationName}</a></td>
-	<td>{$at.factionID}</td>
+{if $at.factionID !=0}
+    <td>{$at.factionID}</td>
 	<td>{$at.factionName}</td>
+{/if}
+{if $at.allianceID !=0}
+    <td>{$at.allianceID}</td>
+	<td>{$at.allianceName}</td>
+{/if}
 	<td>{$at.damageDone}</td>
-	<!--<td>{$at.finalblow}</td>-->
+{if $at.finalblow eq 1}
+    <td>yes</td>
+{else}
+    <td>No</td>
+{/if}
 	<td>{$at.shipType}</td>
 	<td>{$at.weaponType}</td>
 </tr>

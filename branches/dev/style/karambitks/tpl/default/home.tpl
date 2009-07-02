@@ -11,6 +11,7 @@
 {foreach $chartoplist char}
 <tr><td>{$char.characterName}</td><td>{$char.stats}</td></tr>
 {/foreach}
+<tr><td colspan="2"><img src="?v=dailykill&w={$week}&y={$year}" alt="Daily Kills/Losses"/></td></tr>
 </table>
 
 <table width="750" border="1" class="main-table kb-table" align="right">
