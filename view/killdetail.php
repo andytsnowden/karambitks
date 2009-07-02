@@ -84,6 +84,8 @@ $data->assign('banner_link', $_SERVER['PHP_SELF']);
 $data->assign('banner', $banner);
 $data->assign('theme_url', $theme_url);
 
+echo"<pre>";print_r($attackers);echo"</pre><br><hr>";
+
 
 //Page data
 $attackers = array('attack' => $attackers);

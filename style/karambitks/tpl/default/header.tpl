@@ -1,6 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<html>
-<head>
+<html><head><!-- header file -->
 <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1"/>
 <title>{$kb_title}</title>
 <link rel="stylesheet" type="text/css" href="{$style_url}/common.css"/>
@@ -23,7 +22,7 @@
 	<table class="main-table" height="100%" align="center" bgcolor="#111111" border="0" cellspacing="1" style="height: 100%">
 <tr style="height: 100%">
 <td valign="top" height="100%" style="height: 100%">
-<div id="header">
+<div id="header"> <!--Header Start-->
 {if $bannerswf=='true'}
 <OBJECT classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,0,0" WIDTH="1000" HEIGHT="200" id="{$banner}" ALIGN="">
 <PARAM NAME=movie VALUE="banner/{$banner}"> <PARAM NAME=quality VALUE=high> <PARAM NAME=bgcolor VALUE=black> <EMBED src="banner/{$banner}" quality=high bgcolor=black WIDTH="1000" HEIGHT="200" NAME="{$banner}" ALIGN="" TYPE="application/x-shockwave-flash" PLUGINSPAGE="http://www.macromedia.com/go/getflashplayer"></EMBED> </OBJECT>
@@ -36,5 +35,5 @@
 <a href="?v=home"><img src="style/img/banner/{$banner}" border="0"/></a>
 {/if}
 {/if}
-</div>
+</div> <!--Header End-->
 {include file="menu.tpl"}
