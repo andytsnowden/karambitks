@@ -135,6 +135,7 @@ class xmlFeed
             //$sql .= ' AND kl.`killTime`BETWEEN "'.$start_date.'" AND "'.$end_date.'"';
         }
         $sql .= $this->SQL_end;
+        $this->sql=$sql;
         
         if($this->rs=$con->Execute($sql)){
 

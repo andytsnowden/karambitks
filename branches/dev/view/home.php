@@ -60,6 +60,8 @@ else {
     $y=$year;
 
 }
+$nxtweek=$week+1;
+$pvsweek=$week-1;
 //Generate Cache ID
 $cacheID='home_id'.$kkskb['ID'].'a0w'.$week.'y'.$year;
 //Generate Template
@@ -194,8 +196,10 @@ $chartl = array('chartoplist' => $charCorpTop);
 $data->assign($recent, 'recent');
 $data->assign($sckill, 'table');
 $data->assign($chartl, 'chartl');
-$data->assign($week, 'week');
-$data->assign($year, 'year');
+$data->assign('week', $week);
+$data->assign('year', $year);
+$data->assign('nxtweek', $nxtweek);
+$data->assign('pvsweek', $pvsweek);
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
