@@ -611,6 +611,11 @@ background-color:#333333;
 {
   float:left;
 }
+#pnav-tb 
+{
+  float:left;
+  width:190px;
+}
 
 #navbar 
 {
