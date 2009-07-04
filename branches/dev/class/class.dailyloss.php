@@ -31,7 +31,7 @@
  * @link       http://www.eve-online.com/
  */
 
-class dailyKills extends kks
+class dailyLoss extends kks
 {
     
     function __construct()
@@ -71,15 +71,15 @@ class dailyKills extends kks
         $sql .= ' WHERE 1=1';
         if ($this->fetchCorp == true && $this->corpID > 0)
         {
-            $sql .= ' AND ca.corporationID=' . $con->qstr($this->corpID);
+            $sql .= ' AND cv.corporationID=' . $con->qstr($this->corpID);
         }
         if ($this->fetchAlliance == true && $this->allianceID > 0)
         {
-            $sql .= ' AND ca.allianceID=' . $con->qstr($this->allianceID);
+            $sql .= ' AND cv.allianceID=' . $con->qstr($this->allianceID);
         }
         if ($this->fetchFaction == true && $this->factionID > 0)
         {
-            $sql .= ' AND ca.factionID=' . $con->qstr($this->factionID);
+            $sql .= ' AND cv.factionID=' . $con->qstr($this->factionID);
         }
         if($this->fetchWeek == true) {
             $sql .= ' AND kl.`killTime`BETWEEN "'.$this->startDate.'" AND "'.$this->endDate.'"';    

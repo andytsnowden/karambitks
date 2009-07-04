@@ -83,10 +83,10 @@ class lossList
                 $year='YEAR(NOW())';            
             }
             if($isAlliance){
-                $WHERE=' cv.allianceID='.$ID.'';
+                $WHERE=' cv.allianceID='.$con->qstr($ID).'';
             }
             else {
-                $WHERE=' cv.corporationID='.$ID.'';
+                $WHERE=' cv.corporationID='.$con->qstr($ID).'';
             }
             
             $sql = 'SELECT  kl . * , cv . * , ca . * , it.typeName, it.graphicID FROM `corpKillLog` kl'
