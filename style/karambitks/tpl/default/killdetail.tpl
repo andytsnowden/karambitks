@@ -6,7 +6,7 @@
 <tr>
 	<td>{$at.killID}</td>
 	<td><a href="index.php?v=detail&id={$at.allianceID}&g=alliance">{$at.allianceName}</a></td>
-	<td>{$at.characterID}</td>
+	<td><img src="?v=character&ID={$at.characterID}" alt="{$at.characterName}" height="32" width="32"/></td>
 	<td>{$at.characterName}</td>
 	<td><img src="http://www.evecorplogo.net/logo.php?id={$at.corporationID}&amp;bgc=606060" width="32" height="32" alt="{$at.corporationName}"/></td>
 	<td><a href="index.php?v=detail&id={$at.corporationID}&g=corp">{$at.corporationName}</a></td>
