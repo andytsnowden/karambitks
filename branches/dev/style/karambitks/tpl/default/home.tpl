@@ -27,7 +27,7 @@
 <div id="kb-tb"> <!--Killboard Table Start-->
 <table width="750" border="1" class="kb-table" align="right">
 {foreach $chartoplist char}
-<tr><td><img src="http://img.eve.is/serv.asp?s=64&c={$char.characterID}" alt="{$char.characterName}" width="33" height="32"/>{$char.characterName}</td><td>{$char.stats}</td></tr>
+<tr><td><img src="?v=character&ID={$char.characterID}" alt="{$char.characterName}" width="33" height="32"/>{$char.characterName}</td><td>{$char.stats}</td></tr>
 {/foreach}
 
 <tr><td colspan="2"><img src="?v=dailykill&w={$week}&y={$year}" alt="Daily Kills/Losses"/></td></tr>
@@ -39,7 +39,7 @@
 <tr><th>Ship Type</th><th></th><th>Victim</th><th>Final Blow</th><th>System Name</th><th>Time</th></tr>
 {foreach $recent kill}
 <tr onClick="window.location.href='index.php?v=killdetail&kid={$kill.killID}';" style="cursor: pointer;">
-<td><img src="http://img.eve.is/serv.asp?s=64&c={$kill.victimID}" alt="{$kill.victimName}"/></td>
+<td><img src="?v=character&ID={$kill.victimID}" alt="{$kill.victimName}"/></td>
 <td><img src="http://www.evecorplogo.net/logo.php?id={$kill.vcorpID}&amp;bgc=606060" width="32" height="32" /></td>
 <td><b>{$kill.victimName}</b> <br />Corporation: {$kill.vcorpName}<br />Alliance: {$kill.valliName}<br /><b>{$kill.shiptype}</b></td>
 <td><b>{$kill.killerName}</b><br />Corporation: {$kill.kcorpName}<br />Alliance: {$kill.kalliNmae}</td><td>{$kill.solarSystemName} ({$kill.security})</td><td>{$kill.killTime}</td>
