@@ -101,11 +101,11 @@ class toplist extends kks
         }
                 
         if($this->fetchCorp){
-            $sql .=' WHERE ca.`corporationID`='.$this->corpID;
+            $sql .=' WHERE ca.`corporationID`='.$con->qstr($this->corpID);
         }elseif($this->fetchAlliance) {
-            $sql .=' WHERE ca.`allianceID`='.$this->allianceID;       
+            $sql .=' WHERE ca.`allianceID`='.$con->qstr($this->allianceID);       
         }elseif ($this->fetchFaction) {
-            $sql .=' WHERE ca.`factionID`='.$this->allianceID;  
+            $sql .=' WHERE ca.`factionID`='.$con->qstr($this->allianceID);  
         }
         
         if($this->fetchWeek == true) {

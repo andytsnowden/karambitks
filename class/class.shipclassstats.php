@@ -99,15 +99,15 @@ class shipClassStats extends kks
         $sql .= ' WHERE 1=1';
         if ($this->fetchCorp == true && $this->corpID > 0)
         {
-            $sql .= ' AND cv.corporationID=' . $this->corpID;
+            $sql .= ' AND cv.corporationID=' . $con->qstr($this->corpID);
         }
         elseif ($this->fetchAlliance == true && $this->allianceID > 0)
         {
-            $sql .= ' AND cv.allianceID=' . $this->allianceID;
+            $sql .= ' AND cv.allianceID=' . $con->qstr($this->allianceID);
         }
         elseif ($this->fetchFaction == true && $this->factionID > 0)
         {
-            $sql .= ' AND cv.factionID=' . $this->factionID;
+            $sql .= ' AND cv.factionID=' . $con->qstr($this->factionID);
         }
 	    else
         {
@@ -151,15 +151,15 @@ class shipClassStats extends kks
         $sql .= ' WHERE 1=1';
         if ($this->fetchCorp == true && $this->corpID > 0)
         {
-            $sql .= ' AND ca.corporationID=' . $this->corpID;
+            $sql .= ' AND ca.corporationID=' . $con->qstr($this->corpID);
         }
         elseif ($this->fetchAlliance == true && $this->allianceID > 0)
         {
-            $sql .= ' AND ca.allianceID=' . $this->allianceID;
+            $sql .= ' AND ca.allianceID=' . $con->qstr($this->allianceID);
         }
         elseif ($this->fetchFaction == true && $this->factionID > 0)
         {
-            $sql .= ' AND ca.factionID=' . $this->factionID;
+            $sql .= ' AND ca.factionID=' . $con->qstr($this->factionID);
         }
         else
         {
