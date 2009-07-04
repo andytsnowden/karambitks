@@ -31,19 +31,33 @@
  * @link       http://www.eve-online.com/
  */
  
+/**
+ * Check to see if ID is set and is a number
+ */
  if(!isset($_GET['ID']) && !is_numeric($_GET['ID'])){
     exit(); 
  }
+ /**
+  * Check to see if ID is 0, exit script
+  */
  if($_GET['ID']==0) {
     exit(); 
  }
  
+ /**
+  * require curl request class
+  */
  require_once KKS_EXT.'/yapeal/class/CurlRequest.class.php';
  
  
- 
+ /**
+  * Get the Database connection
+  */
  $con = get_connection();
  
+ /**
+  * SQL query to fetch character image from database
+  */
  $sql = "SELECT * FROM `".PREFIX_KKS."characterIcon` WHERE `characterID`=".$con->qstr($_GET['ID'], get_magic_quotes_gpc())." LIMIT 1 ";
  
  if($rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
@@ -51,22 +65,37 @@
     /**
      * Display Image from Database
      */
-    //header('Content-Type: image/png');
+    header('Content-Type: image/jpeg');
     echo $rarray[$_GET['ID']]['icon'];
     
  } else {
+ /**
+  * If not in database, add it and display it
+  */
    $image=fetchIcon($_GET['ID']);
-   //header('Content-Type: image/jpeg');
+   header('Content-Type: image/jpeg');
    echo $image;
 }
 if($rs->EOF){
+    /**
+     * If no resluts, add it to database and display it
+     */
     $image=fetchIcon($_GET['ID']);
-   //header('Content-Type: image/jpeg');
+   header('Content-Type: image/jpeg');
    echo $image;
 }
 
-function fetchIcon($characterID) {
-    
+
+/**
+ * fetchIcon()
+ * 
+ * @param interger $characterID
+ * @return image string
+ */
+function fetchIcon(integer $characterID) {
+    /**
+     * Get database connection
+     */
     $con = get_connection();
     /**
      * Set Needed Paramaters for CURL
@@ -83,14 +112,22 @@ function fetchIcon($characterID) {
          */
         $image=$curl->exec();
        
-        
+        /** 
+         * SQL Query to insert image into database
+         */
         $sql="INSERT INTO `".PREFIX_KKS."characterIcon` (`characterID`, `icon`, `date`) VALUES (".$con->qstr($characterID, get_magic_quotes_gpc()).", NULL, ".$con->DBDate(time()).") ON DUPLICATE KEY UPDATE date=".$con->DBDate(time()).";";
         
+        /**
+         * Execute SQL query
+         */
         if ($con->Execute($sql) === false) {
         
                  print 'error inserting: '.$conn->ErrorMsg().'<BR>';
         
         }
+        /**
+         * Update database record with image
+         */
         $con->UpdateBlob(PREFIX_KKS.'characterIcon','icon',$image['body'], 'characterID='.$characterID);
         return $image['body'];
 }
@@ -98,6 +135,11 @@ function fetchIcon($characterID) {
 
 
 
+ /**
+  * get_connection()
+  * 
+  * @return ADODB database object
+  */
  function get_connection()
     {
         //Get ADODB Factory INSTANCE
