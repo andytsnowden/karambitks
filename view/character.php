@@ -92,7 +92,7 @@ if($rs->EOF){
  * @param interger $characterID
  * @return image string
  */
-function fetchIcon(integer $characterID) {
+function fetchIcon($characterID) {
     /**
      * Get database connection
      */

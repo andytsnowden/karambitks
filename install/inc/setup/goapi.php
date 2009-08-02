@@ -131,6 +131,30 @@ if ($stop == 0) {
     $step1++;
   };
 }; // if $stop == 0
+if ($stop == 0) {
+    /*
+   * Check Password
+   */
+  if (!preg_match("^[A-Za-z0-9]{6,24}$", $_REQUEST['regPass'])) {
+    $regchecks = array(
+      'action' => 'Password',
+      'status' => 'Invalid Password'
+    );
+    $data->append('regchecks', $regchecks);
+    unset($regchecks);
+    $stop++;
+    $step1++;
+  } elseif ($_REQUEST['regPass'] !== $_REQUEST['regCheckPass']) {
+    $regchecks = array(
+      'action' => 'Password',
+      'status' => 'Password and password check did not match'
+    );
+    $data->append('regchecks', $regchecks);
+    unset($regchecks);
+    $stop++;
+    $step1++;
+  };// Check Password
+};// if $stop == 0
 /*
  * If no errors.
  */
@@ -551,6 +575,40 @@ if ($stop == 0) {
         $step2++;
       }
     }; // if $stop == 0
+        /*
+     * Register Admin Password in Config
+     */
+    if ($stop == 0) {
+      $salt = substr(md5(uniqid(rand() , true)) , 0, 8);
+      $password = sha1($_REQUEST['siteSalt'] .
+        $_REQUEST['regPass'] . $salt);
+      $query = 'INSERT INTO `' . $prefix['kks'] . 'config`';
+      $query .= ' (`config_string`,`config_value`)';
+      $query .= ' VALUES (`adminPassword`, '.$password.'`);';
+      try {
+        $con->Execute($query);
+        $outputs = array(
+          'action' => 'Database: Register Admin In',
+          'info' => $prefix['kks'] . 'config',
+          'status' => 'Done',
+          'check' => 1
+        );
+        $data->append('outputs', $outputs);
+        unset($outputs);
+      }
+      catch(ADODB_Exception $e) {
+        $outputs = array(
+          'action' => 'Database: Register Admin In',
+          'info' => $prefix['kks'] . 'config',
+          'status' => $e->getMessage() ,
+          'check' => 0
+        );
+        $data->append('outputs', $outputs);
+        unset($outputs);
+        $stop++;
+        $step2++;
+      }
+    };// if $stop = 0
     /*
      * Configuere EMPA
      */
