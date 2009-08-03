@@ -59,7 +59,7 @@
   * SQL query to fetch character image from database
   */
  $sql = "SELECT * FROM `".PREFIX_KKS."characterIcon` WHERE `characterID`=".$con->qstr($_GET['ID'], get_magic_quotes_gpc())." LIMIT 1 ";
- 
+try {
  if($rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
     $rarray=$rs->GetAssoc();
     /**
@@ -73,6 +73,15 @@
   * If not in database, add it and display it
   */
    $image=fetchIcon($_GET['ID']);
+   header('Content-Type: image/jpeg');
+   echo $image;
+}
+}
+catch (Exception $e) {
+    /**
+     * If no resluts, add it to database and display it
+     */
+    $image=fetchIcon($_GET['ID']);
    header('Content-Type: image/jpeg');
    echo $image;
 }
