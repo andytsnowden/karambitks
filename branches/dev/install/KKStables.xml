@@ -111,4 +111,16 @@
       <DEFAULT value="0"/>
     </field>
   </table>
+<table name="characterIcon">
+<field name="characterID" type="I" size="20">
+<KEY/>
+<DEFAULT value="0"/>
+<UNSIGNED/>
+</field>
+<field name="icon" type="B"/>
+-
+<field name="date" type="D">
+<NOTNULL/>
+</field>
+</table>
 </schema>

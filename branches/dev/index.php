@@ -81,6 +81,8 @@ if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
 } else {	
 	ob_start();
 }
+//Start Session
+session_start();
 
 //UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
 unregister_globals('_POST', '_GET', '_REQUEST');
