@@ -135,7 +135,7 @@ if ($stop == 0) {
     /*
    * Check Password
    */
-  if (!preg_match("^[A-Za-z0-9]{6,24}$", $_REQUEST['regPass'])) {
+  if (!preg_match("/^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/", $_REQUEST['regPass'])) {
     $regchecks = array(
       'action' => 'Password',
       'status' => 'Invalid Password'
@@ -584,7 +584,7 @@ if ($stop == 0) {
         $_REQUEST['regPass'] . $salt);
       $query = 'INSERT INTO `' . $prefix['kks'] . 'config`';
       $query .= ' (`config_string`,`config_value`)';
-      $query .= ' VALUES (`adminPassword`, '.$password.'`);';
+      $query .= " VALUES ('adminPassword', '".$salt.$password."');";
       try {
         $con->Execute($query);
         $outputs = array(
