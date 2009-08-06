@@ -61,6 +61,8 @@ if($_GET['m']=='login')
     if($salt.$password==$storedPassword)
     {
         $_SESSION['adminLogedOn']=='TRUE';
+        header("Location:". $_SERVER['REQUEST_URI']);
+        exit();
     }
 }
 /**
@@ -70,7 +72,6 @@ if($_SESSION['adminLoggedOn']!='TRUE'){
     $cacheID='admin';
     $template = TemplateHandler::createTemplate('adminlogin', KKS_CACHE_DWOO, $cacheID);
 }
-
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));

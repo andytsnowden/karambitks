@@ -69,6 +69,9 @@ $banner = $config->get('banner');
 require_once KKS_DWOO.'dwooAutoload.php';
 require_once KKS_CLASS.'class.DwooTemplateHandler.php';
 
+//Start Session
+session_start();
+
 //Compress output if server can and enabled in config.
 if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
 {
@@ -81,8 +84,7 @@ if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
 } else {	
 	ob_start();
 }
-//Start Session
-session_start();
+
 
 //UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
 unregister_globals('_POST', '_GET', '_REQUEST');
