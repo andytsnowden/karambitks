@@ -60,16 +60,22 @@ if($_GET['m']=='login')
     $password = sha1($iniVars['salt'].$_REQUEST['password'].$salt);
     if($salt.$password==$storedPassword)
     {
-        $_SESSION['adminLogedOn']=='TRUE';
-        header("Location:". $_SERVER['REQUEST_URI']);
+        setcookie('adminLoggedOn', 'TRUE');
+        header("Location: http://".$_SERVER['HTTP_HOST'].$_SERVER[PHP_SELF]."?v=admin");
         exit();
     }
 }
 /**
  * Check is user is logged on as admin
  */
-if($_SESSION['adminLoggedOn']!='TRUE'){
+if($_COOKIE['adminLoggedOn']=='TRUE')
+{
     $cacheID='admin';
+    $template = TemplateHandler::createTemplate('admin', KKS_CACHE_DWOO, $cacheID);
+} 
+else
+{
+    $cacheID='admin_login';
     $template = TemplateHandler::createTemplate('adminlogin', KKS_CACHE_DWOO, $cacheID);
 }
 
