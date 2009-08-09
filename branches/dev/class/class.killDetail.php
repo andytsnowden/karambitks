@@ -82,9 +82,10 @@ class killDetail
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT `killID`, `allianceID`, `allianceName`, `characterID`, `characterName`, `corporationID`, `corporationName`, `factionID`, `factionName`, `damageDone`, `finalBlow`, st.typeName AS shipType, wt.typeName AS weaponType FROM `'.PREFIX_YAPEAL.'corpAttackers` ca'
+            $sql = 'SELECT `killID`, ca.`allianceID`, `allianceName`, `characterID`, `characterName`, `corporationID`, `corporationName`, `factionID`, `factionName`, `damageDone`, `finalBlow`, st.typeName AS shipType, wt.typeName AS weaponType, al.icon FROM `'.PREFIX_YAPEAL.'corpAttackers` ca'
         . ' JOIN '.PREFIX_EVE.'invTypes st ON st.typeID=ca.`shipTypeID`'
         . ' JOIN '.PREFIX_EVE.'invTypes wt ON wt.typeID=ca.`weaponTypeID`'
+        . ' LEFT JOIN '.PREFIX_KKS.'allianceLogo al ON al.allianceID=ca.allianceID'
         . ' WHERE ca.`killID`='.$killID; 
         
 
@@ -96,6 +97,7 @@ class killDetail
         	 	
         	 	$temp[$a]['killID'] = $this->rs_attackers->fields['killID'];
         	 	$temp[$a]['allianceID'] = $this->rs_attackers->fields['allianceID'];
+        	 	$temp[$a]['icon']=$this->rs_attackers->fields['icon'];
         	 	$temp[$a]['allianceName'] = $this->rs_attackers->fields['allianceName'];
         	 	$temp[$a]['characterID'] = $this->rs_attackers->fields['characterID'];
         	 	$temp[$a]['characterName'] = $this->rs_attackers->fields['characterName'];
@@ -127,8 +129,9 @@ class killDetail
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT im.`killID`, it.`typeName`, im.`qtyDropped`, im.`qtyDestroyed` FROM `'.PREFIX_YAPEAL.'corpItems` im'
+            $sql = 'SELECT im.`killID`, it.`typeID`, eg.`icon`, it.`typeName`, im.`qtyDropped`, im.`qtyDestroyed` FROM `'.PREFIX_YAPEAL.'corpItems` im'
         . ' JOIN '.PREFIX_EVE.'invTypes it ON it.`typeID`=im.`typeID`'
+        . ' JOIN '.PREFIX_EVE.'eveGraphics eg ON it.`graphicID`=eg.`graphicId`'
         . ' WHERE im.`killID`='.$killID.' AND im.`lft`!=1 LIMIT 0, 100 '; 
 
             if($this->rs_items=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
@@ -137,6 +140,8 @@ class killDetail
             	while (!$this->rs_items->EOF) {
         	 	
         	 	$temp[$a]['killID'] = $this->rs_items->fields['killID'];
+        	 	$temp[$a]['icon'] = $this->rs_items->fields['icon'];
+        	 	$temp[$a]['typeID'] = $this->rs_items->fields['typeID'];
                 $temp[$a]['typeName'] = $this->rs_items->fields['typeName'];
                 $temp[$a]['qtyDropped'] = $this->rs_items->fields['qtyDropped'];
                 $temp[$a]['qtyDestroyed'] = $this->rs_items->fields['qtyDestroyed'];
@@ -169,10 +174,13 @@ class killDetail
             $con = $instance->factory(KKS_DSN);
             
             
-            $sql = 'SELECT * FROM `'.PREFIX_YAPEAL.'corpKillLog` kl'
+            $sql = 'SELECT kl.*, cv.*, map.*, types.typeName as shipTypeName, al.icon FROM `'.PREFIX_YAPEAL.'corpKillLog` kl'
         . ' JOIN '.PREFIX_YAPEAL.'corpVictim cv ON cv.`killID`=kl.`killID`'
         . ' JOIN '.PREFIX_EVE.'mapSolarSystems map ON kl.`solarSystemID` = map.solarSystemID'
+        . ' JOIN '.PREFIX_EVE.'invTypes types ON types.typeID=cv.shipTypeID'
+        . ' LEFT JOIN '.PREFIX_KKS.'allianceLogo al ON al.allianceID=cv.allianceID'
         . ' WHERE kl.`killID`='.$killID.' LIMIT 1 '; 
+        
         
 
             if($this->rs_detail=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){

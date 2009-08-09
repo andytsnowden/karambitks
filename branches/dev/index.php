@@ -68,7 +68,8 @@ $banner = $config->get('banner');
 //set new Error Handlerset_error_handler(array('errors', 'handler'));//LOAD DWOO
 require_once KKS_DWOO.'dwooAutoload.php';
 require_once KKS_CLASS.'class.DwooTemplateHandler.php';
-
+//Session name
+session_name('KKS_SESSION');
 //Start Session
 session_start();
 
