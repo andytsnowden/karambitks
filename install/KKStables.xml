@@ -12,7 +12,7 @@
       <row><f>theme_url</f><f>karambitks</f></row>
       <row><f>style_url</f><f>style</f></row>
       <row><f>kb_title</f><f>Karambitks Beta KB</f></row>
-      <row><f>banner</f><f>killboard.jpg</f></row>
+      <row><f>banner</f><f>killboard.png</f></row>
     </data>
   </table>
   <table name="contracts">

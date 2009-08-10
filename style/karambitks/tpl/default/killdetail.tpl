@@ -56,7 +56,16 @@
 {/if}
 <tr>
     <td rowspan="3"><img src="img/types/shiptypes_png/64_64/{$shipTypeID}.png" alt="{$shipTypeName}" width="64" height="64" />
-    <td rowspan="3"><img src="img/logos/icons_alliance_png/64_64/icon{$icon}" alt="{$allianceName}" height="32" width="32" /> </td>
+    <td rowspan="3">
+    <!--Alliance Logo Start-->
+    {if $icon eq NULL}
+        <img src="img/logos/icons_alliance_png/64_64/icon01_01.png" alt="{$allianceName}" height="64" width="64" />
+    {elseif $allianceID !=0}
+        <img src="img/logos/icons_alliance_png/64_64/icon{$icon}" alt="{$allianceName}" height="64" width="64" />
+    {else}
+    {/if}
+    <!--Alliance Loglo End-->
+     </td>
     <td>Location</td>
     <td colspan="2">{$solarSystemName}</td>
 </tr>
