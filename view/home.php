@@ -101,6 +101,7 @@ $dk= New dailyKills();
     */
     $tl->week=$week;
     $tl->year=$year;
+    $tl->limit=10;
     /**
     * Daily Kill Class
     */
