@@ -44,13 +44,14 @@ class killList extends kks
 {
     function __construct()
     {
-        $this->SQL_start = 'SELECT  it.typeName as shiptype, cv.characterID as victimID, cv.characterName as victimName, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, map.solarSystemName, format(map.security,2) AS security,  caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
+        $this->SQL_start = 'SELECT  it.typeName as shiptype, it.typeID as shipTypeID, cv.characterID as victimID, cv.characterName as victimName, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, al.icon, map.solarSystemName, format(map.security,2) AS security,  caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
         $this->SQL_joins = ' FROM `'.PREFIX_YAPEAL.'corpKillLog` kl' .
             ' JOIN `'.PREFIX_YAPEAL.'corpVictim` cv ON cv.`killID`=kl.`killID`' .
             ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` ca ON ca.`killID`=cv.`killID`' .
             ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` caf ON caf.`killID`=cv.`killID`' .
             ' JOIN `'.PREFIX_EVE.'invTypes` it ON it.`typeID` = cv.`shipTypeID`' .
-            ' JOIN `'.PREFIX_EVE.'mapSolarSystems` map ON map.`solarSystemID` = kl.`solarSystemID`';
+            ' JOIN `'.PREFIX_EVE.'mapSolarSystems` map ON map.`solarSystemID` = kl.`solarSystemID`'
+            . ' LEFT JOIN '.PREFIX_KKS.'allianceLogo al ON al.allianceID=cv.allianceID';
         $this->SQL_end = ' ORDER BY kl.`killTime` DESC';
     }
 
@@ -66,21 +67,6 @@ class killList extends kks
         $this->getTimeFrame();
         
         $con = $this->get_connection();
-        /*
-        //Change Week and Year to format we can use
-        if(!isset($this->week) && !is_numeric($this->week)) {
-            $this->week = date('W');
-        }
-        if(!isset($this->year) && !is_numeric($this->year)) {
-            $this->year = date('Y');
-        }
-        if($this->week<10) {
-            $week=$this->week;
-            $pad=str_pad($week, 2, 0, STR_PAD_LEFT);
-            $this->week=substr($pad, -2, 2);
-        }
-        $start_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week));
-        $end_date=date( 'Y-m-d H:i:s', strtotime($this->year.'W'.$this->week.'7 23 hour 59 minutes 59 seconds'));*/
         
         $sql = $this->SQL_start;
         $sql .= $this->SQL_joins;

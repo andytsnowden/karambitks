@@ -121,9 +121,8 @@ class toplist extends kks
         $sql .= $this->SQL_end;
         if(isset($this->limit) && $this->limit>0)
         {
-            $sql .='LIMIT 0,'.$this->limit;  
+            $sql .=' LIMIT 0,'.$this->limit;  
         }
-        
         if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
                 $a=0;
             	while (!$this->rs->EOF) {
