@@ -65,7 +65,8 @@ class YapealFeedRequests {
    * @throws YapealApiErrorException for API errors
    */
   static function getAPIinfo($feedUrl, $postData = array()) {
-    echo"POST DATA: ";print_r($postData);echo PHP_EOL."----<hr>".PHP_EOL;
+    //echo"POST DATA: ";print_r($postData);
+    echo PHP_EOL."----<hr>".PHP_EOL;
     global $tracing;
     require_once YAPEAL_CLASS . 'CurlRequest.class.php';
     $result = array();
