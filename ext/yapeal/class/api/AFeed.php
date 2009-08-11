@@ -80,6 +80,8 @@ abstract class AFeed implements IFetchApiTable, IStoreApiTable {
    */
   public function __construct(array $params = array()) {
     echo "Constructor".PHP_EOL;
+    echo "Params: ".$params.PHP_EOL;
+    echo PHP_EOL;
     $this->tablePrefix = YAPEAL_TABLE_PREFIX . 'corp';
     if (isset($params['feedUrl']) && is_string($params['feedUrl'])) {
       $this->feedUrl = $params['feedUrl'];
@@ -122,7 +124,7 @@ abstract class AFeed implements IFetchApiTable, IStoreApiTable {
   public function apiFetch() {
     global $tracing;
     global $cachetypes;
-    //$postdata = array('id'=> $this->ID, 'type'=> $this->idType, 'feedKey'=> $this->feedKey);
+    $postdata = array('id'=> $this->ID, 'type'=> $this->idType, 'feedKey'=> $this->feedKey);
     echo "POSTDATA IN apiFetch()";print_r($postdata);echo PHP_EOL;
     $tableName = $this->tablePrefix . $this->api;
     $xml = FALSE;

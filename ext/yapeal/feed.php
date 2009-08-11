@@ -61,7 +61,10 @@ foreach($feeds as $feed) {
       $params = array('feedUrl' => $feed['feedUrl'], 'feedKey' => $feed['feedKey'],
         'ID' => $feed['ID'], 'idType' => $feed['idType'], 'serverName' => 'kksfeed'
       );
+      echo "In feed.php".PHP_EOL;
       print_r($params);echo PHP_EOL;
+      echo "----".PHP_EOL;
+      echo PHP_EOL;
       $feed = new feedKillLog($params);
       $feed->apiFetch();
       $feed->apiStore();
