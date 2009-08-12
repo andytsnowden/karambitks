@@ -119,4 +119,31 @@
     <query platform="mysql">INSERT INTO `%%PutilConfig` (`Name`,`Value`) VALUES('dbPrefix', '%%P') ON DUPLICATE KEY UPDATE `Value`=VALUES(`Value`)</query>
     <query platform="mysql">INSERT INTO `%%PutilConfig` (`Name`,`Value`) VALUES('utilVersion', '$Revision: 753 $') ON DUPLICATE KEY UPDATE `Value`=VALUES(`Value`)</query>
   </sql>
+  <table name="utilFeeds">
+    <field name="feedId" type="I" size="10">
+      <KEY/>
+      <AUTOINCREMENT/>
+      <UNSIGNED/>
+    </field>
+    <field name="feedUrl" type="C" size="255"/>
+    <field name="feedKey" type="C" size="64"/>
+
+    <field name="cachedUntil" type="T">
+      <NOTNULL/>
+    </field>
+    <field name="ID" type="I" size="20">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+      <UNSIGNED/>
+    </field>
+    <field name="idType" type="C" size="50">
+
+      <NOTNULL/>
+    </field>
+    <field name="isActive" type="I" size="1">
+      <NOTNULL/>
+      <DEFAULT value="0"/>
+      <UNSIGNED/>
+    </field>
+  </table>
 </schema>

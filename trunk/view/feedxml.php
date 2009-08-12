@@ -76,6 +76,8 @@
     $value = $doc->createTextNode($currentTime);
     $value = $cur_time->appendChild($value);
     
+    
+   /* 
     //Result Element
     $result = $doc->createElement('result');
     $result = $root->appendChild($result);
@@ -87,7 +89,7 @@
     $rowset->setAttribute('name', 'kills');
     $rowset->setAttribute('key', 'killID');
     $rowset->setAttribute('columns', 'killID,solarSystemID,killTime,moonID');
-    
+    */
 
 //Get Needed Classes
 require_once KKS_CLASS.'class.xmlfeed.php';
@@ -150,12 +152,19 @@ $kl->fetchList();
 //Get the results
 $kills=$kl->rarray;
 
+//Error for testing Element
+    $error = $doc->createElement('error');
+    $error = $root->appendChild($error);
+    $error->setAttribute('code', '900');
+    $erroratt = $doc->createTextNode($kl->sql);
+    $erroratt = $error->appendChild($erroratt);
+
 /*
 foreach($kills as $kill) {
 echo"<pre>";print_r($kill);echo"</pre><br><br><hr>\n";
 }*/
 
-
+/*
 foreach ($kills as $kill)
 {
 
@@ -213,7 +222,7 @@ foreach ($kills as $kill)
             $attacker->setAttribute('weaponTypeID', $killer['weaponTypeID']);
             $attacker->setAttribute('shipTypeID', $killer['shipTypeID']);
             unset($killer);
-    }
+    } //foreach attackerlist as killer
     
 
     //Add Item rowset element
@@ -230,7 +239,8 @@ foreach ($kills as $kill)
     itemsTreeXML($theShip['lvl'], $kill['killID'], $items, $doc, $theShip['lft'], $theShip['rgt']);
     unset($theShip);
     
-}
+} //foreach $kills AS $kill
+*/
 //Record Set Count
 $rc=$kl->rs->RowCount();
 $comment = $doc->createComment('Row Count: '.$rc);

@@ -42,6 +42,7 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
  */
 $prefix = $_REQUEST['Prefix'];
 $charInfo = $_REQUEST['charInfo'];
+$allifact = $_REQUEST['allifact'];
 $stop = 0;
 $step1 = 0;
 $step2 = 0;
@@ -130,6 +131,30 @@ if ($stop == 0) {
     $step1++;
   };
 }; // if $stop == 0
+if ($stop == 0) {
+    /*
+   * Check Password
+   */
+  if (!preg_match("/^.*(?=.{6,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/", $_REQUEST['regPass'])) {
+    $regchecks = array(
+      'action' => 'Password',
+      'status' => 'Invalid Password'
+    );
+    $data->append('regchecks', $regchecks);
+    unset($regchecks);
+    $stop++;
+    $step1++;
+  } elseif ($_REQUEST['regPass'] !== $_REQUEST['regCheckPass']) {
+    $regchecks = array(
+      'action' => 'Password',
+      'status' => 'Password and password check did not match'
+    );
+    $data->append('regchecks', $regchecks);
+    unset($regchecks);
+    $stop++;
+    $step1++;
+  };// Check Password
+};// if $stop == 0
 /*
  * If no errors.
  */
@@ -222,7 +247,7 @@ if ($stop == 0) {
               'check' => 1
             );
             $data->append('outputs', $outputs);
-            unset($outputs, $corpxml);
+            unset($outputs);
           }
           catch(ADODB_Exception $e) {
             $outputs = array(
@@ -232,9 +257,77 @@ if ($stop == 0) {
               'check' => 0
             );
             $data->append('outputs', $outputs);
-            unset($outputs, $corpxml);
+            unset($outputs);
             $stop++;
             $step2++;
+          }
+          if($allifact=='on')
+          {
+                /**
+                 * Set var $allianceID to allianceID from API
+                 */
+
+                $allianceID=(integer) $corpxml->result->allianceID;
+                /**
+                 * Check to see if allianceID is 0 or NULL
+                 */
+                if(is_numeric($allianceID) && $allianceID!=0) {
+                    /**
+                     * Set Values for INI (alliance)
+                     */
+                    $kks['kks']['allianceID']=$allianceID;
+                    $kks['kks']['allianceName']=$corpxml->result->allianceName;
+                    $kks['kks']['factionID']=0;
+                    $kks['kks']['factionName']='';
+                    $kks['kks']['corporationID']=0;
+                    $kks['kks']['corporationName']='';
+                    echo "ALLiance Set".$allianceID."<br>";
+                } else {
+                    /**
+                     * Get Faction Info from API
+                     */
+                    $factionxml = getApiInfo($params, '	 /corp/FacWarStats.xml.aspx');
+                    if($factionxml)
+                    {
+                            /**
+                             * Handel XML Data
+                             */
+                            if (isset($factionxml->error)) {
+                                $outputs = array(
+                                'action' => 'Database: Put Character In',
+                                'info' => $prefix['yapeal'] . 'charCharacterSheet',
+                                'status' => 'Api Error:<br />' . $charxml->error,
+                                'check' => 0
+                              );
+                              $data->append('outputs', $outputs);
+                              unset($outputs);
+                              $stop++;
+                              $step2++;
+                              $stop++;
+                            } else {
+                                /**
+                                 * Set INI Vars
+                                 */
+                                 $kks['kks']['factionID']=(int)$factionxml->result->factionID;
+                                 $kks['kks']['factionName']=$factionxml->result->factionName;
+                                 $kks['kks']['allianceID']=0;
+                                 $kks['kks']['allianceName']='';
+                                 $kks['kks']['corporationID']=0;
+                                 $kks['kks']['corporationName']='';
+                            } //if else is set $factionxml->error
+                    }
+                    unset($outputs, $corpxml, $factionxml);                       
+                }                                                                                                
+          } else {
+            /**
+             * Set CorpID and Name
+             */
+             $kks['kks']['corporationID']=(int)$corpxml->result->corporationID;
+             $kks['kks']['corporationName']=$corpxml->result->corporationName;
+             $kks['kks']['allianceID']=0;
+             $kks['kks']['allianceName']='';
+             $kks['kks']['factionID']=0;
+             $kks['kks']['factionName']='';
           }
         };
       } else {
@@ -362,7 +455,7 @@ if ($stop == 0) {
       /*
        * Get AccessPerApi
        */
-      $query = "SELECT * FROM `" . $prefix['empa'] . "AccessPerApi`";
+      $query = "SELECT * FROM `" . $prefix['kks'] . "AccessPerApi`";
       $apilist = $con->GetAssoc($query);
       /*
        * Put Character In utilRegisteredCharacter
@@ -373,7 +466,7 @@ if ($stop == 0) {
           'characterID' => $charInfo[$_REQUEST['charName']]['charId'],
           'corporationID' => $charInfo[$_REQUEST['charName']]['corpId'],
           'corporationName' => $charInfo[$_REQUEST['charName']]['corpName'],
-          'isActive' => 1,
+          'isActive' => 0,
           'name' => $_REQUEST['charName'],
           'userID' => $_REQUEST['api_user_id']
         )
@@ -482,6 +575,40 @@ if ($stop == 0) {
         $step2++;
       }
     }; // if $stop == 0
+        /*
+     * Register Admin Password in Config
+     */
+    if ($stop == 0) {
+      $salt = substr(md5(uniqid(rand() , true)) , 0, 8);
+      $password = sha1($_REQUEST['siteSalt'] .
+        $_REQUEST['regPass'] . $salt);
+      $query = 'INSERT INTO `' . $prefix['kks'] . 'config`';
+      $query .= ' (`config_string`,`config_value`)';
+      $query .= " VALUES ('adminPassword', '".$salt.$password."');";
+      try {
+        $con->Execute($query);
+        $outputs = array(
+          'action' => 'Database: Register Admin In',
+          'info' => $prefix['kks'] . 'config',
+          'status' => 'Done',
+          'check' => 1
+        );
+        $data->append('outputs', $outputs);
+        unset($outputs);
+      }
+      catch(ADODB_Exception $e) {
+        $outputs = array(
+          'action' => 'Database: Register Admin In',
+          'info' => $prefix['kks'] . 'config',
+          'status' => $e->getMessage() ,
+          'check' => 0
+        );
+        $data->append('outputs', $outputs);
+        unset($outputs);
+        $stop++;
+        $step2++;
+      }
+    };// if $stop = 0
     /*
      * Configuere EMPA
      */

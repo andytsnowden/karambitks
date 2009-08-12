@@ -45,7 +45,8 @@ $incDir = realpath(dirname(__FILE__));
 chdir($incDir);
 $ds = DIRECTORY_SEPARATOR;
 // Set some basic common settings so we know we'll get to see any errors etc.
-error_reporting(E_ALL);
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+//error_reporting(E_ALL);
 ini_set('ignore_repeated_errors', 0);
 ini_set('ignore_repeated_source', 0);
 ini_set('html_errors', 0);
@@ -65,6 +66,10 @@ if (version_compare(PHP_VERSION, '5.2.1', '<')) {
   echo 'Need minimum of PHP 5.2.1 to use this software!';
   exit(1);
 };
+if(ini_get('safe_mode')) {
+    $error='Safe Mode is on and will cause problems with this software!';
+    trigger_error($error, E_USER_WARNING);
+}
 // Check for some required extensions
 $required = array('curl', 'date', 'mysqli', 'SimpleXML', 'SPL');
 $exts = get_loaded_extensions();
@@ -139,7 +144,7 @@ foreach ($subsections as $section) {
 };// foreach $subsections ...
 */
 // log_dir is relative to YAPEAL_CACHE
-$realpath = realpath(KKS_CACHE . 'log');
+/*$realpath = realpath(KKS_CACHE . 'log');
 if ($realpath && is_dir($realpath)) {
   define('KKS_LOG', $realpath . $ds);
 } else {
@@ -147,7 +152,7 @@ if ($realpath && is_dir($realpath)) {
 };
 if (!is_writable($realpath)) {
   $mess .= $realpath . ' is not writeable<br />' . PHP_EOL;
-};
+};*/
 // Output file and dir check error
 if (!empty($mess)) {
   echo $mess;
@@ -340,5 +345,19 @@ catch(ADODB_Exception $e) {
   die($e->getMessage());
 }
 */
-define('KKS_KBCORPID', '170567768');
+if(isset($iniVars['Killboard'])) {
+    if($iniVars['Killboard']['corporationID']>0){
+        $kkskb=array('type'=>'corp', 'ID'=>$iniVars['Killboard']['corporationID'], 'name'=>$iniVars['Killboard']['corporationName']);
+    } elseif($iniVars['Killboard']['allianceID']>0) {
+         $kkskb=array('type'=>'alliance', 'ID'=>$iniVars['Killboard']['allianceID'], 'name'=>$iniVars['Killboard']['allianceName']);   
+    } else {
+        $kkskb=array('type'=>'faction', 'ID'=>$iniVars['Killboard']['factionID'], 'name'=>$iniVars['Killboard']['factionName']);    
+    }
+}
+
+/**
+ * Turn Compression On
+ */
+$compression=1; //Set to 0 to turn off
+
 ?>

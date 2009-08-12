@@ -36,6 +36,10 @@ require_once KKS_CLASS.'class.killlist.php';
 require_once KKS_CLASS.'class.shipclassstats.php';
 require_once KKS_CLASS.'class.navigation.php';
 require_once KKS_CLASS.'class.toplist.php';
+require_once KKS_CLASS.'class.dailykills.php';
+//Get Charting
+require_once KKS_EXT.'pChart/pChart.class.php';
+require_once KKS_EXT.'pChart/pData.class.php';
 
 //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
@@ -56,8 +60,10 @@ else {
     $y=$year;
 
 }
+$nxtweek=$week+1;
+$pvsweek=$week-1;
 //Generate Cache ID
-$cacheID='home_id'.KKS_KBCORPID.'a0w'.$week.'y'.$year;
+$cacheID='home_id'.$kkskb['ID'].'a0w'.$week.'y'.$year;
 //Generate Template
 $template = TemplateHandler::createTemplate('home', KKS_CACHE_DWOO, $cacheID);
 
@@ -69,38 +75,105 @@ if(TemplateHandler::getInstance()->isCached($template))
 } else {
 //New KillList
 $kl = New killList();
-
-//Set needed KillList options
-$kl->corpID=KKS_KBCORPID;
-$kl->fetchCorp=TRUE;
-$kl->week=$week;
-$kl->year=$year;
-
-
 //New Statslist
 $sc= New shipClassStats();
-
-//Set needed KillList options
-$sc->corpID=KKS_KBCORPID;
-$sc->fetchCorp=TRUE;
-$sc->week=$week;
-$sc->year=$year;
-
 //New Top List
 $tl= New toplist();
 $tl->getCharacter=TRUE;
-$tl->fetchCorp=TRUE;
-$tl->corpID=KKS_KBCORPID;
+//New Daily Kills
+$dk= New dailyKills();
+
+/**
+ * Set Weeks for needed Classes
+ */
+    /**
+    * Killlist
+    */
+    $kl->week=$week;
+    $kl->year=$year;
+    /**
+    * Ship Class
+    */
+    $sc->week=$week;
+    $sc->year=$year;
+    /**
+    * Top List Class
+    */
+    $tl->week=$week;
+    $tl->year=$year;
+    $tl->limit=10;
+    /**
+    * Daily Kill Class
+    */
+    $dk->week=$week;
+    $dk->year=$year;
+/**
+ * Make sure type is set
+ */
+if(isset($kkskb['type'])) {
+    /**
+     * Set corp, alliance, or faction mode
+     */
+    switch ($kkskb['type']){ 
+	case 'corp':
+    	//Set needed KillList options
+        $kl->corpID=$kkskb['ID'];
+        $kl->fetchCorp=TRUE;
+        //Set needed Ship Class options
+        $sc->corpID=$kkskb['ID'];
+        $sc->fetchCorp=TRUE;
+        //Set Needed Top List options
+        $tl->fetchCorp=TRUE;
+        $tl->corpID=$kkskb['ID'];
+        //Set Needed Daily Kill List options
+        $dk->fetchCorp=TRUE;
+        $dk->corpID=$kkskb['ID'];	
+	break;
+
+	case 'alliance':
+        //Set needed KillList options
+        $kl->allianceID=$kkskb['ID'];
+        $kl->fetchAlliance=TRUE;
+        //Set needed Ship Class options
+        $sc->allianceID=$kkskb['ID'];
+        $sc->fetchalliance=TRUE;
+        //Set Needed Top List options
+        $tl->fetchAlliance=TRUE;
+        $tl->allianceID=$kkskb['ID'];
+	break;
+
+	case 'faction':
+	   //Set needed KillList options
+        $kl->factionID=$kkskb['ID'];
+        $kl->fetchfaction=TRUE;
+        //Set needed Ship Class options
+        $sc->factionID=$kkskb['ID'];
+        $sc->fetchFaction=TRUE;
+        //Set Needed Top List options
+        $tl->fetchFaction=TRUE;
+        $tl->factionID=$kkskb['ID'];
+	break;
+}
+}
+
+
+
 $list=$tl->fetchList();
 
 //Get the list
 $kl->fetchList();
+//$dk->fetchList();
 $charCorpTop=$tl->fetchList();
 //Get the results
 $list=$kl->rarray;
 $table=$sc->fetchShipClassTableArray();
+//$dailykills=$dk->formatArray();
+
+//echo"<pre>";var_dump($dailykills);echo"</pre>";
+
 //assign Data to Dwoo
 $data = new Dwoo_Data();
+
 
 //menu
 $nav = new kss_navigation();
@@ -112,7 +185,7 @@ $data->assign('menu', $menu);
 //template data
 $data->assign('kb_title', $kb_title);
 $data->assign('style_url', $style_url);
-$data->assign('banner_link', $_SERVER['SCRIPT_URI']);
+$data->assign('banner_link', $_SERVER['PHP_SELF']);
 $data->assign('banner', $banner);
 $data->assign('theme_url', $theme_url);
 
@@ -124,6 +197,10 @@ $chartl = array('chartoplist' => $charCorpTop);
 $data->assign($recent, 'recent');
 $data->assign($sckill, 'table');
 $data->assign($chartl, 'chartl');
+$data->assign('week', $week);
+$data->assign('year', $year);
+$data->assign('nxtweek', $nxtweek);
+$data->assign('pvsweek', $pvsweek);
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));

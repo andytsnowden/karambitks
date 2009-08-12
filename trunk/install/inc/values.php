@@ -51,7 +51,7 @@ $Yapeal_Version = 786;
 $schemas = array(
   'kks' => array('KKStables') ,
   'yapeal' => array('util', 'account', 'char', 'corp', 'eve', 'map', 'server') ,
-  'db_dump' => array('invTypes', 'invTypes_Dump', 'mapSolarSystems', 'mapSolarSystems_Dump')
+  'db_dump' => array('invTypes', 'invTypes_Dump', 'mapSolarSystems', 'mapSolarSystems_Dump', 'eveGraphics', 'eveGraphics_Dump')
 );
 /*
  * Access per Api defined by level.
