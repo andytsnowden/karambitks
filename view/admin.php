@@ -30,44 +30,11 @@
  * @link       http://code.google.com/p/karambitks/
  * @link       http://www.eve-online.com/
  */
-
-//Get Needed Classes
-require_once KKS_CLASS.'class.killDetail.php';
-require_once KKS_CLASS.'class.shipclassstats.php';
+//require classes
 require_once KKS_CLASS.'class.navigation.php';
-
-//Turn on Dev mode
+ //Turn on Dev mode
 define('KKS_DEV_MODE', 'Just needs to be defined');
 
-//Check to see if killID is set
-if(is_numeric($_GET['kid'])) {
-    (int) $killID=$_GET['kid'];
-} else {
-    (int) $killID=0;
-    echo"No kill ID Submitted!";exit;
-}
-//Generate Cache ID
-$cacheID='detail_id'.$killID;
-//Generate Template
-$template = TemplateHandler::createTemplate('killdetail', 21600, $cacheID);
-
-//Check to see if template was cached
-if(TemplateHandler::getInstance()->isCached($template))
-{
-    // we assign a blank array as the data
-    $data = array();
-} else {
-
-//New KillDetial
-$kd = New killDetail();
-
-//GET the kill detail
-$kd->fetchAttackers($killID);
-$attackers=$kd->rarray_attackers;
-$kd->fetchItems($killID);
-$items=$kd->rarray_items;
-
-//assign Data to Dwoo
 $data = new Dwoo_Data();
 
 //menu
@@ -83,17 +50,38 @@ $data->assign('style_url', $style_url);
 $data->assign('banner_link', $_SERVER['PHP_SELF']);
 $data->assign('banner', $banner);
 $data->assign('theme_url', $theme_url);
-
-//Page data
-$attackers = array('attack' => $attackers);
-$items = array('items' => $items);
-$data->assign($attackers, 'attack');
-$data = $kd->fetchDetail($killID, $data);
-$data->assign($items, 'items');
+/**
+ * Check if user is attempting to login
+ */
+if($_GET['m']=='login')
+{
+    $storedPassword = $config->get('adminPassword');
+    $salt=substr($storedPassword, 0, 8);
+    $password = sha1($iniVars['salt'].$_REQUEST['password'].$salt);
+    if($salt.$password==$storedPassword)
+    {
+        setcookie('adminLoggedOn', 'TRUE');
+        header("Location: http://".$_SERVER['HTTP_HOST'].$_SERVER[PHP_SELF]."?v=admin");
+        exit();
+    }
+}
+/**
+ * Check is user is logged on as admin
+ */
+if($_COOKIE['adminLoggedOn']=='TRUE')
+{
+    $cacheID='admin';
+    $template = TemplateHandler::createTemplate('admin', KKS_CACHE_DWOO, $cacheID);
+} 
+else
+{
+    $cacheID='admin_login';
+    $template = TemplateHandler::createTemplate('adminlogin', KKS_CACHE_DWOO, $cacheID);
+}
 
 //execution time
 $data->assign('gen', round(array_sum(explode(' ', microtime())) - array_sum(explode(' ', $time_start)), 3));
-}
+
 
 echo TemplateHandler::fetch($template, $data);
 ?>

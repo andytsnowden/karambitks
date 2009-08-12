@@ -31,32 +31,30 @@
  * @link       http://www.eve-online.com/
  */
 
-/**
- * killList
- * 
- * @package KarambitKS
- * @author Stephen Gulick
- * @copyright 2009
- * @version $Id$
- * @access public
- */
-class killList extends kks
+class dailyLoss extends kks
 {
+    
     function __construct()
     {
-        $this->SQL_start = 'SELECT  it.typeName as shiptype, it.typeID as shipTypeID, cv.characterID as victimID, cv.characterName as victimName, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, al.icon, map.solarSystemName, format(map.security,2) AS security,  caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
-        $this->SQL_joins = ' FROM `'.PREFIX_YAPEAL.'corpKillLog` kl' .
-            ' JOIN `'.PREFIX_YAPEAL.'corpVictim` cv ON cv.`killID`=kl.`killID`' .
-            ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` ca ON ca.`killID`=cv.`killID`' .
-            ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` caf ON caf.`killID`=cv.`killID`' .
-            ' JOIN `'.PREFIX_EVE.'invTypes` it ON it.`typeID` = cv.`shipTypeID`' .
-            ' JOIN `'.PREFIX_EVE.'mapSolarSystems` map ON map.`solarSystemID` = kl.`solarSystemID`'
-            . ' LEFT JOIN '.PREFIX_KKS.'allianceLogo al ON al.allianceID=cv.allianceID';
-        $this->SQL_end = ' ORDER BY kl.`killTime` DESC';
+        /*"SELECT date(kl.`killTime`) AS thedate, count(kl.`killID`) AS count, dayofweek(date(kl.`killTime`)) as dayOfWeek\n"
+    . "FROM yapeal_corpKillLog kl\n"
+    . "JOIN `yapeal_corpVictim` cv ON cv.`killID`=kl.`killID`\n"
+    . "JOIN `yapeal_corpAttackers` ca ON ca.`killID`=cv.`killID`\n"
+    . "JOIN `yapeal_corpAttackers` caf ON caf.`killID`=cv.`killID`\n"
+    . "WHERE ca.`corporationID`=170567768 AND kl.`killTime`BETWEEN \"2009-06-15 00:00:00\" AND \"2009-06-21 23:59:59\"\n"
+    . "GROUP BY thedate\n"
+    . "ORDER BY thedate ASC ";*/
+    
+    
+        $this->SQL_start = "SELECT date(kl.`killTime`) AS thedate, count(kl.`killID`) AS count, dayofweek(date(kl.`killTime`)) as dayOfWeek FROM `".PREFIX_YAPEAL."corpKillLog` kl ";
+        $this->SQL_joins = "JOIN `".PREFIX_YAPEAL."corpVictim` cv ON cv.`killID`=kl.`killID`\n"
+    . "JOIN `".PREFIX_YAPEAL."corpAttackers` ca ON ca.`killID`=cv.`killID`";
+        $this->SQL_end ="GROUP BY date(kl.`killTime`) ORDER BY date(kl.`killTime`) ASC ";;
     }
 
-    /**
-     * killList::fetchList()
+
+/**
+     * dailykills::fetchList()
      * 
      * Use this to generate a list of kills
      * 
@@ -67,33 +65,44 @@ class killList extends kks
         $this->getTimeFrame();
         
         $con = $this->get_connection();
-        
+            
         $sql = $this->SQL_start;
         $sql .= $this->SQL_joins;
-        $sql .= ' WHERE caf.`finalBlow`=1';
+        $sql .= ' WHERE 1=1';
         if ($this->fetchCorp == true && $this->corpID > 0)
         {
-            $sql .= ' AND ca.corporationID=' . $con->qstr($this->corpID);
+            $sql .= ' AND cv.corporationID=' . $con->qstr($this->corpID);
         }
         if ($this->fetchAlliance == true && $this->allianceID > 0)
         {
-            $sql .= ' AND ca.allianceID=' . $con->qstr($this->allianceID);
+            $sql .= ' AND cv.allianceID=' . $con->qstr($this->allianceID);
         }
         if ($this->fetchFaction == true && $this->factionID > 0)
         {
-            $sql .= ' AND ca.factionID=' . $con->qstr($this->factionID);
+            $sql .= ' AND cv.factionID=' . $con->qstr($this->factionID);
         }
         if($this->fetchWeek == true) {
             $sql .= ' AND kl.`killTime`BETWEEN "'.$this->startDate.'" AND "'.$this->endDate.'"';    
         }
         $sql .= $this->SQL_end;
+        
+        //echo $sql;
+        
+        
         if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
-        $this->rarray=$this->rs->GetAssoc();
+            //echo"<pre>";var_dump($this->rs);echo"</pre>";
+            $this->rarray=$this->rs->GetAssoc();
         } else {
-        trigger_error('SQL Query Failed', E_USER_ERROR);
+            trigger_error('SQL Query Failed', E_USER_ERROR);
         } 
 
     }
+    public function formatArray(){
+        $return=array();
+        foreach($this->rarray as $line){
+            $return[]=$line['count'];
+        }
+        return $return;             
+    }
 }
-
 ?>

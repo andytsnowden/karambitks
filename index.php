@@ -52,6 +52,7 @@ require_once KKS_CLASS . 'ADOdbFactory.class.php';
 require_once KKS_CLASS . 'class.errors.php';
 require_once KKS_CLASS . 'class.config.php';
 require_once KKS_INC . 'functions.php';
+require_once KKS_CLASS.'class.kks.php';
 
 //Load config from SQL and some basic config needed for all pages
 $config = new kss_config();
@@ -67,6 +68,10 @@ $banner = $config->get('banner');
 //set new Error Handlerset_error_handler(array('errors', 'handler'));//LOAD DWOO
 require_once KKS_DWOO.'dwooAutoload.php';
 require_once KKS_CLASS.'class.DwooTemplateHandler.php';
+//Session name
+session_name('KKS_SESSION');
+//Start Session
+session_start();
 
 //Compress output if server can and enabled in config.
 if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
@@ -80,6 +85,7 @@ if (!empty($compression) && !headers_sent() && ob_get_length() == 0)
 } else {	
 	ob_start();
 }
+
 
 //UNSET GLOBAL VARIBLES IF HOST HAS register_globals ON (SECURITY RISK)
 unregister_globals('_POST', '_GET', '_REQUEST');

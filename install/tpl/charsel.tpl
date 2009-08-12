@@ -19,7 +19,7 @@
           <td style="width: 64px;"><img src="http://img.eve.is/serv.asp?s=64&amp;c={$info.charId}" width="64" height="64" /></td>
           <td>{$info.charName}</td>
           <td style="text-align:right;">{$info.corpName}</td>
-          <td style="width: 64px;"><img src="http://www.evecorplogo.net/logo.php?id={$info.corpId}&amp;bgc=606060" width="64" height="64" /></td>
+          <td style="width: 64px;"><img src="http://www.evecorplogo.net/logo.php?id={$info.corpId}&amp;bgc=606060" width="64" height="64" />Install for Alliance/Faction? <input type="checkbox" id="allifact" name="allifact" /></td>
         </tr>
       </table>
     </td>
@@ -27,6 +27,19 @@
   {/foreach}
 </table>
 <br />
+<table>
+  <tr>
+    <th colspan="2">Admin Registration</th>
+  </tr>
+  <tr>
+    <td class="tableinfolbl">Password</td>
+    <td><input type="password" name="regPass" /> Must be 6 - 24 character long</td>
+  </tr>
+  <tr>
+    <td class="tableinfolbl">Retype Password</td>
+    <td><input type="password" name="regCheckPass" /></td>
+  </tr>
+</table>
 {$inputHiddenPost}
 <input type="submit" value="Next" />
 </form>

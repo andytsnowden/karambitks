@@ -115,7 +115,7 @@ if (isset($con) && $con->IsConnected()) {
          */
         $saveErrHandlers = $con->IgnoreErrors();
         $schema = new adoSchema($con);
-        //$schema->debug = false;
+        //$con->debug = TRUE;
         $schema->ExecuteInline(FALSE);
         $schema->ContinueOnError(FALSE);
         $schema->SetUpgradeMethod('ALTER');

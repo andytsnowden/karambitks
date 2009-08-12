@@ -118,6 +118,15 @@ stats=900
 killdetail=1800
 dwoo=300
 
+;used for KKS
+[Killboard]
+corporationID=' . $kks['kks']['corporationID'] . '
+corporationName="' . $kks['kks']['corporationName'] . '"
+allianceID=' . $kks['kks']['allianceID'] . '
+allianceName="' . $kks['kks']['allianceName'] . '"
+factionID=' . $kks['kks']['factionID'] . '
+factionName="' . $kks['kks']['factionName'] . '"
+master=0
 
 ; Used for KKS
 [Prefix]
@@ -205,6 +214,16 @@ killlist=60
 stats=900
 killdetail=1800
 dwoo=300
+
+;used for KKS
+[Killboard]
+corporationID=' . $kks['kks']['corporationID'] . '
+corporationName="' . $kks['kks']['corporationName'] . '"
+allianceID="' . $kks['kks']['allianceID'] . '
+allianceName="' . $kks['kks']['allianceName'] . '"
+factionID="' . $kks['kks']['factionID'] . '
+factionName="' . $kks['kks']['factionName'] . '"
+master=0
 
 ; Used for KKS
 [Prefix]

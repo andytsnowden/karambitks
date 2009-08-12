@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<schema version="0.3" xmlns="http://www.mgcummings.com/xsd/yapeal/xmlschema03">
+  <!-- Create Table: eveGraphics -->
+  <sql prefixmethod="MANUAL">
+    <query platform="mysql">SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0</query>
+    <query platform="mysql">SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0</query>
+    <query platform="mysql">SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL'</query>
+  </sql>
+  <table name="eveGraphics">
+    <field name="graphicID" type="I4" size="5"/>
+    <field name="url3D" type="C" size="100"/>
+    <field name="urlWeb" type="C" size="100"/>
+    <field name="description" type="C" size="1000"/>
+    <field name="published" type="I2" size="1"/>
+    <field name="obsolete" type="I2" size="1"/>
+    <field name="icon" type="C" size="100"/>
+    <field name="urlSound" type="C" size="100"/>
+    <field name="explosionID" type="I4" size="5"/>
+    <index name="eveGraphics_PK">
+      <UNIQUE/>
+      <col>graphicID</col>
+    </index>
+    <opt platform="mysql"> ENGINE = INNODB COLLATE = utf8_unicode_ci</opt>
+  </table>
+  <sql prefixmethod="MANUAL">
+    <query platform="mysql">SET SQL_MODE=@OLD_SQL_MODE</query>
+    <query platform="mysql">SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS</query>
+    <query platform="mysql">SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS</query>
+  </sql>
+</schema>

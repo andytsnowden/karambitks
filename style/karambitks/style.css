@@ -1,6 +1,7 @@
 html, body
 {
-  margin: 0px;
+  margin: auto;
+  width: 954px;
   color: #dfdfdf;
   padding: 0px;
   height: 100%;
@@ -29,7 +30,6 @@ td
 {
   width: 750px;
   height: 100%;
-
   border-left: 1px solid #555555;
   border-right: 1px solid #555555;
   border-top: 0px solid #555555;
@@ -37,8 +37,8 @@ td
   padding: 0px;
   border-collapse: separate;
   border-spacing: 0px;
-  position: relative;
-  top: 20px
+  /**position: relative;
+  top: 20px*//
 }
 
 .kill-points
@@ -56,12 +56,11 @@ input, button, select
 
 #content
 {
-  margin-top: 10px;
-  padding: 10px;
+  /**margin-top: 10px;**/
+  /**padding: 10px;**/
   width: 760px;
-
+  float:right; /**addition**/
   background: #111111;
-
   font-size: 11px;
 }
 
@@ -198,8 +197,8 @@ textarea.killmail
     font-size: 10px;
     color: #e0e0e0;
     padding: 0px;
-    position: relative;
-    top: 20px
+    /**position: relative;
+    top: 20px*//
 }
 
 .kb-table-title
@@ -599,4 +598,26 @@ background-color:#333333;
   float:left;
   font-weight: bold;
   font-size:9px;
+}
+
+/***Additions**/
+#footer 
+{
+  position: bottom;
+  clear: both;
+}
+
+#shipclass-tb 
+{
+  float:left;
+}
+#pnav-tb 
+{
+  float:left;
+  width:190px;
+}
+
+#navbar 
+{
+  padding: 0 0 10px 0;
 }

@@ -86,6 +86,8 @@ $text = <<<BODY
 BODY;
 print PHP_EOL . PHP_EOL . $text . PHP_EOL;
 
+//require_once(KKS_EXT.'yaplea'.$ds.'feed.php');
+
 require_once(KKS_EXT.'yapeal'.$ds.'yapeal.php');
 
 echo '</pre>';

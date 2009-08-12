@@ -1,3 +1,4 @@
+<div id="navbar"> <!--Navbar Start-->
 <table class="navigation" width="100%" height="25" border="0" cellspacing="1">
 <tr class="kb-table-row-odd">
 {foreach $menu mu}
@@ -5,3 +6,4 @@
 {/foreach}
 </tr>
 </table>
+</div> <!--Navbar End-->
