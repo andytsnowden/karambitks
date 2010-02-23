@@ -44,7 +44,7 @@ class killList extends kks
 {
     function __construct()
     {
-        $this->SQL_start = 'SELECT  it.typeName as shiptype, it.typeID as shipTypeID, cv.characterID as victimID, cv.characterName as victimName, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, al.icon, map.solarSystemName, format(map.security,2) AS security,  caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID';
+        $this->SQL_start = "SELECT  it.typeName as shiptype, it.typeID as shipTypeID, cv.characterID as victimID, cv.characterName as victimName, cv.corporationName as vcorpName, cv.corporationID as vcorpID, cv.allianceName as valliName, cv.allianceID as valliID, al.icon, map.solarSystemName, format(map.security,2) AS security,  caf.characterName as killerName, caf.corporationName AS kcorpName, caf.allianceName AS kalliNmae,it.graphicID, kl.killTime, kl.killID as killID, (SELECT count(killID) FROM `yapealcorpAttackers` WHERE `killID` = `killID`)";
         $this->SQL_joins = ' FROM `'.PREFIX_YAPEAL.'corpKillLog` kl' .
             ' JOIN `'.PREFIX_YAPEAL.'corpVictim` cv ON cv.`killID`=kl.`killID`' .
             ' JOIN `'.PREFIX_YAPEAL.'corpAttackers` ca ON ca.`killID`=cv.`killID`' .
@@ -87,6 +87,7 @@ class killList extends kks
             $sql .= ' AND kl.`killTime`BETWEEN "'.$this->startDate.'" AND "'.$this->endDate.'"';    
         }
         $sql .= $this->SQL_end;
+        echo $sql;
         if($this->rs=$con->CacheExecute(KKS_CACHE_KILLLIST, $sql)){
         $this->rarray=$this->rs->GetAssoc();
         } else {
