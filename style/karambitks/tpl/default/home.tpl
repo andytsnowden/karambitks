@@ -25,7 +25,7 @@
 <div id="content"> <!--Content Start-->
 
 <div id="kb-tb"> <!--Killboard Table Start-->
-<table width="750" border="1" class="kb-table" align="right">
+<table width="750" border="1" class="kb-table" align="right" cellspacing="1">
 {foreach $chartoplist char}
 <tr><td><img src="?v=character&ID={$char.characterID}" alt="{$char.characterName}" width="33" height="32"/>{$char.characterName}</td><td>{$char.stats}</td></tr>
 {/foreach}
@@ -35,17 +35,20 @@
 </div> <!--Killboard Table End-->
 
 <div id="main-tb"> <!--Main Table Start-->
-<table width="750" border="1" class="main-table kb-table" align="right">
+<table width="750" class="main-table kb-table" align="right">
 <!--Kill Table Heading-->
-<tr>
-    <th>Ship Type</th><th></th><th>Victim</th><th>Final Blow</th><th>System Name</th><th>Time</th>
+<tr class="kb-table-header">
+    <th class="kb-table-header" align="center" colspan="2">Ship Type</th><th colspan="3">Victim</th><th>Final Blow</th><th>System Name</th><th>Time</th>
 </tr>
 <!--Begin Kill Data-->
 {foreach $recent kill}
-<tr onClick="window.location.href='index.php?v=killdetail&kid={$kill.killID}';" style="cursor: pointer;">
+<tr class="kb-table-row-odd" onClick="window.location.href='index.php?v=killdetail&kid={$kill.killID}';" style="cursor: pointer;">
     <td>
     <img src="img/types/shiptypes_png/32_32/{$kill.shipTypeID}.png" alt="{$kill.shipType}" width="32" height="32" />
     </td>
+	<td>
+	<b>{$kill.shiptype}</b>
+	</td>
     <!-- Victim Corporation Logo-->
     <td>
     <img src="http://www.evecorplogo.net/logo.php?id={$kill.vcorpID}&amp;bgc=606060" width="32" height="32" />
@@ -62,15 +65,14 @@
     <!--Victim Information-->
     <td>
         <b>{$kill.victimName}</b> <br />
-        Corporation: {$kill.vcorpName}<br />
-        Alliance: {$kill.valliName}<br />
-        <b>{$kill.shiptype}</b>
+        {$kill.vcorpName}<br />
+        <b>{$kill.valliName}</b><br />
     </td>
     <!--Attacker Information-->
     <td>
         <b>{$kill.killerName}</b><br />
-        Corporation: {$kill.kcorpName}<br />
-        Alliance: {$kill.kalliNmae}
+        {$kill.kcorpName}<br />
+        <b>{$kill.kalliNmae}</b>
     </td>
     <!--Kill Solarsystem Information-->
     <td>{$kill.solarSystemName} ({$kill.security})</td>
