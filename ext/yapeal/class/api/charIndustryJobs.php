@@ -1,6 +1,6 @@
 <?php
 /**
- * Class used to fetch and store char IndustryJobs API.
+ * Contains IndustryJobs class.
  *
  * PHP version 5
  *
@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -43,26 +52,6 @@ class charIndustryJobs extends ACharacter {
    */
   protected $api = 'IndustryJobs';
   /**
-   * @var array Holds the database column names and ADOdb types.
-   */
-  private $types = array('activityID' => 'I', 'assemblyLineID' => 'I',
-    'beginProductionTime' => 'T', 'charMaterialMultiplier' => 'N',
-    'charTimeMultiplier' => 'N', 'completed' => 'I', 'completedStatus' => 'I',
-    'completedSuccessfully' => 'I', 'containerID' => 'I',
-    'containerLocationID' => 'I', 'containerTypeID' => 'I',
-    'endProductionTime' => 'T', 'installedInSolarSystemID' => 'T',
-    'installedItemCopy' => 'I', 'installedItemFlag' => 'I',
-    'installedItemID' => 'I',
-    'installedItemLicensedProductionRunsRemaining' => 'I',
-    'installedItemLocationID' => 'I', 'installedItemMaterialLevel' => 'I',
-    'installedItemProductivityLevel' => 'I', 'installedItemQuantity' => 'I',
-    'installedItemTypeID' => 'I', 'installerID' => 'I', 'installTime' => 'T',
-    'jobID' => 'I', 'licensedProductionRuns' => 'I',
-    'materialMultiplier' => 'N', 'outputFlag' => 'I', 'outputLocationID' => 'I',
-    'outputTypeID' => 'I', 'ownerID' => 'I', 'pauseProductionTime' => 'T',
-    'runs' => 'I', 'timeMultiplier' => 'N'
-  );
-  /**
    * @var string Xpath used to select data from XML.
    */
   private $xpath = '//row';
@@ -72,23 +61,15 @@ class charIndustryJobs extends ACharacter {
    * @return Bool Return TRUE if store was successful.
    */
   public function apiStore() {
-    global $tracing;
-    global $cachetypes;
     $ret = FALSE;
     $tableName = $this->tablePrefix . $this->api;
     if ($this->xml instanceof SimpleXMLElement) {
-      $mess = 'Xpath for ' . $tableName . ' from char section in ' . __FILE__;
-      $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
-      $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
-      $datum = $this->xml->xpath($this->xpath);
-      if (count($datum) > 0) {
+      $cuntil = (string)$this->xml->cachedUntil[0];
+      $this->xml = $this->xml->xpath($this->xpath);
+      if (count($this->xml) > 0) {
         try {
           $extras = array('ownerID' => $this->characterID);
-          $mess = 'multipleUpsertAttributes for ' . $tableName;
-          $mess .= ' from char section in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CHAR, 1) &&
-          $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
-          multipleUpsertAttributes($datum, $this->types, $tableName,
+          YapealDBConnection::multipleUpsertAttributes($this->xml, $tableName,
             YAPEAL_DSN, $extras);
         }
         catch (ADODB_Exception $e) {
@@ -97,22 +78,16 @@ class charIndustryJobs extends ACharacter {
         $ret = TRUE;
       } else {
       $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' from char section in ' . __FILE__;
       trigger_error($mess, E_USER_NOTICE);
       $ret = FALSE;
       };// else count $datum ...
       try {
         // Update CachedUntil time since we should have a new one.
-        $cuntil = (string)$this->xml->cachedUntil[0];
         $data = array( 'tableName' => $tableName,
           'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
         );
-        $mess = 'Upsert for '. $tableName;
-        $mess .= ' from char section in ' . __FILE__;
-        $tracing->activeTrace(YAPEAL_TRACE_CACHE, 0) &&
-        $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
-        upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-          YAPEAL_DSN);
+        YapealDBConnection::upsert($data,
+          YAPEAL_TABLE_PREFIX . 'utilCachedUntil', YAPEAL_DSN);
       }
       catch (ADODB_Exception $e) {
         // Already logged nothing to do here.

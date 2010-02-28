@@ -1,6 +1,6 @@
 <?php
 /**
- * Contents IYapealObserver Interface.
+ * Contains IYapealSubject Interface.
  *
  * PHP version 5
  *
@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -37,19 +46,19 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
  * @package Yapeal
  * @subpackage Observer
  */
-interface YapealSubject {
+interface IYapealSubject {
   /**
    * Used by observers to register so they can be notified.
    *
    * @param SplObserver $observer The observer being added.
    */
-  public static function attach(YapealObserver $observer);
+  public static function attach(IYapealObserver $observer);
   /**
    * Used by observers to unregister from being notified.
    *
    * @param SplObserver $observer The observer being removed.
    */
-  public static function detach(YapealObserver $observer);
+  public static function detach(IYapealObserver $observer);
   /**
    * Used to notify all the observers.
    */

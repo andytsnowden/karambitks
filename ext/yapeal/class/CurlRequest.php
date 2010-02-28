@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -68,7 +77,9 @@ class CurlRequest {
    */
   public function __construct($params) {
     $this->ch = curl_init();
-    $user_agent = 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.0.3) Gecko/2008092417 Firefox/3.0.3';
+    $curl = curl_version();
+    $user_agent = 'Yapeal/'. YAPEAL_VERSION . YAPEAL_STABILITY . ' (' . PHP_OS .
+      ' ' . php_uname('m') . ') libcurl/' . $curl['version'];
     $header = array(
       "Accept: text/xml,application/xml,application/xhtml+xml;q=0.9,text/html;q=0.8,text/plain;q=0.7,image/png;q=0.6,*/*;q=0.5",
       "Accept-Language: en-us;q=0.9,en;q=0.8,*;q=0.7",
@@ -77,7 +88,7 @@ class CurlRequest {
     );
     $options = array(
       CURLOPT_ENCODING => '',
-      CURLOPT_FOLLOWLOCATION => TRUE,
+      CURLOPT_FOLLOWLOCATION => FALSE,
       CURLOPT_HEADER => TRUE,
       CURLOPT_MAXREDIRS => 5,
       CURLOPT_RETURNTRANSFER => TRUE,

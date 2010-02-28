@@ -1,6 +1,6 @@
 <?php
 /**
- * Stuff used to trace program flow in Yapeal.
+ * Contains YapealTracing class.
  *
  * PHP version 5
  *
@@ -20,16 +20,24 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
-$sectionFile = basename(__FILE__);
-if ($sectionFile == basename($_SERVER['PHP_SELF'])) {
+if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
   exit();
 };
 /**
@@ -37,6 +45,8 @@ if ($sectionFile == basename($_SERVER['PHP_SELF'])) {
  *
  * @package Yapeal
  * @subpackage Tracing
+ * @deprecated Since revision 990 but may be brought back in changed form using
+ * Xdebug instead.
  */
 class YapealTracing {
   /**
@@ -51,7 +61,6 @@ class YapealTracing {
    * Constructor
    */
   public function __construct() {
-    require_once YAPEAL_INC . 'elog.php';
     if (defined('YAPEAL_DEBUG')) {
       $this->fileTrace = str_pad(' Trace log ', 75, '-', STR_PAD_BOTH) . PHP_EOL;
     };
@@ -61,10 +70,12 @@ class YapealTracing {
    */
   public function __destruct() {
     if (!empty($this->fileTrace)) {
-      elog(PHP_EOL . $this->fileTrace, YAPEAL_TRACE_LOG);
+      YapealErrorHandler::elog(PHP_EOL . $this->fileTrace, YAPEAL_TRACE_LOG);
+      $this->fileTrace = '';
     };
     if (!empty($this->dbTrace)) {
       // This is where the code to store trace into database will go.
+      $this->dbTrace = '';
     };
   }
   /**
@@ -76,7 +87,7 @@ class YapealTracing {
    * @return bool TRUE if this type and level of tracing is on.
    */
   function activeTrace($section, $level) {
-    if (YAPEAL_TRACE_ACTIVE && (YAPEAL_TRACE_SECTION & $section) == $section &&
+    if (YAPEAL_TRACE_ACTIVE && (YAPEAL_TRACE_SECTIONS & $section) == $section &&
       YAPEAL_TRACE_LEVEL >= $level) {
       return TRUE;
     }; // if YAPEAL_TRACE&&...
@@ -100,7 +111,8 @@ class YapealTracing {
       YAPEAL_TRACE_CACHE => 'CACHE: ',
       YAPEAL_TRACE_CURL => 'CURL: ',
       YAPEAL_TRACE_DATABASE => 'DATABASE: ',
-      YAPEAL_TRACE_REQUEST => 'REQUEST: '
+      YAPEAL_TRACE_REQUEST => 'REQUEST: ',
+      YAPEAL_TRACE_SECTION => 'SECTION: '
     );
     $mess = $sections[$section] . $message .PHP_EOL;
     if (YAPEAL_TRACE_OUTPUT == 'file' || YAPEAL_TRACE_OUTPUT == 'both') {
@@ -118,7 +130,7 @@ class YapealTracing {
    */
   public function flushTrace() {
     if (!empty($this->fileTrace)) {
-      elog(PHP_EOL . $this->fileTrace, YAPEAL_TRACE_LOG);
+      YapealErrorHandler::elog(PHP_EOL . $this->fileTrace, YAPEAL_TRACE_LOG);
       $this->fileTrace = '';
     };
     if (!empty($this->dbTrace)) {
@@ -186,4 +198,8 @@ define('YAPEAL_TRACE_FILES', 1048576);
  * Use to turn on request tracing.
  */
 define('YAPEAL_TRACE_REQUEST', 2097152);
+/**
+ * Use to turn on section tracing.
+ */
+define('YAPEAL_TRACE_SECTION', 4194304);
 ?>

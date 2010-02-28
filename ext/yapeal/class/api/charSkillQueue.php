@@ -1,6 +1,6 @@
 <?php
 /**
- * Class used to fetch and store char SkillQueue API.
+ * Contains SkillQueue class.
  *
  * PHP version 5
  *
@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -43,12 +52,6 @@ class charSkillQueue extends ACharacter {
    */
   protected $api = 'SkillQueue';
   /**
-   * @var array Holds the database column names and ADOdb types.
-   */
-  private $types = array('endSP' => 'I', 'endTime' => 'T', 'level' => 'I',
-    'ownerID' => 'I', 'queuePosition' => 'I', 'startSP' => 'I',
-    'startTime' => 'T', 'typeID' => 'I');
-  /**
    * @var string Xpath used to select data from XML.
    */
   private $xpath = '//row';
@@ -58,56 +61,38 @@ class charSkillQueue extends ACharacter {
    * @return Bool Return TRUE if store was successful.
    */
   public function apiStore() {
-    global $tracing;
-    global $cachetypes;
     $ret = FALSE;
     $tableName = $this->tablePrefix . $this->api;
     if ($this->xml instanceof SimpleXMLElement) {
-      $mess = 'Xpath for ' . $tableName . ' in ' . __FILE__;
-      $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
-      $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
-      $datum = $this->xml->xpath($this->xpath);
-      if (count($datum) > 0) {
+      $cuntil = (string)$this->xml->cachedUntil[0];
+      $this->xml = $this->xml->xpath($this->xpath);
+      if (count($this->xml) > 0) {
         try {
-          $con = connect(YAPEAL_DSN, $tableName);
-          $sql = 'delete from ' . $tableName;
-          $sql .= ' where ownerID=' . $this->characterID;
-          $mess = 'Before delete for ' . $tableName;
-          $mess .= ' in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
-          $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
+          $con = YapealDBConnection::connect(YAPEAL_DSN);
+          $sql = 'delete from `' . $tableName . '`';
+          $sql .= ' where `ownerID`=' . $this->characterID;
           // Clear out old tree for this owner.
           $con->Execute($sql);
           $extras = array('ownerID' => $this->characterID);
-          $mess = 'multipleUpsertAttributes for ' . $tableName;
-          $mess .= ' in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CHAR, 1) &&
-          $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
-          multipleUpsertAttributes($datum, $this->types, $tableName, YAPEAL_DSN,
-            $extras);
+          YapealDBConnection::multipleUpsertAttributes($this->xml, $tableName,
+            YAPEAL_DSN, $extras);
         }
         catch (ADODB_Exception $e) {
           return FALSE;
         }
         $ret = TRUE;
       } else {
-      $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' in ' . __FILE__;
-      trigger_error($mess, E_USER_NOTICE);
-      $ret = FALSE;
+        $mess = 'There was no XML data to store for ' . $tableName;
+        trigger_error($mess, E_USER_NOTICE);
+        $ret = FALSE;
       };// else count $datum ...
       try {
         // Update CachedUntil time since we should have a new one.
-        $cuntil = (string)$this->xml->cachedUntil[0];
         $data = array( 'tableName' => $tableName,
           'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
         );
-        $mess = 'Upsert for '. $tableName;
-        $mess .= ' in ' . __FILE__;
-        $tracing->activeTrace(YAPEAL_TRACE_CACHE, 0) &&
-        $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
-        upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-          YAPEAL_DSN);
+        YapealDBConnection::upsert($data,
+          YAPEAL_TABLE_PREFIX . 'utilCachedUntil', YAPEAL_DSN);
       }
       catch (ADODB_Exception $e) {
         // Already logged nothing to do here.
