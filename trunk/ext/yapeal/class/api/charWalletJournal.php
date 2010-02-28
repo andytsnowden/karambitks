@@ -1,6 +1,6 @@
 <?php
 /**
- * Class used to fetch and store char WalletJournal API.
+ * Contains WalletJournal class.
  *
  * PHP version 5
  *
@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -43,14 +52,6 @@ class charWalletJournal extends ACharacter {
    */
   protected $api = 'WalletJournal';
   /**
-   * @var array Holds the database column names and ADOdb types.
-   */
-  private $types = array('accountKey' => 'I', 'amount' => 'N', 'argID1' => 'I',
-    'argName1' => 'C', 'balance' => 'N', 'date' => 'T', 'ownerID' => 'I',
-    'ownerID1' => 'I', 'ownerID2' => 'I', 'ownerName1' => 'C',
-    'ownerName2' => 'C', 'reason' => 'X', 'refID' => 'I', 'refTypeID' => 'I'
-  );
-  /**
    * @var array Hold an array of the XML return from API.
    */
   protected $xml = array();
@@ -64,8 +65,6 @@ class charWalletJournal extends ACharacter {
    * @return boolean Returns TRUE if item received.
    */
   public function apiFetch() {
-    global $tracing;
-    global $cachetypes;
     $accounts = array(1000);
     $ret = 0;
     $tableName = $this->tablePrefix . $this->api;
@@ -82,20 +81,12 @@ class charWalletJournal extends ACharacter {
         try {
           // Build base part of cache file name.
           $cacheName = $this->serverName . $tableName;
-          $cacheName .= $this->characterID . $account . $beforeID . '.xml';
+          $cacheName .= $this->characterID . $account . $beforeID;
           // Try to get XML from local cache first if we can.
-          $mess = 'getCachedXml for ' . $cacheName;
-          $mess .= ' from char section in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
-          $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
           $xml = YapealApiRequests::getCachedXml($cacheName, YAPEAL_API_CHAR);
           if ($xml === FALSE) {
-            $mess = 'getAPIinfo for ' . $this->api;
-            $mess .= ' from char section in ' . __FILE__;
-            $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
-            $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
             $xml = YapealApiRequests::getAPIinfo($this->api, YAPEAL_API_CHAR,
-              $postData);
+              $postData, $this->proxy);
             if ($xml instanceof SimpleXMLElement) {
               // Get current API time and add an hour to it.
               $currentTime = strtotime((string)$xml->currentTime[0] . ' +0000');
@@ -108,18 +99,16 @@ class charWalletJournal extends ACharacter {
             };// if $xml ...
           };// if $xml === FALSE ...
           if ($xml !== FALSE) {
-            print 'Storing XML' . PHP_EOL;
             $this->xml[$account][] = $xml;
             $datum = $xml->xpath($this->xpath);
             $cnt = count($datum);
-            print 'Row count: ' .$cnt . PHP_EOL;
             if ($cnt > 0) {
               // Get date/time of last record
               $lastDT = strtotime($datum[$cnt - 1]['date'] . ' +0000');
               // If last record is less than a week old we might be able to
               // continue walking backwards through records.
               if ($oldest < $lastDT) {
-                $beforeID = (int)$datum[$cnt - 1]['refID'];
+                $beforeID = (string)$datum[$cnt - 1]['refID'];
                 // Pause to let CCP figure out we got last 1000 records before
                 // trying to getting another batch :P
                 sleep(2);
@@ -129,41 +118,24 @@ class charWalletJournal extends ACharacter {
               }; // if $oldest<$lastDT
             } else {
               $mess = 'No records for ' . $tableName;
-              $mess .= ' from char section in ' . __FILE__;
               trigger_error($mess, E_USER_NOTICE);
               break;
             }
           } else {
             $mess = 'No XML found for ' . $tableName;
-            $mess .= ' from char section in ' . __FILE__;
             trigger_error($mess, E_USER_NOTICE);
             continue 2;// while, foreach $accounts
           };// else $xml !== FALSE ...
         }
         catch (YapealApiErrorException $e) {
-          // Some error codes give us a new time to retry after that should be
-          // used for cached until time.
-          switch ($e->getCode()) {
-            case 101: // Wallet exhausted.
-            case 103: // Already returned one week of data.
-              $cuntil = substr($e->getMessage() , -21, 20);
-              print 'Error cachedUntil: ' . $cuntil . PHP_EOL;
-              $data = array( 'tableName' => $tableName,
-                'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
-              );
-              upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-                YAPEAL_DSN);
-              break;
-            case 211: // Login denied by account status.
-              // The character's account isn't active no use trying any of the
-              // other APIs.
-              break 4;// switch, while, foreach $accounts, foreach $apis
-            default:
-              // Do nothing but logging by default
-          };// switch $e->getCode()
-          continue 2;// while, foreach $accounts
+          if ($this->handleApiRetry($e)) {
+            continue 2;
+          } else if ($this->handleApiError($e)) {
+            return FALSE;
+          };
+          continue 2;
         }
-        catch (YapealApiException $e) {
+        catch (YapealApiFileException $e) {
           continue 2;
         }
         catch (ADODB_Exception $e) {
@@ -183,55 +155,50 @@ class charWalletJournal extends ACharacter {
    * @return Bool Return TRUE if store was successful.
    */
   public function apiStore() {
-    global $tracing;
-    global $cachetypes;
     $accounts = array(1000);
     $ret = 0;
     $cuntil = '1970-01-01 00:00:01';
     $tableName = $this->tablePrefix . $this->api;
     if (empty($this->xml)) {
       $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' from char section in ' . __FILE__;
       trigger_error($mess, E_USER_NOTICE);
       return FALSE;
     };// if empty $this->xml ...
     foreach ($accounts as $account) {
       if (empty($this->xml[$account])) {
         $mess = 'There was no XML data to store for ' . $tableName . $account;
-        $mess .= ' in ' . __FILE__;
         trigger_error($mess, E_USER_NOTICE);
+        continue;
       };// if empty $this->xml[$account] ...
       foreach ($this->xml[$account] as $xml) {
-        $mess = 'Xpath for ' . $tableName . $account;
-        $mess .= ' from char section in ' . __FILE__;
-        $tracing->activeTrace(YAPEAL_TRACE_CHAR, 2) &&
-        $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
-        $datum = $xml->xpath($this->xpath);
-        $cnt = count($datum);
+        $cuntil = (string)$xml->cachedUntil[0];
+        $xml = $xml->xpath($this->xpath);
+        $cnt = count($xml);
         if ($cnt > 0) {
           try {
+            foreach ($xml as $row) {
+              if (empty($row['taxAmount'])) {
+                $row['taxAmount'] = 0.0;
+              };
+              if (empty($row['taxReceiverID'])) {
+                $row['taxReceiverID'] = 0;
+              };
+            };
             $extras = array('ownerID' => $this->characterID,
               'accountKey' => $account);
-            $mess = 'multipleUpsertAttributes for ' . $tableName . $account;
-            $mess .= ' from char section in ' . __FILE__;
-            $tracing->activeTrace(YAPEAL_TRACE_CHAR, 1) &&
-            $tracing->logTrace(YAPEAL_TRACE_CHAR, $mess);
-            multipleUpsertAttributes($datum, $this->types, $tableName, YAPEAL_DSN,
-              $extras);
+            for ($i = 0, $grp = (int)ceil($cnt / YAPEAL_MAX_UPSERT), $pos = 0;
+                $i < $grp;++$i, $pos += YAPEAL_MAX_UPSERT) {
+              $group = array_slice($xml, $pos, YAPEAL_MAX_UPSERT, TRUE);
+              YapealDBConnection::multipleUpsertAttributes($group, $tableName,
+                YAPEAL_DSN, $extras);
+            };// for $i = 0...
           }
           catch (ADODB_Exception $e) {
             // Any failure to store XML on any account returns FALSE;
             continue 2;
           }
-          // This doesn't work until CCP fixes thier cachedUntil timer.
-          // Now correcting the time in XML instead.
-          //$until = (string)$xml->cachedUntil[0];
-          //if ($until > $cuntil) {
-          //  $cuntil = $until;
-          //};
         } else {
         $mess = 'There was no XML data to store for ' . $tableName . $account;
-        $mess .= ' from char section in ' . __FILE__;
         trigger_error($mess, E_USER_NOTICE);
         };// else count $datum ...
       };// foreach $this->xml[$account] ...
@@ -239,20 +206,11 @@ class charWalletJournal extends ACharacter {
     };// foreach $accounts ...
     try {
       // Update CachedUntil time since we updated records and have new one.
-      // API returning wrong cache until time need to set cachedUntil to
-      // 60 minutes
-      //$cuntil = gmdate('Y-m-d H:i:s', strtotime('60 minutes'));
-      // Now correcting the time in XML instead.
-      $cuntil = (string)$xml->cachedUntil[0];
       $data = array( 'tableName' => $tableName,
         'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
       );
-      $mess = 'Upsert for '. $tableName;
-      $mess .= ' from char section in ' . __FILE__;
-      $tracing->activeTrace(YAPEAL_TRACE_CACHE, 0) &&
-      $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
-      upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-        YAPEAL_DSN);
+      YapealDBConnection::upsert($data,
+        YAPEAL_TABLE_PREFIX . 'utilCachedUntil', YAPEAL_DSN);
     }
     catch (ADODB_Exception $e) {
       // Already logged nothing to do here.
@@ -263,5 +221,35 @@ class charWalletJournal extends ACharacter {
     };
     return FALSE;
   }// function apiStore
+  /**
+   * Handles some Eve API error codes in special ways.
+   *
+   * @param object $e Eve API exception returned.
+   *
+   * @return bool Returns TRUE if handled the error else FALSE.
+   */
+  private function handleApiRetry($e) {
+    try {
+      switch ($e->getCode()) {
+        // All of these codes give a new cachedUntil time to use.
+        case 101: // Wallet exhausted: retry after {0}.
+        case 103: // Already returned one week of data: retry after {0}.
+        case 115: // Assets already downloaded: retry after {0}.
+        case 116: // Industry jobs already downloaded: retry after {0}.
+        case 117: // Market orders already downloaded. retry after {0}.
+        case 119: // Kills exhausted: retry after {0}.
+          $cuntil = substr($e->getMessage() , -21, 20);
+          $data = array( 'tableName' => $this->tablePrefix . $this->api,
+            'ownerID' => $this->characterID, 'cachedUntil' => $cuntil
+          );
+            YapealDBConnection::upsert($data,
+              YAPEAL_TABLE_PREFIX . 'utilCachedUntil', YAPEAL_DSN);
+          return TRUE;
+          break;
+      };// switch $code ...
+    }
+    catch (ADODB_Exception $e) {}
+    return FALSE;
+  }// function handleApiRetry
 }
 ?>

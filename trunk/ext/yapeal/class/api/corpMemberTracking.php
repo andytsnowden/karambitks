@@ -1,6 +1,6 @@
 <?php
 /**
- * Class used to fetch and store Corp MemberTracking API.
+ * Contains MemberTracking class.
  *
  * PHP version 5
  *
@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -43,15 +52,6 @@ class corpMemberTracking extends ACorporation {
    */
   protected $api = 'MemberTracking';
   /**
-   * @var array Holds the database column names and ADOdb types.
-   */
-  private $types = array('base' => 'C', 'baseID' => 'I', 'characterID' => 'I',
-    'grantableRoles' => 'C', 'location' => 'C', 'locationID' => 'I',
-    'logoffDateTime' => 'T', 'logonDateTime' => 'T', 'name' => 'C',
-    'ownerID' => 'I', 'roles' => 'C', 'shipType' => 'C', 'shipTypeID' => 'I',
-    'startDateTime' => 'T', 'title' => 'C'
-  );
-  /**
    * @var string Xpath used to select data from XML.
    */
   private $xpath = '//row';
@@ -61,32 +61,20 @@ class corpMemberTracking extends ACorporation {
    * @return Bool Return TRUE if store was successful.
    */
   public function apiStore() {
-    global $tracing;
-    global $cachetypes;
     $ret = FALSE;
     $tableName = $this->tablePrefix . $this->api;
     if ($this->xml instanceof SimpleXMLElement) {
-      $mess = 'Xpath for ' . $tableName . ' in ' . __FILE__;
-      $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-      $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
-      $datum = $this->xml->xpath($this->xpath);
-      if (count($datum) > 0) {
+      $cuntil = (string)$this->xml->cachedUntil[0];
+      $this->xml = $this->xml->xpath($this->xpath);
+      if (count($this->xml) > 0) {
         try {
-          $con = connect(YAPEAL_DSN, $tableName);
-          $mess = 'Delete data from ' . $tableName;
-          $mess .= ' in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-          $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
+          $con = YapealDBConnection::connect(YAPEAL_DSN);
           // Empty out old data then upsert (insert) new
-          $sql = 'delete from ' . $tableName;
-          $sql .= ' where ownerID=' . $this->corporationID;
+          $sql = 'delete from `' . $tableName . '`';
+          $sql .= ' where `ownerID`=' . $this->corporationID;
           $con->Execute($sql);
           $extras = array('ownerID' => $this->corporationID);
-          $mess = 'multipleUpsertAttributes for ' . $tableName;
-          $mess .= ' in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CORP, 1) &&
-          $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
-          multipleUpsertAttributes($datum, $this->types, $tableName,
+          YapealDBConnection::multipleUpsertAttributes($this->xml, $tableName,
             YAPEAL_DSN, $extras);
         }
         catch (ADODB_Exception $e) {
@@ -95,22 +83,16 @@ class corpMemberTracking extends ACorporation {
         $ret = TRUE;
       } else {
       $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' in ' . __FILE__;
       trigger_error($mess, E_USER_NOTICE);
       $ret = FALSE;
       };// else count $datum ...
       try {
         // Update CachedUntil time since we should have a new one.
-        $cuntil = (string)$this->xml->cachedUntil[0];
         $data = array( 'tableName' => $tableName,
           'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
         );
-        $mess = 'Upsert for '. $tableName;
-        $mess .= ' in ' . __FILE__;
-        $tracing->activeTrace(YAPEAL_TRACE_CACHE, 0) &&
-        $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
-        upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-          YAPEAL_DSN);
+        YapealDBConnection::upsert($data,
+          YAPEAL_TABLE_PREFIX . 'utilCachedUntil', YAPEAL_DSN);
       }
       catch (ADODB_Exception $e) {
         // Already logged nothing to do here.

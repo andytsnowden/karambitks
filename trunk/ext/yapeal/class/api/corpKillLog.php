@@ -1,6 +1,6 @@
 <?php
 /**
- * Class used to fetch and store char killLog API.
+ * Contains killLog class.
  *
  * PHP version 5
  *
@@ -20,11 +20,20 @@
  *  You should have received a copy of the GNU Lesser General Public License
  *  along with Yapeal. If not, see <http://www.gnu.org/licenses/>.
  *
- * @author Michael Cummings <mgcummings@yahoo.com>
- * @copyright Copyright (c) 2008-2009, Michael Cummings
- * @license http://www.gnu.org/copyleft/lesser.html GNU LGPL
- * @package Yapeal
+ * @author     Michael Cummings <mgcummings@yahoo.com>
+ * @copyright  Copyright (c) 2008-2010, Michael Cummings
+ * @license    http://www.gnu.org/copyleft/lesser.html GNU LGPL
+ * @package    Yapeal
+ * @link       http://code.google.com/p/yapeal/
+ * @link       http://www.eve-online.com/
  */
+/**
+ * @internal Allow viewing of the source code in web browser.
+ */
+if (isset($_REQUEST['viewSource'])) {
+  highlight_file(__FILE__);
+  exit();
+};
 /**
  * @internal Only let this code be included or required not ran directly.
  */
@@ -32,10 +41,10 @@ if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
   exit();
 };
 /**
- * Class used to fetch and store char KillLog API.
+ * Class used to fetch and store corp KillLog API.
  *
  * @package Yapeal
- * @subpackage Api_character
+ * @subpackage Api_corporation
  */
 class corpKillLog extends ACorporation {
   /**
@@ -72,8 +81,6 @@ class corpKillLog extends ACorporation {
    * @return boolean Returns TRUE if item received.
    */
   public function apiFetch() {
-    global $tracing;
-    global $cachetypes;
     $ret = 0;
     $xml = FALSE;
     $tableName = $this->tablePrefix . $this->api;
@@ -87,38 +94,28 @@ class corpKillLog extends ACorporation {
       try {
         // Build base part of cache file name.
         $cacheName = $this->serverName . $tableName;
-        $cacheName .= $this->corporationID . $beforeID . '.xml';
+        $cacheName .= $this->corporationID . $beforeID;
         // Try to get XML from local cache first if we can.
-        $mess = 'getCachedXml for ' . $cacheName;
-        $mess .= ' in ' . __FILE__;
-        $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-        $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
         $xml = YapealApiRequests::getCachedXml($cacheName, YAPEAL_API_CORP);
         if ($xml === FALSE) {
-          $mess = 'getAPIinfo for ' . $this->api;
-          $mess .= ' in ' . __FILE__;
-          $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-          $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
           $xml = YapealApiRequests::getAPIinfo($this->api, YAPEAL_API_CORP,
-            $postData);
+            $postData, $this->proxy);
           if ($xml instanceof SimpleXMLElement) {
             YapealApiRequests::cacheXml($xml->asXML(), $cacheName,
               YAPEAL_API_CORP);
           };// if $xml ...
         };// if $xml === FALSE ...
         if ($xml !== FALSE) {
-          print 'Storing XML' . PHP_EOL;
           $this->xml[] = $xml;
           $datum = $xml->xpath($this->xpath);
           $cnt = count($datum);
-          print 'Row count: ' .$cnt . PHP_EOL;
           if ($cnt > 0) {
             // Get date/time of last record
             $lastDT = strtotime($datum[$cnt - 1]['killTime'] . ' +0000');
             // If last record is less than a week old we might be able to
             // continue walking backwards through records.
             if ($oldest < $lastDT) {
-              $beforeID = (int)$datum[$cnt - 1]['killID'];
+              $beforeID = (string)$datum[$cnt - 1]['killID'];
               // Pause to let CCP figure out we got last group of records before
               // trying to getting another batch :P
               sleep(2);
@@ -128,38 +125,22 @@ class corpKillLog extends ACorporation {
             };// else $oldest<$lastDT
           } else {
             $mess = 'No records for ' . $tableName;
-            $mess .= ' in ' . __FILE__;
             trigger_error($mess, E_USER_NOTICE);
             break;
           }
         } else {
           $mess = 'No XML found for ' . $tableName;
-          $mess .= ' in ' . __FILE__;
           trigger_error($mess, E_USER_NOTICE);
           continue;
         };// else $xml !== FALSE ...
       }
-      catch(YapealApiErrorException $e) {
-        // Some error codes give us a new time to retry after that should be
-        // used for cached until time.
-        switch ($e->getCode()) {
-          case 103: // Already returned one week of data.
-          case 119: // Kills exhausted: retry after {0}.
-            $cuntil = substr($e->getMessage() , -21, 20);
-            $data = array( 'tableName' => $tableName,
-              'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
-            );
-            upsert($data, $cachetypes, 'utilCachedUntil', YAPEAL_DSN);
-            break;
-          case 211: // Login denied by account status.
-            // The character's account isn't active no use trying any of the other APIs.
-            break 3;// switch, while, foreach $apis
-          default:
-            // Do nothing but logging by default
-        };// switch $e->getCode()
+      catch (YapealApiErrorException $e) {
+        // Any API errors that need to be handled in some way are handled in this
+        // function.
+        $this->handleApiError($e);
         return FALSE;
       }
-      catch (YapealApiException $e) {
+      catch (YapealApiFileException $e) {
         return FALSE;
       }
       catch (ADODB_Exception $e) {
@@ -173,33 +154,26 @@ class corpKillLog extends ACorporation {
     return FALSE;
   }// function apiFetch
   /**
-   * Used to store XML to WalletJournal table.
+   * Used to store XML to KillLog tables.
    *
    * @return Bool Return TRUE if store was successful.
    */
   public function apiStore() {
-    global $tracing;
-    global $cachetypes;
     $ret = 0;
     $cuntil = '1970-01-01 00:00:01';
     $tableName = $this->tablePrefix . $this->api;
     if (empty($this->xml)) {
       $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' in ' . __FILE__;
       trigger_error($mess, E_USER_NOTICE);
       return FALSE;
     };// if empty $this->xml ...
     foreach ($this->xml as $xml) {
-      $mess = 'Xpath for ' . $tableName;
-      $mess .= ' in ' . __FILE__;
-      $tracing->activeTrace(YAPEAL_TRACE_CORP, 2) &&
-      $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
       $kills = $xml->xpath('//rowset[@name="kills"]/row');
       $cnt = count($kills);
      if ($cnt > 0) {
         for ($i = 0; $i < $cnt; ++$i) {
           $kill = $kills[$i];
-          $killID = (int)$kill['killID'];
+          $killID = $kill['killID'];
           $this->attackers($kill, $killID);
           $this->killLog($kill, $killID);
           $this->items($kill, $killID);
@@ -209,21 +183,10 @@ class corpKillLog extends ACorporation {
         };// for $i = 0...
         if (!empty($this->attackersList)) {
           $tableName = $this->tablePrefix . 'Attackers';
-          // Set the field types of query by name.
-          $types = array(
-            'allianceID' => 'I', 'allianceName' => 'C', 'characterID' => 'I',
-            'characterName' => 'C', 'corporationID' => 'I',
-            'corporationName' => 'C', 'damageDone' => 'I', 'factionID' => 'I',
-            'factionName' => 'C', 'finalBlow' => 'L', 'killID' => 'I',
-            'securityStatus' => 'N', 'shipTypeID' => 'I', 'weaponTypeID' => 'I'
-          );
+          $extras = array('finalBlow' => 0);
           try {
-            $mess = 'multipleUpsertAttributes for ' . $tableName;
-            $mess .= ' in ' . __FILE__;
-            $tracing->activeTrace(YAPEAL_TRACE_CORP, 1) &&
-            $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
-            multipleUpsertAttributes($this->attackersList, $types, $tableName,
-              YAPEAL_DSN);
+            YapealDBConnection::multipleUpsertAttributes($this->attackersList,
+              $tableName, YAPEAL_DSN);
             ++$ret;
           }
           catch (ADODB_Exception $e) {
@@ -232,18 +195,9 @@ class corpKillLog extends ACorporation {
         };// if !empty $this->attackersList ...
         if (!empty($this->itemsList)) {
           $tableName = $this->tablePrefix . 'Items';
-          // Set the field types of query by name.
-          $types = array('flag' => 'I', 'killID' => 'I', 'lft' => 'I',
-            'lvl' => 'I', 'rgt' => 'I', 'typeID' => 'I', 'qtyDestroyed' => 'I',
-            'qtyDropped' => 'I'
-          );
           try {
-            $mess = 'multipleUpsertAttributes for ' . $tableName;
-            $mess .= ' in ' . __FILE__;
-            $tracing->activeTrace(YAPEAL_TRACE_CORP, 1) &&
-            $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
-            multipleUpsertAttributes($this->itemsList, $types, $tableName,
-              YAPEAL_DSN);
+            YapealDBConnection::multipleUpsertAttributes($this->itemsList,
+              $tableName, YAPEAL_DSN);
             ++$ret;
           }
           catch (ADODB_Exception $e) {
@@ -252,16 +206,9 @@ class corpKillLog extends ACorporation {
         };// if !empty $this->itemsList ...
         if (!empty($this->killList)) {
           $tableName = $this->tablePrefix . 'KillLog';
-          // Set the field types of query by name.
-          $types = array('killID' => 'I', 'killTime' => 'T', 'moonID' => 'I',
-            'solarSystemID' => 'I');
           try {
-            $mess = 'multipleUpsertAttributes for ' . $tableName;
-            $mess .= ' in ' . __FILE__;
-            $tracing->activeTrace(YAPEAL_TRACE_CORP, 1) &&
-            $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
-            multipleUpsertAttributes($this->killList, $types, $tableName,
-              YAPEAL_DSN);
+            YapealDBConnection::multipleUpsertAttributes($this->killList,
+              $tableName, YAPEAL_DSN);
             ++$ret;
           }
           catch (ADODB_Exception $e) {
@@ -270,20 +217,9 @@ class corpKillLog extends ACorporation {
         };// if !empty $this->killList ...
         if (!empty($this->victimList)) {
           $tableName = $this->tablePrefix . 'Victim';
-          // Set the field types of query by name.
-          $types = array(
-            'allianceID' => 'I', 'allianceName' => 'C', 'characterID' => 'I',
-            'characterName' => 'C', 'corporationID' => 'I',
-            'corporationName' => 'C', 'damageTaken' => 'I', 'factionID' => 'I',
-            'factionName' => 'C', 'killID' => 'I', 'shipTypeID' => 'I'
-          );
           try {
-            $mess = 'multipleUpsertAttributes for ' . $tableName;
-            $mess .= ' in ' . __FILE__;
-            $tracing->activeTrace(YAPEAL_TRACE_CORP, 1) &&
-            $tracing->logTrace(YAPEAL_TRACE_CORP, $mess);
-            multipleUpsertAttributes($this->victimList, $types, $tableName,
-              YAPEAL_DSN);
+            YapealDBConnection::multipleUpsertAttributes($this->victimList,
+              $tableName, YAPEAL_DSN);
             ++$ret;
           }
           catch (ADODB_Exception $e) {
@@ -292,7 +228,6 @@ class corpKillLog extends ACorporation {
         };// if !empty $this->victimList ...
       } else {
       $mess = 'There was no XML data to store for ' . $tableName;
-      $mess .= ' in ' . __FILE__;
       trigger_error($mess, E_USER_NOTICE);
       };// else count $datum ...
     };// foreach $this->xml ...
@@ -303,12 +238,8 @@ class corpKillLog extends ACorporation {
       $data = array( 'tableName' => $tableName,
         'ownerID' => $this->corporationID, 'cachedUntil' => $cuntil
       );
-      $mess = 'Upsert for '. $tableName;
-      $mess .= ' in ' . __FILE__;
-      $tracing->activeTrace(YAPEAL_TRACE_CACHE, 0) &&
-      $tracing->logTrace(YAPEAL_TRACE_CACHE, $mess);
-      upsert($data, $cachetypes, YAPEAL_TABLE_PREFIX . 'utilCachedUntil',
-        YAPEAL_DSN);
+      YapealDBConnection::upsert($data,
+        YAPEAL_TABLE_PREFIX . 'utilCachedUntil', YAPEAL_DSN);
     }
     catch (ADODB_Exception $e) {
       // Already logged nothing to do here.
@@ -328,7 +259,6 @@ class corpKillLog extends ACorporation {
    * @return void
    */
   protected function attackers($kill, $killID) {
-    global $tracing;
     $tableName = $this->tablePrefix . 'Attackers';
     $xml = simplexml_load_string($kill->rowset[0]->asXML());
     $data = $xml->xpath('//row');
@@ -348,7 +278,6 @@ class corpKillLog extends ACorporation {
    * @return void
    */
   protected function killLog($kill, $killID) {
-    global $tracing;
     $tableName = $this->tablePrefix . 'KillLog';
     $datum = simplexml_load_string($kill->asXML());
     if (!empty($datum)) {
@@ -365,9 +294,8 @@ class corpKillLog extends ACorporation {
    * @return void
    */
   protected function items($kill, $killID) {
-    global $tracing;
     $tableName = $this->tablePrefix . 'Items';
-    $typeID = (int)$kill->victim['shipTypeID'];
+    $typeID = $kill->victim['shipTypeID'];
     // Walking the items and add nested set stuff.
     $rgt = $this->editItems($kill->rowset[1], $killID);
     $data = '<row flag="0" killID="' . $killID . '" lft="1" lvl="0" rgt="';
@@ -384,7 +312,6 @@ class corpKillLog extends ACorporation {
    * @return void
    */
   protected function victim($kill, $killID) {
-    global $tracing;
     $tableName = $this->tablePrefix . 'Attackers';
     $xml = simplexml_load_string($kill->asXML());
     $data = $xml->victim[0];
