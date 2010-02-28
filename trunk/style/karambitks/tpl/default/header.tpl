@@ -4,6 +4,7 @@
 <title>{$kb_title}</title>
 <link rel="stylesheet" type="text/css" href="{$style_url}/common.css"/>
 <link rel="stylesheet" type="text/css" href="{$style_url}/{$theme_url}/style.css"/>
+<link rel="stylesheet" type="text/css" href="{$style_url}/{$theme_url}/extended.css"/>
 {$page_headerlines}
 <script language="javascript" src="{$style_url}/generic.js"></script>
 <!--[if lt IE 7]>
